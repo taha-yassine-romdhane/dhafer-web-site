@@ -9,7 +9,7 @@ import { ShoppingCart, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/lib/context/cart-context"
 
-type ProductWithImages = Product & { images: ProductImage[] }
+type ProductWithImages = Product & { images: ProductImage[], colors: string[], sizes: string[] }
 
 // Color mapping for actual CSS colors
 const colorMap: { [key: string]: string } = {
@@ -84,7 +84,7 @@ export function HomePageProductGrid({ initialProducts = [] }: { initialProducts?
           <Link href={`/product/${product.id}`}>
             <div className="relative aspect-[3/4] mb-4 overflow-hidden rounded-xl bg-gray-100">
               <Image
-                src={product.images[0]?.url ? product.images[0].url : '/images/placeholder.jpg'}
+                src={product.images && product.images.length > 0 && product.images[0] && product.images[0].url ? product.images[0].url : '/images/placeholder.jpg'}
                 alt={product.name}
                 fill
                 className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"

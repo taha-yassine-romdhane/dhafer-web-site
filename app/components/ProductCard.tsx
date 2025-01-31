@@ -53,7 +53,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                   className={`relative w-16 h-20 overflow-hidden rounded-md border-2 transition-all duration-200 ${
                     currentImageIndex === index 
                       ? 'border-[#D4AF37] scale-110' 
-                      : 'border-white/50 hover:border-[#D4AF37] hover:scale-105'
+                      : 'border-white/50 hover:border-[#D4AF37] hover:scale-105 '
                   }`}
                   onMouseEnter={() => setCurrentImageIndex(index)}
                 >
@@ -61,7 +61,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     src={image.url}
                     alt={`${product.name} view ${index + 1}`}
                     fill
-                    className="object-cover"
+                    className="object-cover "
                     sizes="64px"
                   />
                 </button>

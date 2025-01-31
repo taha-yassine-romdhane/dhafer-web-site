@@ -62,14 +62,24 @@ export default function ProductPage({ params }: { params: { productId: string } 
   }, [params.productId])
 
   const handleAddToCart = () => {
-    if (!product || !selectedColorVariant) return
-    
-    if (product.sizes?.length > 0 && !selectedSize) {
-      alert('Please select a size')
-      return
+    if (!product || !selectedColorVariant || !selectedSize) {
+      toast.error("Please select both size and color");
+      return;
     }
+
+    // Create a modified product with the correct images
+    const productWithImages = {
+      ...product,
+      images: selectedColorVariant.images
+    };
     
-    addItem(product, selectedSize, selectedColorVariant.color)
+    addItem(
+      productWithImages,
+      selectedSize,
+      selectedColorVariant.color
+    );
+
+    toast.success("Added to cart successfully");
   }
 
   const handleDirectPurchase = async (formData: any) => {

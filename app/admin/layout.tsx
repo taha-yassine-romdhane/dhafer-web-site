@@ -15,6 +15,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: 'Dashboard', href: '/admin', icon: '📊' },
     { name: 'Products', href: '/admin/products', icon: '📦' },
     { name: 'Orders', href: '/admin/orders', icon: '🛍️' },
+    { name: 'Stock Management', href: '/admin/stock', icon: '📈' }, // Added Stock Management
+    { name: 'Product Display', href: '/admin/product-display', icon: '📂' },
   ];
 
   return (

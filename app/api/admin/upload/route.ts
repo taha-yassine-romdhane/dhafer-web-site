@@ -1,48 +1,76 @@
+// app/api/admin/upload/route.ts
 import { NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import path from 'path';
+import imagekit from '@/lib/imagekit-config';
 
 export async function POST(request: Request) {
   try {
-    console.log('Starting file upload...');
+    console.log('Starting file upload to ImageKit...');
     const formData = await request.formData();
     const files = formData.getAll('images') as File[];
+    const positions = formData.getAll('positions') as string[];
     
     console.log(`Processing ${files.length} files...`);
     const uploadedImages = [];
 
-    for (const file of files) {
-      console.log(`Processing file: ${file.name}`);
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const position = positions[i] || 'side'; // default to 'side' if position not specified
+      
+      console.log(`Processing file: ${file.name}, position: ${position}`);
+      
+      // Convert File to Buffer
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
       
       // Create a unique filename
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      const filename = uniqueSuffix + '-' + file.name.replace(/\s+/g, '-').toLowerCase();
-      console.log(`Generated filename: ${filename}`);
+      const fileName = `${position}-${uniqueSuffix}-${file.name.replace(/\s+/g, '-').toLowerCase()}`;
       
-      // Save file to public/images/autres directory
-      const publicPath = path.join(process.cwd(), 'public', 'images', 'autres');
-      await writeFile(path.join(publicPath, filename), new Uint8Array(buffer));
-      
-      // Return the URL
-      const imageUrl = `/images/autres/${filename}`;
-      console.log(`File saved, URL: ${imageUrl}`);
-      
-      // Just return the URL string directly
-      uploadedImages.push(imageUrl);
+      try {
+        // Upload to ImageKit
+        const uploadResponse = await imagekit.upload({
+          file: buffer, // Buffer
+          fileName: fileName,
+          folder: '/products', // Optional: organize files in ImageKit
+          tags: [position], // Optional: add tags for better organization
+          useUniqueFileName: true,
+        });
+
+        console.log(`File uploaded successfully to ImageKit. URL: ${uploadResponse.url}`);
+        
+        uploadedImages.push({
+          url: uploadResponse.url,
+          fileId: uploadResponse.fileId,
+          position: position,
+          thumbnailUrl: uploadResponse.thumbnailUrl,
+        });
+      } catch (uploadError) {
+        console.error(`Error uploading file ${fileName} to ImageKit:`, uploadError);
+        throw new Error(`Failed to upload ${fileName} to ImageKit`);
+      }
     }
 
-    console.log('Upload complete. Uploaded images:', uploadedImages);
+    console.log('All uploads complete. Uploaded images:', uploadedImages);
     return NextResponse.json({ 
       success: true, 
       images: uploadedImages 
     });
   } catch (error) {
-    console.error('Error uploading images:', error);
+    console.error('Error in upload process:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to upload images' },
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to upload images' 
+      },
       { status: 500 }
     );
   }
 }
+
+// Increase payload size limit for image uploads
+export const config = {
+  api: {
+    bodyParser: false, // Disable the default body parser
+    responseLimit: false,
+  },
+};

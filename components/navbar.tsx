@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import SearchBar from "@/components/search-bar";
 
 interface Subcategory {
   name: string;
@@ -65,8 +66,6 @@ const Navbar = () => {
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const router = useRouter();
   const { items } = useCart();
-  const [searchQuery, setSearchQuery] = useState("");
-  const searchParams = useSearchParams();
   const menuRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => {
@@ -76,13 +75,6 @@ const Navbar = () => {
 
   const toggleCategory = (category: string) => {
     setOpenCategory(openCategory === category ? null : category);
-  };
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
-    }
   };
 
   useEffect(() => {
@@ -187,26 +179,8 @@ const Navbar = () => {
             </ul>
           </nav>
 
-          <div className="flex items-center space-x-4">
-            <form onSubmit={handleSearch} className="flex items-center">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-md border-[#D4AF37]/20 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] transition-colors"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#D4AF37] transition-colors"
-                  aria-label="Search"
-                >
-                  <Search size={20} />
-                </button>
-              </div>
-            </form>
-
+          <div className="hidden lg:flex items-center space-x-4">
+            <SearchBar />
             <Link
               href="/cart"
               className="relative text-gray-800 hover:text-[#D4AF37] transition-colors"

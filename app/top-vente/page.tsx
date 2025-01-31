@@ -1,129 +1,194 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Product, ProductImage } from "@/lib/types";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { Loader2 } from "lucide-react";
+import ProductCard from "../components/ProductCard";
+
+export type ProductWithImages = Product & {
+  images: ProductImage[];
+  salePrice: number | null;
+};
 
 const TopVentePage = () => {
-  const bestSellers = [
-    {
-      id: 1,
-      name: "Caftan Doré",
-      price: "450 TND",
-      image: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=715&q=80",
-      href: "/products/caftan-dore",
-    },
-    {
-      id: 2,
-      name: "Abaya Luxe",
-      price: "350 TND",
-      image: "https://images.unsplash.com/photo-1618354691551-5d1a5a5f5f5a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=715&q=80",
-      href: "/products/abaya-luxe",
-    },
-    {
-      id: 3,
-      name: "Robe Soirée Élégante",
-      price: "600 TND",
-      image: "https://images.unsplash.com/photo-1618354691551-5d1a5a5f5f5a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=715&q=80",
-      href: "/products/robe-soiree",
-    },
-    {
-      id: 4,
-      name: "Jebba Traditionnelle",
-      price: "400 TND",
-      image: "https://images.unsplash.com/photo-1618354691551-5d1a5a5f5f5a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=715&q=80",
-      href: "/products/jebba-traditionnelle",
-    },
-  ];
+  const [products, setProducts] = useState<ProductWithImages[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
+  useEffect(() => {
+    const fetchTopProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch('/api/products/top-ventes', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Fetched products:', data);
+
+        // Transform the fetched products to match the ProductWithImages type
+        const transformedProducts = data.map((product: Product) => ({
+          ...product,
+          colorVariants: product.colorVariants || [], // Ensure colorVariants is defined
+          images: product.colorVariants.length > 0 ? product.colorVariants[0].images : [],
+          salePrice: product.salePrice || null,
+        }));
+
+        setProducts(transformedProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopProducts();
+  }, []);
+
+  useEffect(() => {
+    console.log('Loading:', loading);
+    console.log('Error:', error);
+    console.log('Fetched Products:', products);
+  }, [loading, error, products]);
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6 }
+    }
+  };
 
   return (
     <div className="bg-[#FFF8E1] min-h-screen">
-      {/* Hero Section */}
-      <div className="relative h-[60vh] w-full overflow-hidden">
+      {/* Hero Section with Parallax Effect */}
+      <motion.div 
+        className="relative h-[70vh] w-full overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1516041774595-cc1b7969480c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // Gold-themed background image
+            src="https://images.unsplash.com/photo-1516041774595-cc1b7969480c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Top Vente Collection"
             fill
-            className="object-cover"
+            className="object-cover transform scale-105 transition-transform duration-[2s]"
             priority
           />
-          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
         </div>
 
-        <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white">
-          <h1 className="mb-6 text-5xl font-bold">
+        <motion.div 
+          className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white px-4"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+        >
+          <h1 className="mb-6 text-4xl md:text-6xl font-bold tracking-tight">
             Nos Meilleures Ventes
           </h1>
-          <p className="mb-8 text-xl">
-            Découvrez les produits les plus populaires de notre collection
+          <p className="mb-8 text-lg md:text-xl max-w-2xl">
+            Découvrez notre sélection exclusive des produits les plus appréciés par nos clients
           </p>
           <Button
             asChild
-            className="rounded-full bg-[#D4AF37] px-8 py-3 text-lg font-semibold text-white hover:bg-[#C5A227] transition-colors"
+            className="rounded-full bg-[#D4AF37]/90 px-8 py-6 text-lg font-semibold text-white 
+                     hover:bg-[#D4AF37] hover:scale-105 transition-all duration-300 shadow-lg"
           >
             <Link href="#top-vente-products">
-              Voir les Produits
+              Explorer la Collection
+            </Link>
+          </Button>
+        </motion.div>
+      </motion.div>
+
+      {/* Products Grid Section */}
+      <div id="top-vente-products" className="container mx-auto px-4 py-16">
+        <motion.h2 
+          className="text-3xl md:text-4xl font-bold text-center text-[#D4AF37] mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+        >
+          Nos Meilleures Ventes
+        </motion.h2>
+
+        {loading ? (
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Loader2 className="w-8 h-8 text-[#D4AF37] animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-500 py-8">{error}</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Newsletter Section */}
+      <motion.div 
+        className="bg-gradient-to-r from-[#D4AF37] to-[#C5A227] py-16 text-center px-4"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Ne Manquez Pas Nos Nouveautés
+          </h2>
+          <p className="text-xl text-white/90 mb-8">
+            Inscrivez-vous pour être informé des dernières tendances et offres exclusives
+          </p>
+          <Button
+            asChild
+            className="rounded-full bg-white px-8 py-6 text-lg font-semibold text-[#D4AF37] 
+                     hover:bg-gray-50 hover:scale-105 transition-all duration-300 shadow-lg"
+          >
+            <Link href="/subscribe">
+              Rejoignez Notre Newsletter
             </Link>
           </Button>
         </div>
-      </div>
-
-      {/* Best Sellers Grid */}
-      <div id="top-vente-products" className="container mx-auto px-4 py-12">
-        <h2 className="text-3xl font-bold text-center text-[#D4AF37] mb-8">
-          Nos Meilleures Ventes
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {bestSellers.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
-            >
-              <div className="relative h-64">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-xl font-semibold text-gray-800">
-                  {product.name}
-                </h3>
-                <p className="text-lg text-[#D4AF37] font-bold mt-2">
-                  {product.price}
-                </p>
-                <Button
-                  asChild
-                  className="w-full mt-4 bg-[#D4AF37] hover:bg-[#C5A227] text-white"
-                >
-                  <Link href={product.href}>Acheter Maintenant</Link>
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Call-to-Action Section */}
-      <div className="bg-[#D4AF37] py-12 text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">
-          Ne Manquez Pas Nos Nouveautés
-        </h2>
-        <p className="text-xl text-white mb-8">
-          Inscrivez-vous pour être informé des dernières tendances
-        </p>
-        <Button
-          asChild
-          className="rounded-full bg-white px-8 py-3 text-lg font-semibold text-[#D4AF37] hover:bg-gray-100 transition-colors"
-        >
-          <Link href="/subscribe">
-            S'inscrire Maintenant
-          </Link>
-        </Button>
-      </div>
+      </motion.div>
     </div>
   );
 };

@@ -1,174 +1,123 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
+import { ProductImage ,ColorVariant, Stock } from '@/lib/types';
 
-export async function POST(req: Request) {
+
+
+export async function POST(request: Request) {
   try {
-    const formData = await req.formData();
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
-    const price = parseFloat(formData.get('price') as string);
-    const salePrice = formData.get('salePrice') ? parseFloat(formData.get('salePrice') as string) : null;
-    const category = formData.get('category') as string;
-    const colors = JSON.parse(formData.get('colors') as string);
-    const sizes = JSON.parse(formData.get('sizes') as string);
-    const collaborateur = formData.get('collaborateur') as string || null;
-    const imageUrls = formData.getAll('images') as string[];
-    const mainImageIndex = parseInt(formData.get('mainImageIndex') as string);
+    const data = await request.json();
+    console.log('Received data:', data);
+    if (!data.colorVariants || !Array.isArray(data.colorVariants)) {
+      throw new Error('Invalid colorVariants structure');
+    }
 
-    // Create product with images
+    const colorVariants = data.colorVariants.map((variant: ColorVariant) => ({
+      color: variant.color,
+      images: {
+        create: Array.isArray(variant.images) ? variant.images.map((image: ProductImage, index: number) => ({
+          url: image.url,
+          isMain: index === 0, // Set the first image as main
+          position: image.position,
+          colorVariantId: variant.id
+        })) : [],
+      },
+      stocks: {
+        create: variant.stocks.map((stock : Stock) => ({
+          quantity: stock.quantity,
+          size: stock.size,
+          colorId: stock.colorId
+        }))
+      }
+    }));
+
     const product = await prisma.product.create({
       data: {
-        name,
-        description,
-        price,
-        salePrice,
-        category,
-        colors,
-        sizes,
-        collaborateur,
-        images: {
-          create: imageUrls.map((url, index) => ({
-            url,
-            isMain: index === mainImageIndex
-          }))
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        salePrice: data.salePrice,
+        category: data.category,
+        sizes: data.sizes,
+        collaborateur: data.collaborateur,
+        colorVariants: {
+          create: colorVariants
         }
       },
       include: {
-        images: true
+        colorVariants: {
+          include: {
+            images: true,
+            stocks: true
+          }
+        }
       }
     });
 
-    revalidatePath('/admin/products');
-    revalidatePath('/collections');
+    const locations = ["monastir", "tunis", "sfax", "online"];
+    const initialQuantity = 5;
 
-    return NextResponse.json(product);
+    for (const variant of product.colorVariants) {
+      for (const size of data.sizes) { 
+        for (const location of locations) {
+          await prisma.stock.create({
+            data: {
+              quantity: initialQuantity,
+              size: size,
+              location: location,
+              colorId: variant.id, 
+              productId: product.id, 
+            },
+          });
+        }
+      }
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      product 
+    });
   } catch (error) {
     console.error('Error creating product:', error);
     return NextResponse.json(
-      { error: 'Failed to create product' },
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to create product' 
+      },
       { status: 500 }
     );
   }
 }
 
+// GET route remains the same
 export async function GET() {
   try {
     const products = await prisma.product.findMany({
       include: {
-        images: true
+        colorVariants: {
+          include: {
+            images: true
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc'
       }
     });
 
-    return NextResponse.json(products);
+    // Return with success flag and products array
+    return NextResponse.json({
+      success: true,
+      products: products
+    });
+
   } catch (error) {
     console.error('Error fetching products:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch products' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PUT(req: Request) {
-  try {
-    const formData = await req.formData();
-    const id = parseInt(formData.get('id') as string);
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
-    const price = parseFloat(formData.get('price') as string);
-    const salePrice = formData.get('salePrice') ? parseFloat(formData.get('salePrice') as string) : null;
-    const category = formData.get('category') as string;
-    const colors = JSON.parse(formData.get('colors') as string);
-    const sizes = JSON.parse(formData.get('sizes') as string);
-    const collaborateur = formData.get('collaborateur') as string || null;
-    const newImageUrls = formData.getAll('newImages') as string[];
-    const mainImageIndex = parseInt(formData.get('mainImageIndex') as string);
-    const existingImages = JSON.parse(formData.get('existingImages') as string);
-
-    // Handle existing images
-    await prisma.productImage.deleteMany({
-      where: {
-        productId: id,
-        NOT: {
-          id: {
-            in: existingImages.map((img: any) => img.id)
-          }
-        }
-      }
-    });
-
-    // Update existing images' isMain status
-    for (const img of existingImages) {
-      await prisma.productImage.update({
-        where: { id: img.id },
-        data: { isMain: img.isMain }
-      });
-    }
-
-    // Update product
-    const product = await prisma.product.update({
-      where: { id },
-      data: {
-        name,
-        description,
-        price,
-        salePrice,
-        category,
-        colors,
-        sizes,
-        collaborateur,
-        images: {
-          create: newImageUrls.map((url, index) => ({
-            url,
-            isMain: index + existingImages.length === mainImageIndex
-          }))
-        }
+      { 
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to fetch products'
       },
-      include: {
-        images: true
-      }
-    });
-
-    revalidatePath('/admin/products');
-    revalidatePath('/collections');
-    revalidatePath(`/product/${id}`);
-
-    return NextResponse.json(product);
-  } catch (error) {
-    console.error('Error updating product:', error);
-    return NextResponse.json(
-      { error: 'Failed to update product' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(req: Request) {
-  try {
-    const { id } = await req.json();
-
-    // Delete all images first
-    await prisma.productImage.deleteMany({
-      where: { productId: id }
-    });
-
-    // Then delete the product
-    await prisma.product.delete({
-      where: { id }
-    });
-
-    revalidatePath('/admin/products');
-    revalidatePath('/collections');
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error deleting product:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete product' },
       { status: 500 }
     );
   }

@@ -2,21 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Product } from '@/lib/types';
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  category: string;
-  colors: string[];
-  sizes: string[];
-  collaborateur?: string;
-  images: {
-    url: string;
-    isMain: boolean;
-  }[];
-}
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -94,7 +81,7 @@ export default function ProductsPage() {
         </div>
         <button
           onClick={() => router.push('/admin/products/new')}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Add New Product
         </button>
@@ -135,7 +122,7 @@ export default function ProductsPage() {
           >
             <div className="aspect-w-3 aspect-h-2">
               <img
-                src={product.images.find(img => img.isMain)?.url || product.images[0]?.url}
+                src={product.colorVariants[0]?.images.find(img => img.isMain)?.url || product.colorVariants[0]?.images[0]?.url}
                 alt={product.name}
                 className="w-full h-48 object-cover"
               />

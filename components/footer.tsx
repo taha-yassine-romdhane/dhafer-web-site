@@ -64,22 +64,22 @@ export function Footer() {
             <h3 className="font-semibold mb-4 text-[#D4AF37]">Service Client</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/shipping" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                <Link href="/about" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
                   Dar Koftan al assil
                 </Link>
               </li>
               <li>
-                <Link href="/returns" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                <Link href="/contact" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
                   Contactez Nous  
                 </Link>
               </li>
               <li>
-                <Link href="/size-guide" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                <Link href="/policy" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
                   Politique de confidentialité
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                <Link href="/refund" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
                   Politique de remboursement
                 </Link>
               </li>
@@ -99,7 +99,7 @@ export function Footer() {
                 className="border-[#D4AF37]/20 focus:ring-[#D4AF37] focus:border-[#D4AF37]"
               />
               <Button className="w-full bg-[#D4AF37] text-white hover:bg-[#D4AF37]/90">
-                S'abonner
+                S&#39;abonner
               </Button>
             </div>
           </div>
@@ -113,7 +113,7 @@ export function Footer() {
             </p>
             <div className="flex space-x-6">
               <Link href="/terms" className="text-sm text-gray-600 hover:text-[#D4AF37] transition-colors">
-                Conditions d'utilisation
+                Conditions d&#39;utilisation
               </Link>
               <Link href="/cookies" className="text-sm text-gray-600 hover:text-[#D4AF37] transition-colors">
                 Politique de confidentialité

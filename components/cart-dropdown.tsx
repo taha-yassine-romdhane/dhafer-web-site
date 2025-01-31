@@ -137,13 +137,6 @@ export function CartDropdown() {
                 Voir le Panier
               </Button>
             </Link>
-            <Link href="/checkout" className="flex-1">
-              <Button
-                className="w-full bg-[#D4AF37] text-white hover:bg-[#D4AF37]/90"
-              >
-                Commander
-              </Button>
-            </Link>
           </div>
         </div>
       </div>

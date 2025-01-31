@@ -4,106 +4,193 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useDropzone } from 'react-dropzone';
-import { Loader2, Upload, X } from 'lucide-react';
+import { Loader2, Upload, X, Plus } from 'lucide-react';
+import Dropzone from '@/components/drop-zone';
+import { Stock, ProductImage } from '@/lib/types';
+
+const CATEGORY_GROUPS = [
+  {
+    label: "Femme",
+    categories: ["abaya", "caftan", "robe-soire", "jebba"]
+  },
+  {
+    label: "Enfants",
+    categories: ["enfants-caftan", "enfants-robe-soire", "tabdila"]
+  },
+  {
+    label: "Accessoires",
+    categories: ["chachia", "pochette", "eventaille", "foulard"]
+  }
+];
+export const SIZE_GROUPS: Record<string, string[]> = {
+  Femme: ["XS", "S", "M", "L", "XL", "XXL"],
+  Enfants: ["2ans", "4ans", "6ans", "8ans", "10ans", "12ans"],
+  Accessoires: ["Standard"]
+};
+export interface ColorVariantImages {
+  id: string;
+  color: string;
+  colorVariantId: string;
+  images: File[];
+  previewUrls: string[];
+  stocks: Stock[];
+}
+export interface FormData {
+  name: string;
+  description: string;
+  price: string;
+  salePrice: string | null;
+  categoryGroup: string;
+  category: string;
+  sizes: string[];
+  collaborateur: string | null;
+  colorVariants: ColorVariantImages[];
+}
 
 export default function NewProductPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
-  const [previewImages, setPreviewImages] = useState<string[]>([]);
-  const [formData, setFormData] = useState({
+  const [currentColor, setCurrentColor] = useState<string>('');
+  const [selectedCategoryGroup, setSelectedCategoryGroup] = useState<string>('');
+
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     description: '',
     price: '',
+    salePrice: null,
+    categoryGroup: '',
     category: '',
-    colors: [] as string[],
-    sizes: [] as string[],
-    collaborateur: '',
-    images: [] as File[],
+    sizes: [],
+    collaborateur: null,
+    colorVariants: [],
   });
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    // Validate file size (max 5MB each)
-    const validFiles = acceptedFiles.filter(file => file.size <= 5 * 1024 * 1024);
-    if (validFiles.length !== acceptedFiles.length) {
-      setError('Some files were too large (max 5MB each)');
+  // Handle category group change
+  const handleCategoryGroupChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const group = e.target.value;
+    setSelectedCategoryGroup(group);
+    setFormData(prev => ({
+      ...prev,
+      categoryGroup: group,
+      category: '', // Reset category when group changes
+      sizes: [] // Reset sizes when group changes
+    }));
+  };
+
+  // Add a new color variant
+  const addColorVariant = () => {
+    if (!currentColor.trim()) {
+      setError('Please enter a color name');
+      return;
+    }
+
+    if (formData.colorVariants.some(cv => cv.color.toLowerCase() === currentColor.toLowerCase())) {
+      setError('This color already exists');
       return;
     }
 
     setFormData(prev => ({
       ...prev,
-      images: [...prev.images, ...validFiles],
+      colorVariants: [...prev.colorVariants, {
+        color: currentColor,
+        images: [],
+        previewUrls: [],
+        stocks: [],
+        id: crypto.randomUUID(),
+        colorVariantId: crypto.randomUUID()
+      }]
     }));
-
-    // Create preview URLs for the images
-    const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
-    setPreviewImages(prev => [...prev, ...newPreviewUrls]);
+    setCurrentColor('');
     setError('');
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.webp']
-    },
-    multiple: true,
-    maxSize: 5 * 1024 * 1024 // 5MB
-  });
-
-  const removeImage = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
-    
-    // Revoke the URL to prevent memory leaks
-    URL.revokeObjectURL(previewImages[index]);
-    setPreviewImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+
+
+
+
+  // Remove a color variant
+  const removeColorVariant = (colorIndex: number) => {
+    setFormData(prev => {
+      const updatedColorVariants = [...prev.colorVariants];
+      // Revoke all preview URLs for this color
+      updatedColorVariants[colorIndex].previewUrls.forEach(url => URL.revokeObjectURL(url));
+      updatedColorVariants.splice(colorIndex, 1);
+      return { ...prev, colorVariants: updatedColorVariants };
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      if (formData.images.length === 0) {
-        throw new Error('Please add at least one image');
-      }
+      // Validation
+      if (!formData.name.trim()) throw new Error('Product name is required');
+      if (!formData.description.trim()) throw new Error('Description is required');
+      if (!formData.price) throw new Error('Price is required');
+      if (!formData.category) throw new Error('Category is required');
+      if (formData.sizes.length === 0) throw new Error('At least one size is required');
+      if (formData.colorVariants.length === 0) throw new Error('At least one color variant is required');
 
-      // First upload images
-      const imageFormData = new FormData();
-      formData.images.forEach((image) => {
-        imageFormData.append('images', image);
+      // Check if each color variant has at least one image
+      formData.colorVariants.forEach(cv => {
+        if (cv.images.length === 0) {
+          throw new Error(`Color ${cv.color} needs at least one image`);
+        }
       });
 
-      console.log('Uploading images...');
-      const uploadResponse = await fetch('/api/admin/upload', {
-        method: 'POST',
-        body: imageFormData,
-      });
+      // Upload images for each color variant
+      const colorVariantsWithUrls = await Promise.all(
+        formData.colorVariants.map(async (colorVariant) => {
+          const imageFormData = new FormData();
+          colorVariant.images.forEach((image: File, index) => {
+            imageFormData.append('images', image);
+            imageFormData.append('positions', index === 0 ? 'front' : index === 1 ? 'back' : 'side');
+          });
 
-      if (!uploadResponse.ok) {
-        throw new Error('Failed to upload images');
-      }
+          const uploadResponse = await fetch('/api/admin/upload', {
+            method: 'POST',
+            body: imageFormData,
+          });
 
-      const { images: uploadedImages } = await uploadResponse.json();
-      console.log('Uploaded images:', uploadedImages);
+          if (!uploadResponse.ok) {
+            throw new Error(`Failed to upload images for ${colorVariant.color}`);
+          }
 
-      // Then create product with image URLs
+          const { images: uploadedImages }: { images: { url: string; alt?: string; isMain: boolean; position: string; }[] } = await uploadResponse.json();
+
+          return {
+            color: colorVariant.color,
+            images: uploadedImages.map((image): ProductImage => ({
+              id: crypto.randomUUID(),
+              url: image.url,
+              alt: image.alt || '',
+              isMain: image.isMain,
+              position: image.position,
+              colorVariantId: colorVariant.id,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            })),
+            stocks: colorVariant.stocks
+          };
+        })
+      );
+
+      // Create product data
       const productData = {
         name: formData.name,
         description: formData.description,
         price: parseFloat(formData.price),
+        salePrice: formData.salePrice ? parseFloat(formData.salePrice) : null,
         category: formData.category,
-        colors: formData.colors,
         sizes: formData.sizes,
-        collaborateur: formData.collaborateur || undefined,
-        images: uploadedImages // Now this is an array of URL strings
+        collaborateur: formData.collaborateur || null,
+        colorVariants: colorVariantsWithUrls
       };
 
-      console.log('Creating product with data:', productData);
-      const response = await fetch('/api/products', {
+      const response = await fetch('/api/admin/products', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -126,150 +213,84 @@ export default function NewProductPage() {
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleArrayInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: 'colors' | 'sizes'
-  ) => {
-    const values = e.target.value.split(',').map(item => item.trim()).filter(Boolean);
-    setFormData(prev => ({
-      ...prev,
-      [field]: values,
-    }));
-  };
-
-  const categories = [
-    'Dresses',
-    'Suits',
-    'Outerwear',
-    'Accessorie'
-  ];
-
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Add New Product</h1>
-        <p className="text-gray-600">Create a new product with images and details</p>
+        <p className="text-gray-600">Create a new product with multiple color variants</p>
       </div>
-      
+
       {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-600 rounded-md p-4">
+          {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Product Information Section */}
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h2 className="text-lg font-semibold mb-4">Product Images</h2>
-          <div
-            {...getRootProps()}
-            className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-              ${isDragActive ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 hover:border-indigo-500'}`}
-          >
-            <input {...getInputProps()} />
-            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-            <p className="mt-2 text-sm text-gray-600">
-              {isDragActive
-                ? 'Drop the images here...'
-                : 'Drag & drop images here, or click to select files'}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Supports: JPG, PNG, WebP (max 5MB each)
-            </p>
-          </div>
-
-          {previewImages.length > 0 && (
-            <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-              {previewImages.map((preview, index) => (
-                <div key={preview} className="relative group">
-                  <div className="aspect-square relative rounded-lg overflow-hidden">
-                    <Image
-                      src={preview}
-                      alt={`Preview ${index + 1}`}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-sm
-                      opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-6">
-          <h2 className="text-lg font-semibold mb-4">Product Details</h2>
-          
+          <h2 className="text-xl font-semibold mb-4">Product Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Product Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Product Name *
               </label>
               <input
                 type="text"
-                name="name"
-                required
                 value={formData.name}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                  focus:border-indigo-500 focus:ring-indigo-500"
-                placeholder="Enter product name"
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                required
               />
             </div>
 
+            {/* Category Group */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Category *
+                Category Group *
               </label>
               <select
-                name="category"
+                value={selectedCategoryGroup}
+                onChange={handleCategoryGroupChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 required
-                value={formData.category}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                  focus:border-indigo-500 focus:ring-indigo-500"
               >
-                <option value="">Select a category</option>
-                {categories.map(category => (
-                  <option key={category} value={category.toLowerCase()}>
-                    {category}
+                <option value="">Select a category group</option>
+                {CATEGORY_GROUPS.map(group => (
+                  <option key={group.label} value={group.label}>
+                    {group.label}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="md:col-span-2">
+            {/* Category */}
+            <div>
               <label className="block text-sm font-medium text-gray-700">
-                Description *
+                Category *
               </label>
-              <textarea
-                name="description"
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 required
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={4}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                  focus:border-indigo-500 focus:ring-indigo-500"
-                placeholder="Enter product description"
-              />
+                disabled={!selectedCategoryGroup}
+              >
+                <option value="">Select a category</option>
+                {selectedCategoryGroup &&
+                  CATEGORY_GROUPS
+                    .find(group => group.label === selectedCategoryGroup)
+                    ?.categories.map(category => (
+                      <option key={category} value={category}>
+                        {category.replace(/-/g, ' ')}
+                      </option>
+                    ))
+                }
+              </select>
             </div>
 
+            {/* Price */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Price (TND) *
@@ -280,82 +301,158 @@ export default function NewProductPage() {
                 </div>
                 <input
                   type="number"
-                  name="price"
-                  required
+                  value={formData.price}
+                  onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                  className="block w-full pl-12 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  placeholder="0.00"
                   min="0"
                   step="0.01"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  className="block w-full pl-12 rounded-md border-gray-300 shadow-sm 
-                    focus:border-indigo-500 focus:ring-indigo-500"
-                  placeholder="0.00"
+                  required
                 />
               </div>
             </div>
 
+            {/* Sale Price */}
             <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Sale Price (TND)
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-500 sm:text-sm">TND</span>
+                </div>
+                <input
+                  type="number"
+                  value={formData.salePrice !== null ? formData.salePrice : ""}
+                  onChange={(e) => setFormData(prev => ({ ...prev, salePrice: e.target.value }))}
+                  className="block w-full pl-12 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Description *
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                rows={4}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                required
+              />
+            </div>
+
+            {/* Sizes */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Sizes *
+              </label>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {selectedCategoryGroup && SIZE_GROUPS[selectedCategoryGroup as keyof typeof SIZE_GROUPS]?.map((size) => (
+                  <label key={size} className="inline-flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.sizes.includes(size)}
+                      onChange={(e) => {
+                        const updatedSizes = e.target.checked
+                          ? [...formData.sizes, size]
+                          : formData.sizes.filter(s => s !== size);
+                        setFormData(prev => ({ ...prev, sizes: updatedSizes }));
+                      }}
+                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">{size}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Collaborateur */}
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700">
                 Collaborateur
               </label>
               <input
                 type="text"
-                name="collaborateur"
-                value={formData.collaborateur}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                  focus:border-indigo-500 focus:ring-indigo-500"
-                placeholder="Enter collaborateur name"
+                value={formData.collaborateur || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, collaborateur: e.target.value }))}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Colors
-              </label>
-              <input
-                type="text"
-                value={formData.colors.join(', ')}
-                onChange={(e) => handleArrayInputChange(e, 'colors')}
-                placeholder="red, blue, green"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                  focus:border-indigo-500 focus:ring-indigo-500"
-              />
-              <p className="mt-1 text-xs text-gray-500">Separate colors with commas</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Sizes
-              </label>
-              <input
-                type="text"
-                value={formData.sizes.join(', ')}
-                onChange={(e) => handleArrayInputChange(e, 'sizes')}
-                placeholder="S, M, L, XL"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                  focus:border-indigo-500 focus:ring-indigo-500"
-              />
-              <p className="mt-1 text-xs text-gray-500">Separate sizes with commas</p>
             </div>
           </div>
         </div>
 
+        {/* Color Variants Section */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Color Variants</h2>
+            <div className="flex gap-2 items-center">
+              <input
+                type="text"
+                value={currentColor}
+                onChange={(e) => setCurrentColor(e.target.value)}
+                placeholder="Enter color name"
+                className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
+              <button
+                type="button"
+                onClick={addColorVariant}
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <Plus className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+
+          {formData.colorVariants.map((colorVariant, colorIndex) => (
+            <div key={colorVariant.color} className="mb-6 border rounded-lg p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium capitalize">{colorVariant.color}</h3>
+                <button
+                  type="button"
+                  onClick={() => removeColorVariant(colorIndex)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <Dropzone
+                color={colorVariant.color}
+                onImagesChange={(files, previewUrls) => {
+                  setFormData(prev => {
+                    const updatedColorVariants = [...prev.colorVariants];
+                    updatedColorVariants[colorIndex] = {
+                      ...updatedColorVariants[colorIndex],
+                      images: files,
+                      previewUrls: previewUrls
+                    };
+                    return { ...prev, colorVariants: updatedColorVariants };
+                  });
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Submit Buttons */}
         <div className="flex justify-end space-x-4">
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 
-              hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium 
-              text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 
-              focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed
-              inline-flex items-center"
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading && <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />}
             {loading ? 'Creating...' : 'Create Product'}

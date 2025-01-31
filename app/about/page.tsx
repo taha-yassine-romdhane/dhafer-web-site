@@ -13,57 +13,68 @@ import {
 export default function AboutUs() {
     const owners = [
         {
-            name: "Aya Romdhane",
-            role: "Founder & Creative Director",
-            image: "2d36c081-65d7-4957-bbc3-86857614dfb1.jpg",
+            name: "Marie Dupont",
+            role: "Fondatrice & Directrice Artistique",
+            image: "marie-dupont.jpg",
         },
         {
-            name: "Sameh Zammit",
-            role: "CEO",
-            image: "017e5d9b-1231-46e6-8e1f-02cfeae2b5c5.jpg",
+            name: "Jean Martin",
+            role: "PDG",
+            image: "jean-martin.jpg",
         },
     ];
-    
 
     const locations = [
-        { 
-            city: "Tunisia Sousse , Msaken", 
-            address: "Chera el bi2a , Rampoint Urgence , Msaken",
-            image: "Capture d'écran 2024-12-12 184551.png",
-            mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3234.9891632755877!2d10.572296375754671!3d35.73798852939042!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12fdf5d5083bd377%3A0x58184a9b95cca8f4!2sWood's%20pizzaria!5e0!3m2!1sen!2stn!4v1702403810"  },
-      
+        {
+            city: "Paris, France",
+            address: "123 Rue de la Mode, 75001 Paris",
+            image: "paris-store.jpg",
+            mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.991625693759!2d2.335455315674414!3d48.8583700792875!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e2964e34e2d%3A0x8ddca9ee380ef7e0!2sTour%20Eiffel!5e0!3m2!1sfr!2sfr!4v1702403810",
+        },
+        {
+            city: "Lyon, France",
+            address: "456 Avenue des Tendances, 69002 Lyon",
+            image: "lyon-store.jpg",
+            mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2783.597257715981!2d4.835215315644904!3d45.757934979106!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47f4ea516ae88797%3A0x408ab2ae4bb21f0!2sPlace%20Bellecour!5e0!3m2!1sfr!2sfr!4v1702403810",
+        },
+        {
+            city: "Marseille, France",
+            address: "789 Boulevard de la Créativité, 13001 Marseille",
+            image: "marseille-store.jpg",
+            mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2904.093621073497!2d5.369757315631394!3d43.296482479134!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12c9c0c6a8e8e8e9%3A0x12c9c0c6a8e8e8e9!2sVieux%20Port%20de%20Marseille!5e0!3m2!1sfr!2sfr!4v1702403810",
+        },
     ];
 
     return (
-        <div className="container mx-auto px-4 py-16">
-            <h1 className="text-5xl font-extrabold text-center text-primary mb-8">
-                About Trendy Threads
+        <div className="container mx-auto px-4 py-16 bg-white">
+            <h1 className="text-5xl font-extrabold text-center text-[#D4AF37] mb-8">
+                À Propos de Trendy Threads
             </h1>
 
-            {/* Brand Story */}
+            {/* Histoire de la marque */}
             <section className="mb-16">
-                <h2 className="text-3xl font-bold text-primary mb-4">Our Story</h2>
+                <h2 className="text-3xl font-bold text-[#D4AF37] mb-4">Notre Histoire</h2>
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                     <div>
                         <p className="text-lg mb-6 leading-relaxed">
-                            LAMASETTE is a fashion brand that is dedicated to creating
-                            timeless and stylish clothing for women. Founded in 2021 by SAMEH ZAMMIT
-                             our mission is to provide a range of high-quality clothing that is both
-                            fashionable and sustainable.
+                            Trendy Threads est une marque de mode dédiée à la création de vêtements
+                            intemporels et élégants pour les femmes. Fondée en 2021 par Marie Dupont,
+                            notre mission est de proposer une gamme de vêtements de haute qualité,
+                            à la fois tendance et durables.
                         </p>
                         <p className="text-lg mb-6 leading-relaxed">
-                            Over the years, we've grown from a local boutique to an
-                            international brand, but our core values remain the same: quality,
-                            sustainability, and style.
+                            Au fil des années, nous sommes passés d'une boutique locale à une marque
+                            internationale, mais nos valeurs fondamentales restent les mêmes : qualité,
+                            durabilité et style.
                         </p>
-                        <button className="bg-primary text-white py-2 px-6 rounded-lg font-medium hover:bg-primary-dark transition">
-                            Explore Our Products
+                        <button className="bg-[#D4AF37] text-white py-2 px-6 rounded-lg font-medium hover:bg-[#D4AF37] transition">
+                            Découvrez Nos Produits
                         </button>
                     </div>
                     <div className="relative h-[600px] rounded-lg overflow-hidden shadow-lg">
                         <Image
-                            src="/téléchargement.jpg"
-                            alt="Trendy Threads workshop"
+                            src="/atelier-trendy-threads.jpg"
+                            alt="Atelier Trendy Threads"
                             layout="fill"
                             objectFit="cover"
                         />
@@ -71,14 +82,14 @@ export default function AboutUs() {
                 </div>
             </section>
 
-            {/* Owners */}
+            {/* Propriétaires */}
             <section className="mb-16">
-                <h2 className="text-3xl font-bold text-primary mb-4">Meet Our Team</h2>
+                <h2 className="text-3xl font-bold text-[#D4AF37] mb-4">Rencontrez Notre Équipe</h2>
                 <Carousel className="w-full max-w-4xl mx-auto">
                     <CarouselContent>
                         {owners.map((owner, index) => (
                             <CarouselItem key={index} className="p-4">
-                                <Card className="hover:shadow-xl transition-shadow">
+                                <Card className="hover:shadow-xl transition-shadow border border-[#D4AF37]">
                                     <CardContent className="flex flex-col items-center p-6">
                                         <div className="relative w-48 h-48 rounded-full overflow-hidden mb-4 shadow-md">
                                             <Image
@@ -88,41 +99,41 @@ export default function AboutUs() {
                                                 objectFit="cover"
                                             />
                                         </div>
-                                        <h3 className="text-xl font-semibold text-primary">
+                                        <h3 className="text-xl font-semibold text-[#D4AF37]">
                                             {owner.name}
                                         </h3>
-                                        <p className="text-muted-foreground">{owner.role}</p>
+                                        <p className="text-gray-600">{owner.role}</p>
                                     </CardContent>
                                 </Card>
                             </CarouselItem>
                         ))}
                     </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
+                    <CarouselPrevious className="text-[#D4AF37]" />
+                    <CarouselNext className="text-[#D4AF37]" />
                 </Carousel>
             </section>
 
-            {/* Locations */}
+            {/* Emplacements */}
             <section>
-                <h2 className="text-3xl font-bold text-primary mb-4">Our Locations</h2>
+                <h2 className="text-3xl font-bold text-[#D4AF37] mb-4">Nos Magasins</h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {locations.map((location, index) => (
                         <Card
                             key={index}
-                            className="hover:shadow-lg transition-shadow border border-gray-200"
+                            className="hover:shadow-lg transition-shadow border border-[#D4AF37]"
                         >
                             <CardContent className="p-6">
                                 <div className="flex items-start mb-4">
-                                    <MapPin className="mr-2 h-6 w-6 text-primary" />
+                                    <MapPin className="mr-2 h-6 w-6 text-[#D4AF37]" />
                                     <div>
                                         <h3 className="text-lg font-semibold">{location.city}</h3>
-                                        <p className="text-muted-foreground">{location.address}</p>
+                                        <p className="text-gray-600">{location.address}</p>
                                     </div>
                                 </div>
                                 <div className="relative h-40 rounded-md overflow-hidden shadow-sm mb-4">
                                     <Image
-                                        src={`${location.image}?q=80&w=800`}
-                                        alt={`${location.city} store`}
+                                        src={location.image}
+                                        alt={`Magasin de ${location.city}`}
                                         layout="fill"
                                         objectFit="cover"
                                     />
