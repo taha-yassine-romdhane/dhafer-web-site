@@ -1,17 +1,22 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma' // Make sure to import prisma from your lib
 
 export async function GET() {
   try {
-    console.log('Fetching top products...') // Debugging log
+    console.log('Fetching products for home page...') // Debugging log
 
     const products = await prisma.product.findMany({
-      take: 6, // Fetch top 6 products
-      orderBy: {
-        createdAt: 'desc', // Sort by latest
+      where: {
+        showInHome: true, // Only fetch products marked to show in home
       },
+      orderBy: [
+        {
+          priority: 'desc', // First order by priority
+        },
+        {
+          createdAt: 'desc', // Then by creation date
+        }
+      ],
       include: {
         colorVariants: {
           include: {

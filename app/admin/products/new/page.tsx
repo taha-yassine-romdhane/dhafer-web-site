@@ -1,10 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { useDropzone } from 'react-dropzone';
-import { Loader2, Upload, X, Plus } from 'lucide-react';
+import { Loader2, X, Plus } from 'lucide-react';
 import Dropzone from '@/components/drop-zone';
 import { Stock, ProductImage } from '@/lib/types';
 
@@ -28,9 +26,9 @@ export const SIZE_GROUPS: Record<string, string[]> = {
   Accessoires: ["Standard"]
 };
 export interface ColorVariantImages {
-  id: string;
+  id: number;
   color: string;
-  colorVariantId: string;
+  colorVariantId: number;
   images: File[];
   previewUrls: string[];
   stocks: Stock[];
@@ -97,8 +95,8 @@ export default function NewProductPage() {
         images: [],
         previewUrls: [],
         stocks: [],
-        id: crypto.randomUUID(),
-        colorVariantId: crypto.randomUUID()
+        id: Date.now(), // Using timestamp as a unique number
+        colorVariantId: Date.now() + Math.random(), // Using timestamp plus random number to ensure uniqueness
       }]
     }));
     setCurrentColor('');
@@ -164,7 +162,7 @@ export default function NewProductPage() {
           return {
             color: colorVariant.color,
             images: uploadedImages.map((image): ProductImage => ({
-              id: crypto.randomUUID(),
+              id: Number(Date.now()), // Using timestamp as a unique number
               url: image.url,
               alt: image.alt || '',
               isMain: image.isMain,

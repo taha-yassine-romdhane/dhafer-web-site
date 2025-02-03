@@ -23,8 +23,8 @@ const Dropzone = ({ color, onImagesChange, existingImages = [], className = '' }
     (acceptedFiles: File[]) => {
       const validFiles = acceptedFiles.filter(file => {
         // Validate file size (5MB)
-        if (file.size > 5 * 1024 * 1024) {
-          console.warn(`File ${file.name} is too large. Max size is 5MB`);
+        if (file.size > 15 * 1024 * 1024) {
+          console.warn(`File ${file.name} is too large. Max size is 15MB`);
           return false;
         }
         // Validate file type
@@ -64,7 +64,7 @@ const Dropzone = ({ color, onImagesChange, existingImages = [], className = '' }
       'image/*': ['.jpeg', '.jpg', '.png', '.webp']
     },
     multiple: true,
-    maxSize: 5 * 1024 * 1024 // 5MB
+    maxSize: 15 * 1024 * 1024 // 15MB
   });
 
   return (
@@ -88,7 +88,7 @@ const Dropzone = ({ color, onImagesChange, existingImages = [], className = '' }
             : `Drop images for ${color} variant or click to select`}
         </p>
         <p className="text-xs text-gray-500 mt-1">
-          First image will be the main image. Supports: JPG, PNG, WebP (max 5MB each)
+          First image will be the main image. Supports: JPG, PNG, WebP (max 15MB each)
         </p>
       </div>
 

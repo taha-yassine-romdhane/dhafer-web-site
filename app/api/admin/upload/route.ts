@@ -1,6 +1,7 @@
 // app/api/admin/upload/route.ts
 import { NextResponse } from 'next/server';
 import imagekit from '@/lib/imagekit-config';
+import sharp from 'sharp';
 
 export async function POST(request: Request) {
   try {
@@ -22,6 +23,13 @@ export async function POST(request: Request) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
       
+      // Compress the image using sharp
+      const compressedBuffer = await sharp(buffer)
+        .rotate() // Apply orientation based on EXIF data
+        .resize({ width: 800 }) // Resize to a max width of 800px (adjust as needed)
+        .jpeg({ quality: 95 }) // Compress to maximal quality
+        .toBuffer();
+      
       // Create a unique filename
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       const fileName = `${position}-${uniqueSuffix}-${file.name.replace(/\s+/g, '-').toLowerCase()}`;
@@ -29,7 +37,7 @@ export async function POST(request: Request) {
       try {
         // Upload to ImageKit
         const uploadResponse = await imagekit.upload({
-          file: buffer, // Buffer
+          file: compressedBuffer, // Compressed buffer
           fileName: fileName,
           folder: '/products', // Optional: organize files in ImageKit
           tags: [position], // Optional: add tags for better organization

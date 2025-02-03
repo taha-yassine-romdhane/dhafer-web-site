@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Upload, X, Plus, Trash2 } from 'lucide-react';
+import { Loader2, X, Plus } from 'lucide-react';
 import Dropzone from '@/components/drop-zone';
 import { Stock, ProductImage } from '@/lib/types';
 import Image from 'next/image';
@@ -269,7 +269,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
         colorVariants: colorVariantsWithUrls
       };
 
-      const response = await fetch(`/api/admin/products/${params.productId}`, {
+      const response = await fetch(`/api/products/${params.productId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -1,10 +1,10 @@
 export interface ProductImage {
-  id: string;
+  id: number;
   url: string;
   alt?: string;
   isMain: boolean;
   position: string;
-  colorVariantId: string;
+  colorVariantId: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -38,13 +38,15 @@ export interface Product {
   salePrice?: number | null;
   category: string;
   sizes: string[];
-  collaborateur?: string | null;
+  collaborateur: string | null;
   colorVariants: ColorVariant[];
   stocks: Stock[];
   showInHome: boolean;
   showInPromo: boolean;
   showInTopSales: boolean;
   priority: number;
+  viewCount: number; 
+  orderCount: number; 
   createdAt: Date;
   updatedAt: Date;
 }

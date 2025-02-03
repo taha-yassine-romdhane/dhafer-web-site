@@ -27,9 +27,7 @@ export async function POST(request: Request) {
 
     const product = await prisma.product.create({
       data: productData,
-      include: {
-        images: true
-      }
+
     });
 
     console.log('Created product:', JSON.stringify(product, null, 2));

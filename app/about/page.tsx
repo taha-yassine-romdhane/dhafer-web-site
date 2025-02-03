@@ -1,160 +1,141 @@
+"use client";
+
 import Image from "next/image";
-import { MapPin } from "lucide-react";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { motion } from 'framer-motion';
 
 import { Card, CardContent } from "@/components/ui/card";
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from "@/components/ui/carousel";
 
-export default function AboutUs() {
-    const owners = [
-        {
-            name: "Marie Dupont",
-            role: "Fondatrice & Directrice Artistique",
-            image: "marie-dupont.jpg",
-        },
-        {
-            name: "Jean Martin",
-            role: "PDG",
-            image: "jean-martin.jpg",
-        },
-    ];
+const locations = [
+    {
+        city: "Jemmel",
+        address: "105 Av. Habib Bourguiba, Jemmel",
+        phone: "56 047 691",
+        email: "ddarelkoftanalassil@gmail.com",
+        hours: "09:00 - 20:00",
+        image: "/jemmel-store.jpg",
+        mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3225.563145157493!2d10.776340776268795!3d35.62461367271031!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x130212d8427c71a9%3A0x678b7c0525c76c86!2s105%20Avenue%20Habib%20Bourguiba%2C%20Jemmal!5e0!3m2!1sen!2stn!4v1706799661646!5m2!1sen!2stn",
+    },
+    {
+        city: "Sousse",
+        address: "Avenue Khezama, Sousse",
+        phone: "56 095 021",
+        email: "ddarelkoftanalassil@gmail.com",
+        hours: "09:00 - 20:00",
+        image: "/sousse-store.jpg",
+        mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3235.6789543261087!2d10.583948776268583!3d35.82642167271041!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x130212b6b0a9d0a1%3A0x1b1c0a0b0b0b0b0b!2sAvenue%20Khezama%2C%20Sousse!5e0!3m2!1sen!2stn!4v1706799661646!5m2!1sen!2stn",
+    },
+    {
+        city: "Tunis",
+        address: "40 Av. Fattouma Bourguiba, Tunis",
+        phone: "56 048 365",
+        email: "ddarelkoftanalassil@gmail.com",
+        hours: "09:00 - 20:00",
+        image: "/tunis-store.jpg",
+        mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3235.6789543261087!2d10.583948776268583!3d35.82642167271041!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x130212b6b0a9d0a1%3A0x1b1c0a0b0b0b0b0b!2s40%20Avenue%20Fattouma%20Bourguiba%2C%20Tunis!5e0!3m2!1sen!2stn!4v1706799661646!5m2!1sen!2stn",
+    },
+];
 
-    const locations = [
-        {
-            city: "Paris, France",
-            address: "123 Rue de la Mode, 75001 Paris",
-            image: "paris-store.jpg",
-            mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.991625693759!2d2.335455315674414!3d48.8583700792875!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e2964e34e2d%3A0x8ddca9ee380ef7e0!2sTour%20Eiffel!5e0!3m2!1sfr!2sfr!4v1702403810",
-        },
-        {
-            city: "Lyon, France",
-            address: "456 Avenue des Tendances, 69002 Lyon",
-            image: "lyon-store.jpg",
-            mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2783.597257715981!2d4.835215315644904!3d45.757934979106!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47f4ea516ae88797%3A0x408ab2ae4bb21f0!2sPlace%20Bellecour!5e0!3m2!1sfr!2sfr!4v1702403810",
-        },
-        {
-            city: "Marseille, France",
-            address: "789 Boulevard de la Créativité, 13001 Marseille",
-            image: "marseille-store.jpg",
-            mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2904.093621073497!2d5.369757315631394!3d43.296482479134!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12c9c0c6a8e8e8e9%3A0x12c9c0c6a8e8e8e9!2sVieux%20Port%20de%20Marseille!5e0!3m2!1sfr!2sfr!4v1702403810",
-        },
-    ];
-
+const AboutUs = () => {
     return (
-        <div className="container mx-auto px-4 py-16 bg-white">
-            <h1 className="text-5xl font-extrabold text-center text-[#D4AF37] mb-8">
-                À Propos de Trendy Threads
-            </h1>
+        <motion.div className="max-w-7xl mx-auto p-6">
+            <div className="flex justify-center mb-8">
+                <Image
+                    src="/logo.png"
+                    alt="Dar Al Koftan Al Assil Logo"
+                    width={200}
+                    height={100}
+                    objectFit="contain"
+                />
+            </div>
+            
+            <motion.h1 className="text-5xl font-extrabold text-center text-[#D4AF37] mb-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+                À Propos de Dar Al Koftan Al Assil
+            </motion.h1>
+
+            <motion.p className="text-lg text-gray-700 mb-6 leading-relaxed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+                We are dedicated to providing the best service.
+            </motion.p>
 
             {/* Histoire de la marque */}
-            <section className="mb-16">
+            <motion.section className="mb-16" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                 <h2 className="text-3xl font-bold text-[#D4AF37] mb-4">Notre Histoire</h2>
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                     <div>
                         <p className="text-lg mb-6 leading-relaxed">
-                            Trendy Threads est une marque de mode dédiée à la création de vêtements
-                            intemporels et élégants pour les femmes. Fondée en 2021 par Marie Dupont,
-                            notre mission est de proposer une gamme de vêtements de haute qualité,
-                            à la fois tendance et durables.
+                            Le coftan est apprécié par la plupart des femmes pour sa légèreté et sa souplesse, 
+                            et son style est flexible pour permettre la liberté et la participation à la création 
+                            d'un style artistique qui correspond aux tendances et aux préférences personnelles, 
+                            quel que soit le sens, du bas vers le haut.
                         </p>
-                        <p className="text-lg mb-6 leading-relaxed">
-                            Au fil des années, nous sommes passés d'une boutique locale à une marque
-                            internationale, mais nos valeurs fondamentales restent les mêmes : qualité,
-                            durabilité et style.
-                        </p>
-                        <button className="bg-[#D4AF37] text-white py-2 px-6 rounded-lg font-medium hover:bg-[#D4AF37] transition">
+                        <button className="bg-[#D4AF37] text-white py-2 px-6 rounded-lg font-medium hover:bg-[#C49B2F] transition">
                             Découvrez Nos Produits
                         </button>
                     </div>
-                    <div className="relative h-[600px] rounded-lg overflow-hidden shadow-lg">
-                        <Image
-                            src="/atelier-trendy-threads.jpg"
-                            alt="Atelier Trendy Threads"
-                            layout="fill"
-                            objectFit="cover"
-                        />
+                    <div className="relative h-[400px] rounded-lg overflow-hidden shadow-lg">
+                        <iframe
+                            width="100%"
+                            height="100%"
+                            src="https://www.youtube.com/embed/b0mBbr3QBg8"
+                            title="Dar Al Koftan Al Assil"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="absolute inset-0"
+                        ></iframe>
                     </div>
                 </div>
-            </section>
-
-            {/* Propriétaires */}
-            <section className="mb-16">
-                <h2 className="text-3xl font-bold text-[#D4AF37] mb-4">Rencontrez Notre Équipe</h2>
-                <Carousel className="w-full max-w-4xl mx-auto">
-                    <CarouselContent>
-                        {owners.map((owner, index) => (
-                            <CarouselItem key={index} className="p-4">
-                                <Card className="hover:shadow-xl transition-shadow border border-[#D4AF37]">
-                                    <CardContent className="flex flex-col items-center p-6">
-                                        <div className="relative w-48 h-48 rounded-full overflow-hidden mb-4 shadow-md">
-                                            <Image
-                                                src={owner.image}
-                                                alt={owner.name}
-                                                layout="fill"
-                                                objectFit="cover"
-                                            />
-                                        </div>
-                                        <h3 className="text-xl font-semibold text-[#D4AF37]">
-                                            {owner.name}
-                                        </h3>
-                                        <p className="text-gray-600">{owner.role}</p>
-                                    </CardContent>
-                                </Card>
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="text-[#D4AF37]" />
-                    <CarouselNext className="text-[#D4AF37]" />
-                </Carousel>
-            </section>
+            </motion.section>
 
             {/* Emplacements */}
-            <section>
+            <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                 <h2 className="text-3xl font-bold text-[#D4AF37] mb-4">Nos Magasins</h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {locations.map((location, index) => (
-                        <Card
-                            key={index}
-                            className="hover:shadow-lg transition-shadow border border-[#D4AF37]"
-                        >
-                            <CardContent className="p-6">
-                                <div className="flex items-start mb-4">
-                                    <MapPin className="mr-2 h-6 w-6 text-[#D4AF37]" />
-                                    <div>
-                                        <h3 className="text-lg font-semibold">{location.city}</h3>
-                                        <p className="text-gray-600">{location.address}</p>
+                        <Card key={index}>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    <div className="flex items-start">
+                                        <MapPin className="mr-2 h-6 w-6 text-[#D4AF37]" />
+                                        <div>
+                                            <h3 className="text-lg font-semibold">
+                                                Dar Al Koftan Al Assil - {location.city}
+                                            </h3>
+                                            <p className="text-gray-600">{location.address}</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="relative h-40 rounded-md overflow-hidden shadow-sm mb-4">
-                                    <Image
-                                        src={location.image}
-                                        alt={`Magasin de ${location.city}`}
-                                        layout="fill"
-                                        objectFit="cover"
-                                    />
-                                </div>
-                                <div className="relative h-60 rounded-md overflow-hidden shadow-sm">
-                                    <iframe
-                                        src={location.mapUrl}
-                                        width="100%"
-                                        height="100%"
-                                        style={{ border: 0 }}
-                                        allowFullScreen
-                                        loading="lazy"
-                                        referrerPolicy="no-referrer-when-downgrade"
-                                        className="absolute inset-0"
-                                    ></iframe>
+                                    <div className="flex items-center">
+                                        <Phone className="mr-2 h-5 w-5 text-[#D4AF37]" />
+                                        <p>{location.phone}</p>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <Mail className="mr-2 h-5 w-5 text-[#D4AF37]" />
+                                        <p>{location.email}</p>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <Clock className="mr-2 h-5 w-5 text-[#D4AF37]" />
+                                        <p>{location.hours}</p>
+                                    </div>
+                                    <div className="relative h-60 rounded-md overflow-hidden shadow-sm">
+                                        <iframe
+                                            src={location.mapUrl}
+                                            width="100%"
+                                            height="100%"
+                                            style={{ border: 0 }}
+                                            allowFullScreen
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                            className="absolute inset-0"
+                                        ></iframe>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
                     ))}
                 </div>
-            </section>
-        </div>
+            </motion.section>
+        </motion.div>
     );
-}
+};
+
+export default AboutUs;

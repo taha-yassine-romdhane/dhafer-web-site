@@ -14,7 +14,7 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-[#D4AF37]">DAR KOFTAN EL ASIL</h3>
             <p className="text-sm text-gray-600">
-              Dar Koftan est votre destination de choix pour des caftans traditionnels de haute qualité. 
+              Dar Koftan est votre destination de choix pour des caftans traditionnels de haute qualité.
             </p>
             {/* Social Links */}
             <div className="flex space-x-4">
@@ -70,11 +70,11 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/contact" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
-                  Contactez Nous  
+                  Contactez Nous
                 </Link>
               </li>
               <li>
-                <Link href="/policy" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                <Link href="/admin" className="text-gray-600 hover:text-[#D4AF37] transition-colors hidden">
                   Politique de confidentialité
                 </Link>
               </li>
@@ -112,10 +112,8 @@ export function Footer() {
               {new Date().getFullYear()} <span className="font-semibold">DAR KOFTAN EL ASIL</span>  Tous droits reservés .
             </p>
             <div className="flex space-x-6">
-              <Link href="/terms" className="text-sm text-gray-600 hover:text-[#D4AF37] transition-colors">
-                Conditions d&#39;utilisation
-              </Link>
-              <Link href="/cookies" className="text-sm text-gray-600 hover:text-[#D4AF37] transition-colors">
+              
+              <Link href="/policy" className="text-sm text-gray-600 hover:text-[#D4AF37] transition-colors">
                 Politique de confidentialité
               </Link>
               <AdminLink />
@@ -125,4 +123,4 @@ export function Footer() {
       </div>
     </footer>
   );
-} 
+}

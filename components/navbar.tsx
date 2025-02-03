@@ -115,6 +115,40 @@ const Navbar = () => {
             </Link>
           </div>
 
+          {/* Mobile Search and Cart */}
+          <div className="flex items-center gap-4 lg:hidden">
+            <Link
+              href="/cart"
+              className="relative text-gray-800 hover:text-[#D4AF37] transition-colors"
+              aria-label="Cart"
+            >
+              <ShoppingCart size={20} />
+              {items.length > 0 && (
+                <span className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-[#D4AF37] text-white text-xs flex items-center justify-center">
+                  {items.length}
+                </span>
+              )}
+            </Link>
+          </div>
+
+          {/* Desktop Search and Cart */}
+          <div className="hidden lg:flex items-center space-x-4">
+            <SearchBar />
+            <Link
+              href="/cart"
+              className="relative text-gray-800 hover:text-[#D4AF37] transition-colors"
+              aria-label="Cart"
+            >
+              <ShoppingCart size={20} />
+              {items.length > 0 && (
+                <span className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-[#D4AF37] text-white text-xs flex items-center justify-center">
+                  {items.length}
+                </span>
+              )}
+            </Link>
+          </div>
+
+          {/* Mobile Menu */}
           <nav
             ref={menuRef}
             className={`${
@@ -123,6 +157,11 @@ const Navbar = () => {
                 : "hidden lg:flex"
             } lg:relative lg:left-auto lg:top-auto lg:bg-transparent lg:border-none z-50`}
           >
+            {/* Mobile Search Bar */}
+            <div className="p-4 lg:hidden">
+              <SearchBar />
+            </div>
+
             <ul className="px-4 py-2 lg:flex lg:space-x-8">
               {collectionCategories.map((category) => (
                 <li
@@ -133,6 +172,7 @@ const Navbar = () => {
                     <Link
                       href={category.url}
                       className="text-gray-800 hover:text-[#D4AF37] transition-colors"
+                      onClick={() => setIsOpen(false)}
                     >
                       {category.label}
                     </Link>
@@ -140,7 +180,7 @@ const Navbar = () => {
                     <>
                       <button
                         onClick={() => toggleCategory(category.label)}
-                        className="flex items-center space-x-1 text-gray-800 hover:text-[#D4AF37] transition-colors"
+                        className="flex items-center space-x-1 text-gray-800 hover:text-[#D4AF37] transition-colors w-full justify-between"
                         aria-expanded={openCategory === category.label}
                       >
                         <span>{category.label}</span>
@@ -178,22 +218,6 @@ const Navbar = () => {
               ))}
             </ul>
           </nav>
-
-          <div className="hidden lg:flex items-center space-x-4">
-            <SearchBar />
-            <Link
-              href="/cart"
-              className="relative text-gray-800 hover:text-[#D4AF37] transition-colors"
-              aria-label="Cart"
-            >
-              <ShoppingCart size={20} />
-              {items.length > 0 && (
-                <span className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-[#D4AF37] text-white text-xs flex items-center justify-center">
-                  {items.length}
-                </span>
-              )}
-            </Link>
-          </div>
         </div>
       </Container>
     </div>

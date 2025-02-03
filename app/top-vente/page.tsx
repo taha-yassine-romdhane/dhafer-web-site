@@ -13,6 +13,8 @@ import ProductCard from "../components/ProductCard";
 export type ProductWithImages = Product & {
   images: ProductImage[];
   salePrice: number | null;
+  viewCount: number;
+  orderCount: number;
 };
 
 const TopVentePage = () => {
@@ -20,7 +22,7 @@ const TopVentePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { ref, inView } = useInView({
+  const {  inView } = useInView({
     threshold: 0.1,
     triggerOnce: true,
   });
@@ -52,6 +54,8 @@ const TopVentePage = () => {
           colorVariants: product.colorVariants || [], // Ensure colorVariants is defined
           images: product.colorVariants.length > 0 ? product.colorVariants[0].images : [],
           salePrice: product.salePrice || null,
+          viewCount: product.viewCount || 0, // Ensure viewCount is defined
+          orderCount: product.orderCount || 0, // Ensure orderCount is defined
         }));
 
         setProducts(transformedProducts);
