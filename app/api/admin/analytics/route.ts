@@ -22,21 +22,18 @@ export async function GET() {
     });
 
     const totalOrders = orders.length;
-    const totalRevenue = orders.reduce((sum, order) => {
-      return sum + (order.totalAmount || 0);
-    }, 0);
 
     // Get orders by status
-    const ordersByStatus = Object.values(OrderStatus).map(status => ({
+    const ordersByStatus = Object.values(OrderStatus).map((status) => ({
       status,
-      count: orders.filter(order => order.status === status).length,
+      count: orders.filter((order) => order.status === status).length,
       revenue: orders
-        .filter(order => order.status === status)
+        .filter((order) => order.status === status)
         .reduce((sum, order) => sum + (order.totalAmount || 0), 0),
     }));
 
     // Get recent orders (last 5)
-    const recentOrders = orders.slice(0, 5).map(order => ({
+    const recentOrders = orders.slice(0, 5).map((order) => ({
       id: order.id,
       customerName: order.customerName,
       totalAmount: order.totalAmount || 0,
@@ -53,9 +50,11 @@ export async function GET() {
     }).reverse();
 
     const salesData = {
-      labels: last7Days.map(date => date.toLocaleDateString('en-US', { weekday: 'short' })),
-      data: last7Days.map(date => {
-        const dayOrders = orders.filter(order => {
+      labels: last7Days.map((date) =>
+        date.toLocaleDateString('en-US', { weekday: 'short' })
+      ),
+      data: last7Days.map((date) => {
+        const dayOrders = orders.filter((order) => {
           const orderDate = new Date(order.createdAt);
           return orderDate.toDateString() === date.toDateString();
         });
@@ -91,26 +90,47 @@ export async function GET() {
 
     // Calculate status-based sales data for the last 7 days
     const salesByStatus = Object.values(OrderStatus).reduce((acc, status) => {
-      acc[status] = last7Days.map(date => {
-        const dayOrders = orders.filter(order => {
+      acc[status] = last7Days.map((date) => {
+        const dayOrders = orders.filter((order) => {
           const orderDate = new Date(order.createdAt);
-          return orderDate.toDateString() === date.toDateString() && order.status === status;
+          return (
+            orderDate.toDateString() === date.toDateString() &&
+            order.status === status
+          );
         });
         return dayOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
       });
       return acc;
     }, {} as Record<OrderStatus, number[]>);
 
+    // Get global stock data
+    const globalStock = await prisma.stock.aggregate({
+      _sum: {
+        quantity: true,
+      },
+    });
+
+    const lowStockItems = await prisma.stock.count({
+      where: {
+        quantity: {
+          lt: 10, // Items with less than 10 in stock
+        },
+      },
+    });
+
     const analyticsData = {
       totalProducts,
       totalOrders,
-      totalRevenue,
       recentOrders,
       salesData,
       topProducts: topProductsWithDetails,
       ordersByStatus,
       salesByStatus,
       last7DaysLabels: salesData.labels,
+      globalStock: {
+        totalStock: globalStock._sum.quantity || 0,
+        lowStockItems,
+      },
     };
 
     return NextResponse.json(analyticsData);

@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+.zoom-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.zoom-container img {
+  transition: transform 0.3s ease;
+}
+
+.zoom-container:hover img {
+  transform: scale(1.5); /* Adjust the zoom level as needed */
+}
+
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -93,3 +107,4 @@
     @apply bg-background text-foreground;
   }
 }
+

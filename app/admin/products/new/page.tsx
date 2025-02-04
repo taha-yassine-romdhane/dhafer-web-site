@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Loader2, X, Plus } from 'lucide-react';
 import Dropzone from '@/components/drop-zone';
 import { Stock, ProductImage } from '@/lib/types';
+import { SIZE_GROUPS } from '@/lib/constants';
 
 const CATEGORY_GROUPS = [
   {
@@ -20,11 +21,7 @@ const CATEGORY_GROUPS = [
     categories: ["chachia", "pochette", "eventaille", "foulard"]
   }
 ];
-export const SIZE_GROUPS: Record<string, string[]> = {
-  Femme: ["XS", "S", "M", "L", "XL", "XXL"],
-  Enfants: ["2ans", "4ans", "6ans", "8ans", "10ans", "12ans"],
-  Accessoires: ["Standard"]
-};
+
 export interface ColorVariantImages {
   id: number;
   color: string;

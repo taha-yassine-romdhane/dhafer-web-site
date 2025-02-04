@@ -12,7 +12,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ products: [], categories: [] });
     }
 
-    // Get matching products with their images
+    // Get matching products with their images through colorVariants
     const products = await prisma.product.findMany({
       where: {
         OR: [
@@ -27,12 +27,17 @@ export async function GET(request: Request) {
         category: true,
         price: true,
         salePrice: true,
-        images: {
-          where: {
-            isMain: true,
-          },
+        colorVariants: {
           select: {
-            url: true,
+            images: {
+              where: {
+                isMain: true,
+              },
+              select: {
+                url: true,
+              },
+              take: 1,
+            },
           },
           take: 1,
         },
@@ -72,7 +77,7 @@ export async function GET(request: Request) {
       category: product.category,
       price: product.price,
       salePrice: product.salePrice,
-      imageUrl: product.images[0]?.url || null,
+      imageUrl: product.colorVariants[0]?.images[0]?.url || null,
       type: 'product' as const
     }));
 

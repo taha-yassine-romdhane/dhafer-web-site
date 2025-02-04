@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -8,7 +7,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -61,6 +59,7 @@ const governorates = [
 interface DirectPurchaseFormProps {
   onSubmit: (data: z.infer<typeof formSchema>) => void
   className?: string
+  isSubmitting?: boolean
 }
 
 export function DirectPurchaseForm({ onSubmit, className = "" }: DirectPurchaseFormProps) {

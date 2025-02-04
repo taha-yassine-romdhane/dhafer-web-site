@@ -1,17 +1,18 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Product, ProductImage, ColorVariant } from "@prisma/client"
-import { useCart } from "@/lib/context/cart-context"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import Image from "next/image"
-import { Loader2 } from "lucide-react"
-import { DirectPurchaseForm } from "@/components/direct-purchase-form"
-import { ProductAvailability } from "@/components/product-availability"
-import { toast } from "sonner"
+import { useEffect, useState } from "react";
+import { Product, ProductImage, ColorVariant } from "@prisma/client";
+import { useCart } from "@/lib/context/cart-context";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { Loader2 } from "lucide-react";
+import { DirectPurchaseForm } from "@/components/direct-purchase-form";
+import { ProductAvailability } from "@/components/product-availability";
+import { toast } from "sonner";
+import { SuccessDialog } from "@/components/success-dialog";
 
-interface ProductWithColorVariants extends Omit<Product, 'images'> {
+interface ProductWithColorVariants extends Omit<Product, "images"> {
   colorVariants: (ColorVariant & {
     images: ProductImage[];
   })[];
@@ -19,47 +20,48 @@ interface ProductWithColorVariants extends Omit<Product, 'images'> {
 }
 
 export default function ProductPage({ params }: { params: { productId: string } }) {
-  const [product, setProduct] = useState<ProductWithColorVariants | null>(null)
-  const [selectedColorVariant, setSelectedColorVariant] = useState<ColorVariant & { images: ProductImage[] } | null>(null)
-  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [selectedSize, setSelectedSize] = useState<string>("")
-  const { addItem } = useCart()
+  const [product, setProduct] = useState<ProductWithColorVariants | null>(null);
+  const [selectedColorVariant, setSelectedColorVariant] = useState<ColorVariant & { images: ProductImage[] } | null>(null);
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [submitting, setSubmitting] = useState(false);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
+  const { addItem } = useCart();
 
   const formatPrice = (price: number) => {
-    return price.toFixed(2)
-  }
+    return price.toFixed(2);
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        setLoading(true)
-        setError(null)
-        const response = await fetch(`/api/products/${params.productId}`)
+        setLoading(true);
+        setError(null);
+        const response = await fetch(`/api/products/${params.productId}`);
         if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+          const errorData = await response.json();
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
-        const data = await response.json()
-        setProduct(data)
-        // Set initial color variant and image
+        const data = await response.json();
+        setProduct(data);
         if (data.colorVariants && data.colorVariants.length > 0) {
-          const firstVariant = data.colorVariants[0]
-          setSelectedColorVariant(firstVariant)
-          const mainImage = firstVariant.images.find((img: ProductImage) => img.isMain)?.url || firstVariant.images[0]?.url
-          setSelectedImageUrl(mainImage)
+          const firstVariant = data.colorVariants[0];
+          setSelectedColorVariant(firstVariant);
+          const mainImage = firstVariant.images.find((img: ProductImage) => img.isMain)?.url || firstVariant.images[0]?.url;
+          setSelectedImageUrl(mainImage);
         }
       } catch (error) {
-        console.error('Error fetching product:', error)
-        setError(error instanceof Error ? error.message : 'Failed to load product. Please try again later.')
+        console.error("Error fetching product:", error);
+        setError(error instanceof Error ? error.message : "Failed to load product. Please try again later.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchProduct()
-  }, [params.productId])
+    fetchProduct();
+  }, [params.productId]);
 
   const handleAddToCart = () => {
     if (!product || !selectedColorVariant || !selectedSize) {
@@ -67,54 +69,76 @@ export default function ProductPage({ params }: { params: { productId: string } 
       return;
     }
 
-    // Create a modified product with the correct images
     const productWithImages = {
       ...product,
-      images: selectedColorVariant.images
+      images: selectedColorVariant.images,
     };
-    
-    addItem(
-      productWithImages,
-      selectedSize,
-      selectedColorVariant.color
-    );
+
+    addItem(productWithImages, selectedSize, selectedColorVariant.color);
 
     toast.success("Added to cart successfully");
-  }
+  };
 
   const handleDirectPurchase = async (formData: any) => {
     if (!product || !selectedColorVariant || !selectedSize) {
-      toast.error("Veuillez sélectionner une taille et une couleur")
-      return
+      toast.error("Veuillez sélectionner une taille et une couleur");
+      return;
     }
+
+    setSubmitting(true);
 
     const orderData = {
       ...formData,
       productId: product.id,
       colorId: selectedColorVariant.id,
       size: selectedSize,
-      price: product.salePrice || product.price
-    }
+      price: product.salePrice || product.price,
+    };
 
     try {
-      const response = await fetch('/api/orders/direct', {
-        method: 'POST',
+      const response = await fetch("/api/orders/direct", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(orderData),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error('Failed to place order')
+        throw new Error("Failed to place order");
       }
 
-      toast.success("Commande placée avec succès! Nous vous contacterons bientôt.")
+      setIsSuccessDialogOpen(true);
+      toast.success("Commande placée avec succès! Nous vous contacterons bientôt.");
     } catch (error) {
-      console.error('Error placing order:', error)
-      toast.error("Erreur lors de la commande. Veuillez réessayer.")
+      console.error("Error placing order:", error);
+      toast.error("Erreur lors de la commande. Veuillez réessayer.");
+    } finally {
+      setSubmitting(false);
     }
-  }
+  };
+
+  // Handle zoom on hover
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const img = container.querySelector("img");
+    if (!img) return;
+
+    const { left, top, width, height } = container.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+
+    img.style.transformOrigin = `${x}% ${y}%`;
+    img.style.transform = "scale(1.5)";
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    const img = e.currentTarget.querySelector("img");
+    if (!img) return;
+
+    img.style.transformOrigin = "center";
+    img.style.transform = "scale(1)";
+  };
 
   if (loading) {
     return (
@@ -124,7 +148,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
           <span className="text-lg">Loading...</span>
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -132,7 +156,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
       <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[60vh]">
         <div className="text-red-500">{error}</div>
       </div>
-    )
+    );
   }
 
   if (!product || !selectedColorVariant || !selectedImageUrl) {
@@ -140,8 +164,9 @@ export default function ProductPage({ params }: { params: { productId: string } 
       <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[60vh]">
         <div className="text-lg">Product not found</div>
       </div>
-    )
+    );
   }
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -153,7 +178,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
             {selectedColorVariant.images.map((image) => (
               <button
                 key={image.id}
-                onMouseEnter={() => setSelectedImageUrl(image.url)} // Change to onMouseEnter
+                onMouseEnter={() => setSelectedImageUrl(image.url)}
                 className={cn(
                   "relative w-20 h-20 overflow-hidden rounded-lg bg-gray-100 hover:ring-2 hover:ring-[#D4AF37] transition-all",
                   selectedImageUrl === image.url && "ring-2 ring-[#D4AF37]"
@@ -170,13 +195,17 @@ export default function ProductPage({ params }: { params: { productId: string } 
             ))}
           </div>
 
-          {/* Main Image */}
-          <div className="flex-1 relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-100">
+         {/* Main Image with Zoom */}
+         <div
+            className="flex-1 relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-100 zoom-container"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
             <Image
               src={selectedImageUrl}
               alt={product.name}
               fill
-              className="object-cover object-center"
+              className="object-cover object-center transition-transform duration-300"
               priority
               quality={90}
               sizes="(max-width: 720px) 100vw, 50vw"
@@ -187,7 +216,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
         {/* Product Details */}
         <div className="space-y-6">
           <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-          
+
           <div className="flex items-center gap-4">
             <span className="text-2xl font-semibold text-[#D4AF37]">
               {product.salePrice ? (
@@ -276,9 +305,10 @@ export default function ProductPage({ params }: { params: { productId: string } 
 
           {/* Direct Purchase Form */}
           <div className="border-t border-[#D4AF37]/20 pt-6">
-            <DirectPurchaseForm 
+            <DirectPurchaseForm
               onSubmit={handleDirectPurchase}
               className="space-y-4"
+              isSubmitting={submitting} // Pass submitting state to disable the button
             />
           </div>
 
@@ -305,6 +335,13 @@ export default function ProductPage({ params }: { params: { productId: string } 
           </div>
         </div>
       </div>
+
+      {/* Success Dialog */}
+      <SuccessDialog
+        isOpen={isSuccessDialogOpen}
+        onClose={() => setIsSuccessDialogOpen(false)}
+        message="Your order has been placed successfully!"
+      />
     </div>
-  )
+  );
 }

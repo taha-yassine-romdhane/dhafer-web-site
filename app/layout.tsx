@@ -10,14 +10,13 @@ import { CartDropdown } from "@/components/cart-dropdown";
 
 const inter = Inter({ subsets: ['latin'] });
 
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <body className={inter.className}>
         <CartProvider>
           <Navbar />

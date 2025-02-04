@@ -10,9 +10,21 @@ interface OrderItem {
   quantity: number;
   size?: string;
   color?: string;
+  productId: number;
+  colorVariantId: number;
   product: {
+    id: number;
+    description: string;
+    salePrice?: number | null;
+    category: string;
+    sizes: string[];
     name: string;
     price: number;
+    colorVariants: {
+      images: {
+        url: string;
+      }[];
+    }[];
   };
 }
 
@@ -30,7 +42,6 @@ interface Order {
 export default function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [error, setError] = useState<string>('');
   const [updateLoading, setUpdateLoading] = useState<number | null>(null);
@@ -43,14 +54,31 @@ export default function Orders() {
   const fetchOrders = async () => {
     try {
       const response = await fetch('/api/admin/orders');
+      
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch orders');
       }
-
+  
       if (Array.isArray(data)) {
-        setOrders(data);
+        // Process the orders array
+        setOrders(data.map(order => ({
+          ...order,
+          items: order.items.map((item: OrderItem) => ({
+            ...item,
+            // Ensure the item structure matches your interface
+            product: {
+              id: item.product.id,
+              name: item.product.name,
+              price: item.product.price,
+              description: item.product.description,
+              salePrice: item.product.salePrice,
+              category: item.product.category,
+              sizes: item.product.sizes
+            }
+          }))
+        })));
         setError('');
       } else if (data.error) {
         console.error('Server error:', data.details || data.error);
@@ -73,6 +101,7 @@ export default function Orders() {
     setUpdateLoading(orderId);
     try {
       const response = await fetch(`/api/admin/orders/${orderId}`, {
+        
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -107,7 +136,7 @@ export default function Orders() {
       // Prepare data for export
       const exportData = orders.map(order => {
         // Flatten order items into a comma-separated string
-        const itemsList = order.items.map(item => 
+        const itemsList = order.items.map((item: OrderItem) => 
           `${item.quantity}x ${item.product.name} (${item.size || 'No Size'}${item.color ? `, ${item.color}` : ''})`
         ).join('; ')
 

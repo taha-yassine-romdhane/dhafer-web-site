@@ -1,14 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
-  console.log('Fetching orders...');
+export async function GET(req: Request) {
   try {
-    // First, test the database connection
-    await prisma.$connect();
-    console.log('Database connected successfully');
-
-    // Fetch orders with included relations
+    console.log('Fetching orders...');
     const orders = await prisma.order.findMany({
       include: {
         items: {
@@ -18,8 +13,18 @@ export async function GET() {
                 id: true,
                 name: true,
                 price: true,
+                description: true,
+                salePrice: true,
+                category: true,
+                sizes: true,
+              },
+            },
+            colorVariant: {
+              include: {
                 images: {
-                  where: { isMain: true },
+                  where: {
+                    isMain: true,
+                  },
                   select: {
                     url: true,
                   },
@@ -35,45 +40,15 @@ export async function GET() {
       },
     });
 
-    console.log(`Found ${orders.length} orders`);
-
-    // Safely transform dates to strings and handle undefined values
-    const serializedOrders = orders.map(order => {
-      // Ensure all required fields exist
-      const safeOrder = {
-        ...order,
-        createdAt: order.createdAt || new Date(),
-        updatedAt: order.updatedAt || new Date(),
-        items: order.items || [],
-      };
-
-      return {
-        ...safeOrder,
-        createdAt: safeOrder.createdAt.toISOString(),
-        updatedAt: safeOrder.updatedAt.toISOString(),
-        items: safeOrder.items.map(item => {
-          // Only include fields that exist in the OrderItem model
-          const safeItem = {
-            ...item,
-            product: {
-              ...item.product
-            }
-          };
-
-          return safeItem;
-        }),
-      };
-    });
-
-    return NextResponse.json(serializedOrders);
+    return NextResponse.json(orders);
   } catch (error) {
     console.error('Detailed orders fetch error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return NextResponse.json(
-      { error: 'Failed to fetch orders', details: errorMessage },
+      {
+        error: 'Failed to fetch orders',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

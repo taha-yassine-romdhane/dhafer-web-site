@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import imagekit from '@/lib/imagekit-config';
 import sharp from 'sharp';
 
+
+
 export async function POST(request: Request) {
   try {
     console.log('Starting file upload to ImageKit...');
@@ -75,10 +77,6 @@ export async function POST(request: Request) {
   }
 }
 
-// Increase payload size limit for image uploads
-export const config = {
-  api: {
-    bodyParser: false, // Disable the default body parser
-    responseLimit: false,
-  },
-};
+// New route segment configuration
+export const dynamic = 'force-dynamic'; // Ensure the route is dynamic
+export const maxDuration = 30; // Set the maximum duration for the request (in seconds)
