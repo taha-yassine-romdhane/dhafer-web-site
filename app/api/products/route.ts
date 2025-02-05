@@ -45,7 +45,6 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
-    const collaborateur = searchParams.get("collaborateur");
     const sort = searchParams.get("sort");
     const product = searchParams.get("product");
 
@@ -59,13 +58,7 @@ export async function GET(request: Request) {
       };
     }
 
-    // Collaborateur filter
-    if (collaborateur && collaborateur !== "all") {
-      where.collaborateur = {
-        equals: collaborateur.toLowerCase(),
-        mode: 'insensitive'
-      };
-    }
+  
 
     // Product name filter
     if (product) {

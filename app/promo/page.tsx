@@ -45,35 +45,21 @@ const PromoPage = () => {
   }, []);
 
   return (
-    <div className="bg-[#FFF8E1] min-h-screen">
+    <div className=" min-h-screen">
       {/* Hero Section */}
-      <div className="relative h-[60vh] w-full overflow-hidden">
+      <div className="relative h-[65vh] w-full overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1572584642822-6f8de0243c93?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src="/img_koftan.png"
             alt="Promo Collection"
             fill
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 " />
         </div>
 
         <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white">
-          <h1 className="mb-6 text-5xl font-bold">
-            Promotions Exclusives
-          </h1>
-          <p className="mb-8 text-xl">
-            Profitez de nos offres spéciales sur une sélection de produits
-          </p>
-          <Button
-            asChild
-            className="rounded-full bg-[#D4AF37] px-8 py-3 text-lg font-semibold text-white hover:bg-[#C5A227] transition-colors"
-          >
-            <Link href="#promo-products">
-              Voir les Promos
-            </Link>
-          </Button>
         </div>
       </div>
 

@@ -101,39 +101,47 @@ const SearchBar = () => {
         </button>
       </form>
 
-      {showSuggestions && (searchQuery.length >= 2) && (
-        <div className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-[#D4AF37]/20 max-h-96 overflow-y-auto">
+      {showSuggestions && searchQuery.length >= 2 && (
+        <div className="absolute z-50 w-[150%] -left-1/4 mt-2 bg-white rounded-xl shadow-2xl border border-[#D4AF37]/20 max-h-[600px] overflow-y-auto">
           {isLoading ? (
-            <div className="p-4 text-center text-gray-500">Loading...</div>
+            <div className="p-6 text-center text-gray-500">Loading...</div>
           ) : suggestions && suggestions.length > 0 ? (
-            <ul>
+            <ul className="divide-y divide-[#D4AF37]/10">
               {suggestions.map((product) => (
                 <li
                   key={product.id}
                   onClick={() => handleSuggestionClick(product.id.toString())}
-                  className="flex items-center gap-3 p-3 hover:bg-[#D4AF37]/5 cursor-pointer border-b border-[#D4AF37]/10 last:border-b-0"
+                  className="flex items-center gap-6 p-6 hover:bg-[#D4AF37]/5 cursor-pointer transition-colors duration-200"
                 >
                   {product.colorVariants[0]?.images[0] && (
-                    <div className="relative w-12 h-12">
+                    <div className="relative w-24 h-24 flex-shrink-0">
                       <Image
                         src={product.colorVariants[0].images[0].url}
                         alt={product.name}
                         fill
-                        className="object-cover rounded"
+                        className="object-cover rounded-lg shadow-md"
                       />
                     </div>
                   )}
-                  <div>
-                    <p className="text-sm font-medium text-gray-800">{product.name}</p>
-                    <p className="text-sm text-[#D4AF37]">
-                      TND{product.price.toFixed(2)}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-medium text-gray-900 mb-1 truncate">
+                      {product.name}
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-2 line-clamp-2">
+                      {product.description}
+                    </p>
+                    <p className="text-lg font-semibold text-[#D4AF37]">
+                      TND {product.price.toFixed(2)}
+                    </p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      {product.category}
                     </p>
                   </div>
                 </li>
               ))}
             </ul>
           ) : (
-            <div className="p-4 text-center text-gray-500">No results found</div>
+            <div className="p-6 text-center text-gray-500">No results found</div>
           )}
         </div>
       )}

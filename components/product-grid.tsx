@@ -119,7 +119,7 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
       ...product,
       images: selectedColorVariant.images
     };
-    
+
     addItem(
       productWithImages,
       selectedSizes[product.id],
@@ -170,7 +170,7 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
           onMouseLeave={() => setHoveredProduct(null)}
         >
           {/* Main Product Image */}
-          <div 
+          <div
             className="relative aspect-[2/3] mb-3 overflow-hidden rounded-lg bg-gray-100 cursor-pointer"
             onClick={() => router.push(`/product/${product.id}`)}
           >
@@ -203,10 +203,20 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
           </div>
 
           {/* Product Info */}
-          <div>
-            <h3 className="text-sm font-medium text-gray-900">{product.name}</h3>
-            <p className="mt-1 text-sm text-gray-500">{formatPrice(product.price)} TND</p>
+          <div className="text-gray-700">
+            <h3 className="text-md font-semibold">{product.name}</h3>
+            <div className="mt-1">
+              {product.salePrice ? (
+                <p className="text-sm text-gray-500 line-through">{formatPrice(product.price)} TND</p>
+              ) : (
+                <p className="text-sm text-[#D4AF37] -700">{formatPrice(product.price)} TND</p>
+              )}
+              {product.salePrice && (
+                <p className="text-sm text-[#D4AF37] mt-600 font-semibold"><span className="text-red-600 mr-1">Promo :</span> {formatPrice(product.salePrice)} TND</p>
+              )}
+            </div>
           </div>
+
 
           {/* Color Options */}
           <div className="mt-2 flex gap-1.5">
