@@ -6,8 +6,8 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay'; // For auto-sliding
 
 const TopVentSection: React.FC = () => {
-  const imagesTop1 = ['/compressed/img1.JPG', '/compressed/img2.JPG', '/compressed/img3.JPG']; // First carousel (slides up)
-  const imagesBottom = ['/compressed/img4.JPG', '/compressed/img5.JPG', '/compressed/img6.JPG']; // Second carousel (slides down, reversed order)
+  const imagesTop1 = ['/carousel/img1.JPG', '/carousel/img2.JPG', '/carousel/img3.JPG']; // First carousel (slides up)
+  const imagesBottom = ['/carousel/img4.JPG', '/carousel/img5.JPG', '/carousel/img6.JPG']; // Second carousel (slides down, reversed order)
 
   // Initialize Embla Carousels with Autoplay
   const [emblaRefTop1, emblaApiTop1] = useEmblaCarousel(
