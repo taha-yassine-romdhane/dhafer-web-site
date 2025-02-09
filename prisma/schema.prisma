@@ -108,7 +108,7 @@ model OrderItem {
 
 model Stock {
   id        Int          @id @default(autoincrement())
-  location  String       // Physical locations only: "monastir", "tunis", "sfax" (online stock is virtual)
+  location  String       // "monastir", "tunis", "sfax", "online"
   quantity  Int          @default(0)
   product   Product      @relation("ProductStock", fields: [productId], references: [id], onDelete: Cascade)
   productId Int

@@ -141,13 +141,13 @@ export async function GET(
   { params }: { params: { productId: string } }
 ) {
   try {
-    const productId = parseInt(params.productId)
-    
+    const productId = parseInt(params.productId);
+
     if (isNaN(productId)) {
       return NextResponse.json(
         { error: 'Invalid product ID' },
         { status: 400 }
-      )
+      );
     }
 
     const product = await prisma.product.findUnique({
