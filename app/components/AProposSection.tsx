@@ -6,14 +6,14 @@ import Autoplay from 'embla-carousel-autoplay';
 
 export default function AProposSection() {
   const images = [
-    '/compressed/img7.JPG',
-    '/compressed/img8.JPG',
-    '/compressed/img9.JPG',
-    '/compressed/img10.png',
-    '/compressed/img11.png',
-    '/compressed/img12.png',
-    '/compressed/img13.png',
-    '/compressed/img14.png',
+    '/carousel/img7.JPG',
+    '/carousel/img8.JPG',
+    '/carousel/img9.JPG',
+    '/carousel/img10.png',
+    '/carousel/img11.png',
+    '/carousel/img12.png',
+    '/carousel/img13.png',
+    '/carousel/img14.png',
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
