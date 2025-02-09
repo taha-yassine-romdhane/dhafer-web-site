@@ -58,8 +58,6 @@ export async function GET(request: Request) {
       };
     }
 
-  
-
     // Product name filter
     if (product) {
       const productName = product

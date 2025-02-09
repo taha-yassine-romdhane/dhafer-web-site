@@ -6,28 +6,40 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { X, Minus, Plus, ShoppingBag, Trash } from "lucide-react";
+import { usePathname } from 'next/navigation';
 
 export function CartDropdown() {
   const { items, removeItem, updateQuantity } = useCart();
   const [isVisible, setIsVisible] = useState(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [prevItemsLength, setPrevItemsLength] = useState(items.length);
+  const pathname = usePathname();
 
   useEffect(() => {
-    // Afficher le dropdown lorsque les articles changent
-    if (items.length > 0) {
+    // Don't show dropdown on cart page
+    if (pathname === '/cart') {
+      setIsVisible(false);
+      return;
+    }
+
+    // Only show dropdown when items are added (not on quantity updates)
+    if (items.length > prevItemsLength) {
       setIsVisible(true);
 
-      // Effacer le timeout existant
+      // Clear existing timeout
       if (timeoutId) clearTimeout(timeoutId);
 
-      // Définir un nouveau timeout pour masquer le dropdown après 5 secondes
+      // Set new timeout to hide dropdown after 5 seconds
       const newTimeoutId = setTimeout(() => {
         setIsVisible(false);
       }, 5000);
 
       setTimeoutId(newTimeoutId);
     }
-  }, [items]);
+
+    // Update previous items length
+    setPrevItemsLength(items.length);
+  }, [items, pathname]);
 
   if (!isVisible) return null;
 

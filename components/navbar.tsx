@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, User, LogOut, ShoppingBag, Settings } from "lucide-react";
 import Container from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
@@ -11,6 +11,14 @@ import { useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import SearchBar from "@/components/search-bar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Subcategory {
   name: string;
@@ -67,6 +75,8 @@ const Navbar = () => {
   const router = useRouter();
   const { items } = useCart();
   const menuRef = useRef<HTMLDivElement>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<{ username: string } | null>(null);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -76,6 +86,32 @@ const Navbar = () => {
   const toggleCategory = (category: string) => {
     setOpenCategory(openCategory === category ? null : category);
   };
+
+  useEffect(() => {
+    // Check authentication status
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/users/me', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          setIsLoggedIn(true);
+          setUser(userData);
+        } else {
+          setIsLoggedIn(false);
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -89,8 +125,26 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/users/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        // Force a hard refresh to clear all states
+        window.location.href = '/';
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
-    <div className="border-b">
+    <div className="border-b relative z-50">
       <Container>
         <div className="relative px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between bg-white">
           <div className="flex items-center">
@@ -115,95 +169,34 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Mobile Search and Cart */}
-          <div className="flex items-center gap-4 lg:hidden">
-            <Link
-              href="/cart"
-              className="relative text-gray-800 hover:text-[#D4AF37] transition-colors"
-              aria-label="Cart"
-            >
-              <ShoppingCart size={20} />
-              {items.length > 0 && (
-                <span className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-[#D4AF37] text-white text-xs flex items-center justify-center">
-                  {items.length}
-                </span>
-              )}
-            </Link>
-          </div>
-
-          {/* Desktop Search and Cart */}
-          <div className="hidden lg:flex items-center space-x-4">
-            <SearchBar />
-            <Link
-              href="/cart"
-              className="relative text-gray-800 hover:text-[#D4AF37] transition-colors"
-              aria-label="Cart"
-            >
-              <ShoppingCart size={20} />
-              {items.length > 0 && (
-                <span className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-[#D4AF37] text-white text-xs flex items-center justify-center">
-                  {items.length}
-                </span>
-              )}
-            </Link>
-          </div>
-
-          {/* Mobile Menu */}
-          <nav
-            ref={menuRef}
-            className={`${
-              isOpen
-                ? "absolute top-full left-0 right-0 bg-white border-b border-[#D4AF37]/20"
-                : "hidden lg:flex"
-            } lg:relative lg:left-auto lg:top-auto lg:bg-transparent lg:border-none z-50`}
-          >
-            {/* Mobile Search Bar */}
-            <div className="p-4 lg:hidden">
-              <SearchBar />
-            </div>
-
-            <ul className="px-4 py-2 lg:flex lg:space-x-8">
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center space-x-8">
+            <ul className="flex space-x-8">
               {collectionCategories.map((category) => (
-                <li
-                  key={category.label}
-                  className="relative group py-2 lg:py-0"
-                >
+                <li key={category.label} className="relative group">
                   {category.url ? (
                     <Link
                       href={category.url}
                       className="text-gray-800 hover:text-[#D4AF37] transition-colors"
-                      onClick={() => setIsOpen(false)}
                     >
                       {category.label}
                     </Link>
                   ) : (
-                    <>
+                    <div className="relative">
                       <button
+                        className="text-gray-800 hover:text-[#D4AF37] transition-colors"
                         onClick={() => toggleCategory(category.label)}
-                        className="flex items-center space-x-1 text-gray-800 hover:text-[#D4AF37] transition-colors w-full justify-between"
-                        aria-expanded={openCategory === category.label}
                       >
-                        <span>{category.label}</span>
+                        {category.label}
                       </button>
-
                       {category.subcategories && (
-                        <div
-                          className={`${
-                            openCategory === category.label
-                              ? "block"
-                              : "hidden lg:group-hover:block"
-                          } lg:absolute lg:left-0 lg:top-full lg:w-48 lg:bg-white lg:shadow-lg lg:rounded-md lg:mt-1 border border-[#D4AF37]/20`}
-                        >
+                        <div className="hidden group-hover:block absolute left-0 top-full w-48 bg-white shadow-lg rounded-md border border-[#D4AF37]/20 z-50">
                           <ul className="py-2">
                             {category.subcategories.map((subcategory) => (
                               <li key={subcategory.name}>
                                 <Link
-                                  href={
-                                    subcategory.href ||
-                                    `/collections?category=${subcategory.query}`
-                                  }
+                                  href={`/collections?category=${subcategory.query}`}
                                   className="block px-4 py-2 hover:bg-gray-100"
-                                  onClick={() => setIsOpen(false)}
                                 >
                                   {subcategory.name}
                                 </Link>
@@ -212,13 +205,171 @@ const Navbar = () => {
                           </ul>
                         </div>
                       )}
-                    </>
+                    </div>
                   )}
                 </li>
               ))}
             </ul>
           </nav>
+
+          {/* Right Side - Search, Cart, and Auth */}
+          <div className="flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-4">
+              <SearchBar />
+            </div>
+
+            <Link
+              href="/cart"
+              className="relative text-gray-800 hover:text-[#D4AF37] transition-colors"
+              aria-label="Cart"
+            >
+              <ShoppingCart size={20} />
+              <div className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-[#D4AF37] text-white text-xs flex items-center justify-center">
+                {items.length > 0 ? items.length : ''}
+              </div>
+            </Link>
+
+            {isLoggedIn && user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="relative h-8 w-8 bg-[#D4AF37] hover:bg-[#D4AF37]/80 rounded-full"
+                  >
+                    <div className="flex items-center justify-center h-full w-full bg-[#D4AF37] text-white rounded-full">
+                      {user.username.charAt(0).toUpperCase()}
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.username}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Derniére connexion: {new Date().toLocaleString()}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/orders" className="w-full">
+                      <ShoppingBag className="mr-2 h-4 w-4" />
+                      <span>Mes commandes</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="w-full">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Paramètres</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="text-red-600 focus:text-red-600 cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Deconnexion</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link href="/login">
+                  <Button
+                    variant="ghost"
+                    className="text-gray-700 hover:text-[#D4AF37] transition-colors"
+                  >
+                    Connexion
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button
+                    className="bg-[#D4AF37] text-white hover:bg-[#B59851] transition-colors"
+                  >
+                    Inscription
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div
+            ref={menuRef}
+            className="lg:hidden fixed top-[64px] left-0 right-0 bottom-0 bg-white overflow-y-auto z-50 border-t border-[#D4AF37]/20"
+          >
+            <div className="sticky top-0 p-4 bg-white shadow-sm">
+              <SearchBar />
+            </div>
+            <div className="px-4 py-2">
+              <ul className="space-y-3">
+                {collectionCategories.map((category) => (
+                  <li key={category.label}>
+                    {category.url ? (
+                      <Link
+                        href={category.url}
+                        className="block w-full py-2 text-gray-800 hover:text-[#D4AF37] transition-colors"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {category.label}
+                      </Link>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => toggleCategory(category.label)}
+                          className="flex items-center justify-between w-full py-2 text-gray-800 hover:text-[#D4AF37] transition-colors"
+                        >
+                          <span>{category.label}</span>
+                          {openCategory === category.label ? (
+                            <X size={18} />
+                          ) : (
+                            <Menu size={18} />
+                          )}
+                        </button>
+                        {category.subcategories && openCategory === category.label && (
+                          <ul className="ml-4 mt-1 space-y-2 border-l-2 border-[#D4AF37]/20 pl-4">
+                            {category.subcategories.map((subcategory) => (
+                              <li key={subcategory.name}>
+                                <Link
+                                  href={`/collection/${subcategory.query}`}
+                                  onClick={() => setIsOpen(false)}
+                                  className="block py-1.5 text-gray-600 hover:text-[#D4AF37] transition-colors"
+                                >
+                                  {subcategory.name}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-6 space-y-3 border-t border-gray-100 pt-6">
+                <Link href="/login" className="w-full">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-center text-gray-700 hover:text-[#D4AF37] transition-colors"
+                  >
+                    Connexion
+                  </Button>
+                </Link>
+                <Link href="/signup" className="w-full">
+                  <Button
+                    className="w-full justify-center bg-[#D4AF37] text-white hover:bg-[#B59851] transition-colors"
+                  >
+                    Inscription
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </Container>
     </div>
   );

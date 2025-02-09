@@ -11,6 +11,7 @@ import { DirectPurchaseForm } from "@/components/direct-purchase-form";
 import { ProductAvailability } from "@/components/product-availability";
 import { toast } from "sonner";
 import { SuccessDialog } from "@/components/success-dialog";
+import ProductGrid from "@/components/product-grid";
 
 interface ProductWithColorVariants extends Omit<Product, "images"> {
   colorVariants: (ColorVariant & {
@@ -28,6 +29,13 @@ export default function ProductPage({ params }: { params: { productId: string } 
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
+  const [userDetails, setUserDetails] = useState<{ fullName: string; address: string; governorate: string; phone: string }>({
+    fullName: "",
+    address: "",
+    governorate: "",
+    phone: "",
+  });
+  const [suggestedProducts, setSuggestedProducts] = useState<ProductWithColorVariants[]>([]);
   const { addItem } = useCart();
 
   const formatPrice = (price: number) => {
@@ -52,6 +60,15 @@ export default function ProductPage({ params }: { params: { productId: string } 
           const mainImage = firstVariant.images.find((img: ProductImage) => img.isMain)?.url || firstVariant.images[0]?.url;
           setSelectedImageUrl(mainImage);
         }
+
+        // Fetch suggested products
+        const suggestedResponse = await fetch(`/api/products/suggestions?category=${data.category}&exclude=${data.id}`);
+        if (!suggestedResponse.ok) {
+          const errorData = await suggestedResponse.json();
+          throw new Error(errorData.error || `HTTP error! status: ${suggestedResponse.status}`);
+        }
+        const suggestedData = await suggestedResponse.json();
+        setSuggestedProducts(suggestedData);
       } catch (error) {
         console.error("Error fetching product:", error);
         setError(error instanceof Error ? error.message : "Failed to load product. Please try again later.");
@@ -108,6 +125,13 @@ export default function ProductPage({ params }: { params: { productId: string } 
         throw new Error("Failed to place order");
       }
 
+      setUserDetails({
+        fullName: formData.fullName,
+        address: formData.address,
+        governorate: formData.governorate,
+        phone: formData.phone,
+      });
+
       setIsSuccessDialogOpen(true);
       toast.success("Commande placée avec succès! Nous vous contacterons bientôt.");
     } catch (error) {
@@ -115,6 +139,37 @@ export default function ProductPage({ params }: { params: { productId: string } 
       toast.error("Erreur lors de la commande. Veuillez réessayer.");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleConfirmOrder = async () => {
+    const orderData = {
+      productId: product!.id,
+      colorId: selectedColorVariant!.id,
+      size: selectedSize,
+      price: product!.salePrice || product!.price,
+      ...userDetails,
+    };
+
+    try {
+      const response = await fetch("/api/orders/direct", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to place order");
+      }
+
+      toast.success("Commande confirmée avec succès!");
+    } catch (error) {
+      console.error("Error confirming order:", error);
+      toast.error("Erreur lors de la confirmation de la commande. Veuillez réessayer.");
+    } finally {
+      setIsSuccessDialogOpen(false);
     }
   };
 
@@ -167,7 +222,6 @@ export default function ProductPage({ params }: { params: { productId: string } 
     );
   }
 
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -195,8 +249,8 @@ export default function ProductPage({ params }: { params: { productId: string } 
             ))}
           </div>
 
-         {/* Main Image with Zoom */}
-         <div
+          {/* Main Image with Zoom */}
+          <div
             className="flex-1 relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-100 zoom-container"
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
@@ -308,7 +362,12 @@ export default function ProductPage({ params }: { params: { productId: string } 
             <DirectPurchaseForm
               onSubmit={handleDirectPurchase}
               className="space-y-4"
-              isSubmitting={submitting} // Pass submitting state to disable the button
+              isSubmitting={submitting}
+              productInfo={{
+                name: product.name,
+                price: product.salePrice || product.price,
+                mainImageUrl: selectedImageUrl,
+              }}
             />
           </div>
 
@@ -319,16 +378,16 @@ export default function ProductPage({ params }: { params: { productId: string } 
               className="w-full py-6 text-lg bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white"
               size="lg"
             >
-              Add to Cart
+              Ajouter au Panier
             </Button>
 
             {/* Additional Information */}
             <div className="border-t border-[#D4AF37]/20 pt-6 mt-6">
-              <h3 className="text-sm font-medium mb-4 text-[#D4AF37]">Details</h3>
+              <h3 className="text-sm font-medium mb-4 text-[#D4AF37]">Détails</h3>
               <ul className="list-disc list-inside space-y-2 text-sm text-gray-600">
-                <li>Category: {product.category}</li>
+                <li>Catégorie: {product.category}</li>
                 {product.collaborateur && (
-                  <li>Modeled by: {product.collaborateur}</li>
+                  <li>Modèle: {product.collaborateur}</li>
                 )}
               </ul>
             </div>
@@ -336,11 +395,22 @@ export default function ProductPage({ params }: { params: { productId: string } 
         </div>
       </div>
 
+      {/* Suggested Products */}
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">Produits suggérés</h2>
+        <ProductGrid filters={{ category: product.category, collaborator: "all", sort: "featured", product: "" }} />
+      </div>
+
       {/* Success Dialog */}
       <SuccessDialog
         isOpen={isSuccessDialogOpen}
         onClose={() => setIsSuccessDialogOpen(false)}
-        message="Your order has been placed successfully!"
+        message="Votre commande a été placée avec succès!"
+        onConfirm={handleConfirmOrder}
+        product={product}
+        selectedColorVariant={selectedColorVariant}
+        selectedSize={selectedSize}
+        userDetails={userDetails}
       />
     </div>
   );

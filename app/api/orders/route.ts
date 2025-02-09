@@ -1,9 +1,12 @@
-// app/api/admin/orders/route.ts
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers'; // Import cookies
+import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
   try {
+    const cookieStore = cookies();
+    const userId = cookieStore.get('userId'); // Get the user ID from cookies
+
     const body = await req.json();
     const { customerName, phoneNumber, address, totalAmount, items } = body;
 
@@ -64,14 +67,6 @@ export async function POST(req: Request) {
         );
       }
 
-      // Deduct the ordered quantity from the stock
-      await prisma.stock.update({
-        where: { id: stock.id },
-        data: {
-          quantity: stock.quantity - item.quantity,
-        },
-      });
-
       // Assign the found colorVariantId
       item.colorVariantId = product.colorVariants[0].id;
     }
@@ -84,6 +79,7 @@ export async function POST(req: Request) {
         address,
         totalAmount,
         status: 'PENDING',
+        userId: userId ? parseInt(userId.value) : undefined, // Link order to user ID if logged in
         items: {
           create: items.map((item) => ({
             quantity: item.quantity,
