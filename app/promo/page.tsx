@@ -45,18 +45,19 @@ const PromoPage = () => {
   }, []);
 
   return (
-    <div className=" min-h-screen">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative h-[65vh] w-full overflow-hidden">
+      <div className="relative h-[25vh] md:h-[65vh] w-full overflow-hidden flex items-center">
         <div className="absolute inset-0">
           <Image
-            src="/img_koftan.png"
+            src="/sliders/slider-page-promo.png"
             alt="Promo Collection"
             fill
-            className="object-cover"
+            className="object-contain"
             priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1250px) 50vw, 33vw"
           />
-          <div className="absolute inset-0 " />
+          <div className="absolute inset-0" />
         </div>
 
         <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white">
@@ -64,7 +65,7 @@ const PromoPage = () => {
       </div>
 
       {/* Promo Products Grid */}
-      <div id="promo-products" className="container mx-auto px-4 py-12">
+      <div id="promo-products" className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center text-[#D4AF37] mb-8">
           Nos Produits en Promotion
         </h2>

@@ -5,15 +5,27 @@ import { useState, useEffect } from 'react';
 
 export default function HeroSection() {
   const [currentImage, setCurrentImage] = useState(0);
-  
+
   const images = [
     {
-      src: '/11051605401.jpg',
+      desktop: '/sliders/slider-1.png',
+      mobile: '/sliders/slider-1-v2.png',
       alt: 'Dar Koftan - Image 1'
     },
     {
-      src: '/Sans titre.png',
+      desktop: '/sliders/slider-2.png',
+      mobile: '/sliders/slider-2-v2.png',
       alt: 'Dar Koftan - Image 2'
+    },
+    {
+      desktop: '/sliders/slider-3.png',
+      mobile: '/sliders/slider-3-v2.png',
+      alt: 'Dar Koftan - Image 3'
+    },
+    {
+      desktop: '/sliders/slider-4.png',
+      mobile: '/sliders/slider-4-v2.png',
+      alt: 'Dar Koftan - Image 4'
     }
   ];
 
@@ -27,51 +39,63 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative h-[50vh] md:h-[60vh] w-full overflow-hidden">
-      {/* Background Images */}
-      {images.map((image, index) => (
-        <div
-          key={index}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            currentImage === index ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <Image
-            src={image.src}
-            alt={image.alt}
-            fill
-            className="object-cover"
-            priority={index === 0}
-            sizes="100vw"
-          />
-          {/* Overlay for better text readability */}
-          <div className="absolute inset-0 bg-black/20" />
-        </div>
-      ))}
-
-      {/* Image Navigation Dots */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
-        {images.map((_, index) => (
-          <button
-            key={index}
-            className={`w-2 h-2 rounded-full transition-all ${
-              currentImage === index ? 'bg-white w-4' : 'bg-white/50'
-            }`}
-            onClick={() => setCurrentImage(index)}
-            aria-label={`Go to slide ${index + 1}`}
-          />
+    <section className="relative h-[25vh] md:h-[65vh] w-full overflow-hidden bg-gray-50 flex flex-col">
+      <div className="relative flex-1">
+        {/* Background Images */}
+        {images.map((image, index) => (
+          <Link href="/collections" key={index}>
+            <div
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentImage === index ? 'opacity-100' : 'opacity-0'
+                }`}
+            >
+              {/* Mobile Image */}
+              <Image
+                src={image.mobile}
+                alt={image.alt}
+                fill
+                className="object-contain md:hidden"
+                priority={index === 0}
+                sizes="100vw"
+              />
+              {/* Desktop Image */}
+              <Image
+                src={image.desktop}
+                alt={image.alt}
+                fill
+                className="hidden md:block object-contain"
+                priority={index === 0}
+                sizes="(max-width: 1200px) 50vw, 33vw"
+              />
+              {/* Overlay for better text readability */}
+              <div className="absolute inset-0 " />
+            </div>
+          </Link>
         ))}
-      </div>
-      
-      {/* Hero Content */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-end py-10 text-center text-white px-4">
-     
-        <Link 
-          href="/collections"
-          className="rounded-full bg-white px-6 md:px-8 py-3 md:py-3 text-base md:text-lg font-semibold text-black transition-all hover:bg-gray-100 hover:scale-105 active:scale-95"
-        >
-          Voir la Collection
-        </Link>
+
+        {/* Image Navigation Dots */}
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2 hidden md:flex">
+          {images.map((_, index) => (
+            <button
+              key={index}
+              className={`w-2 h-2 rounded-full transition-all ${currentImage === index ? 'bg-gray-900 w-4' : 'bg-gray-900/50 w-2'
+                }`}
+              onClick={() => setCurrentImage(index)}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+
+        {/* Hero Content - Only visible on desktop */}
+        <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white px-4">
+          <div className="mt-auto pb-10"> {/* Pushes the button to the bottom */}
+            <Link
+              href="/collections"
+              className="hidden md:block rounded-full bg-white px-5 md:px-8 py-2 md:py-3 text-sm md:text-lg font-semibold text-black transition-all hover:bg-gray-100 hover:scale-105 active:scale-95"
+            >
+              Voir la Collection
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );

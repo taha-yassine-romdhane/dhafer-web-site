@@ -20,7 +20,7 @@ const TopVentePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const {  inView } = useInView({
+  const { inView } = useInView({
     threshold: 0.1,
     triggerOnce: true,
   });
@@ -74,34 +74,32 @@ const TopVentePage = () => {
     console.log('Fetched Products:', products);
   }, [loading, error, products]);
 
-
   return (
-    <div className=" min-h-screen">
+    <div className="min-h-screen">
       {/* Hero Section with Parallax Effect */}
       <motion.div 
-        className="relative h-[70vh] w-full overflow-hidden"
+        className="relative h-[25vh] md:h-[65vh] w-full overflow-hidden flex items-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
         <div className="absolute inset-0">
           <Image
-            src="/img_robe.png"
+            src="/sliders/slider-page-top-vente.png"
             alt="Top Vente Collection"
             fill
-            className="object-cover transform scale-105 transition-transform duration-[2s]"
+            className="object-contain"
             priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-          <div className="absolute inset-0 " />
+          <div className="absolute inset-0" />
         </div>
-
-        
       </motion.div>
 
       {/* Products Grid Section */}
-      <div id="top-vente-products" className="container mx-auto px-4 py-16">
+      <div id="top-vente-products" className="container mx-auto px-4 py-8">
         <motion.h2 
-          className="text-3xl md:text-4xl font-bold text-center text-[#D4AF37] mb-12"
+          className="text-3xl md:text-4xl font-bold text-center text-[#D4AF37] mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
@@ -123,8 +121,6 @@ const TopVentePage = () => {
           </div>
         )}
       </div>
-
-     
     </div>
   );
 };

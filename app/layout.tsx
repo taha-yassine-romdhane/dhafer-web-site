@@ -21,7 +21,7 @@ export default function RootLayout({
         <CartProvider>
           <Navbar />
           <CartDropdown />
-          <main className="pt-16 min-h-screen">
+          <main className="min-h-screen">
             {children}
             <Analytics />
           </main>
