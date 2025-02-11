@@ -89,7 +89,7 @@ export default function CollectionsPage() {
 
   const handleClearFilters = () => {
     setFilters({
-      category: "Tous",
+      category: "all",
       collaborator: "all",
       sort: "featured",
       product: ""
@@ -116,20 +116,20 @@ export default function CollectionsPage() {
         </div>
 
         {/* Filters */}
-        <div className="mb-8 space-y-4">
+        <div className="mb-8">
           {/* Category Groups and Categories */}
-          <div className="flex flex-col gap-4 pb-4 border-b">
-            {/* Category Groups */}
-            <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col gap-4">
+            {/* Main Category Groups */}
+            <div className="flex flex-wrap items-center gap-3">
               <button
                 onClick={() => {
                   handleFilterChange("category", "all");
                   setActiveGroup(null);
                 }}
-                className={`px-4 py-2 text-sm rounded-full transition-colors whitespace-nowrap ${
+                className={`px-4 py-2 rounded-full transition-all duration-200 ${
                   filters.category === "all"
-                    ? "bg-[#D4AF37] text-white"
-                    : "text-gray-700 hover:text-[#D4AF37]"
+                    ? "bg-[#D4AF37] text-white shadow-md"
+                    : "bg-gray-50 text-gray-700 hover:bg-[#D4AF37]/10"
                 }`}
               >
                 Voir Tous
@@ -138,10 +138,10 @@ export default function CollectionsPage() {
                 <button
                   key={group.label}
                   onClick={() => setActiveGroup(activeGroup === group.label ? null : group.label)}
-                  className={`px-4 py-2 text-sm rounded-full transition-colors whitespace-nowrap ${
+                  className={`px-4 py-2 rounded-full transition-all duration-200 ${
                     activeGroup === group.label
-                      ? "bg-[#D4AF37] text-white"
-                      : "text-gray-700 hover:text-[#D4AF37]"
+                      ? "bg-[#D4AF37] text-white shadow-md"
+                      : "bg-gray-50 text-gray-700 hover:bg-[#D4AF37]/10"
                   }`}
                 >
                   {group.label}
@@ -149,19 +149,19 @@ export default function CollectionsPage() {
               ))}
             </div>
 
-            {/* Subcategories */}
+            {/* Subcategories with animation */}
             {activeGroup && (
-              <div className="flex flex-wrap gap-2 pl-4">
+              <div className="flex flex-wrap gap-2 pl-2 animate-fadeIn">
                 {CATEGORIES.filter(cat => 
                   CATEGORY_GROUPS.find(g => g.label === activeGroup)?.categories.includes(cat.value)
                 ).map((category) => (
                   <button
                     key={category.value}
                     onClick={() => handleFilterChange("category", category.value)}
-                    className={`px-3 py-1.5 text-sm rounded-full transition-colors whitespace-nowrap ${
+                    className={`px-4 py-1.5 rounded-full transition-all duration-200 ${
                       filters.category === category.value
-                        ? "bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]"
-                        : "bg-gray-50 text-gray-700 hover:bg-[#D4AF37]/10 border border-transparent"
+                        ? "bg-[#D4AF37]/20 text-[#D4AF37] border-2 border-[#D4AF37] font-medium shadow-sm"
+                        : "bg-white text-gray-600 border border-gray-200 hover:border-[#D4AF37] hover:text-[#D4AF37]"
                     }`}
                   >
                     {category.label}
@@ -171,33 +171,43 @@ export default function CollectionsPage() {
             )}
 
             {/* Sort and Clear Filters */}
-            <div className="flex items-center gap-4 mt-4">
-              <Select
-                value={filters.sort}
-                onValueChange={(value) => handleFilterChange("sort", value)}
-              >
-                <SelectTrigger className="w-[180px] border-[#D4AF37]/20">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SORT_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {(filters.category !== "Tous") && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleClearFilters}
-                  className="text-[#D4AF37] border-[#D4AF37]/20 hover:bg-[#D4AF37]/10"
+            <div className="flex items-center justify-between mt-4 border-t pt-4">
+              <div className="flex items-center gap-4">
+                <Select
+                  value={filters.sort}
+                  onValueChange={(value) => handleFilterChange("sort", value)}
                 >
-                  Clear Filters
-                </Button>
-              )}
+                  <SelectTrigger className="w-[200px] bg-white border border-gray-200 hover:border-[#D4AF37] transition-colors">
+                    <SelectValue placeholder="Trier par" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SORT_OPTIONS.map((option) => (
+                      <SelectItem 
+                        key={option.value} 
+                        value={option.value}
+                        className="hover:bg-[#D4AF37]/10 cursor-pointer"
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {(filters.category !== "all") && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearFilters}
+                    className="border border-gray-200 hover:border-[#D4AF37] hover:bg-[#D4AF37]/10 text-gray-600 hover:text-[#D4AF37] transition-colors"
+                  >
+                    Effacer les filtres
+                  </Button>
+                )}
+              </div>
+              
+              <div className="text-sm text-gray-500">
+                {/* You can add product count here if available */}
+              </div>
             </div>
           </div>
         </div>

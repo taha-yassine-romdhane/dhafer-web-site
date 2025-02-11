@@ -334,7 +334,7 @@ const Navbar = () => {
                             {category.subcategories.map((subcategory) => (
                               <li key={subcategory.name}>
                                 <Link
-                                  href={`/collection/${subcategory.query}`}
+                                  href={`/collections?category=${subcategory.query}`}
                                   onClick={() => setIsOpen(false)}
                                   className="block py-1.5 text-gray-600 hover:text-[#D4AF37] transition-colors"
                                 >
@@ -349,24 +349,6 @@ const Navbar = () => {
                   </li>
                 ))}
               </ul>
-
-              <div className="mt-6 space-y-3 border-t border-gray-100 pt-6">
-                <Link href="/login" className="w-full">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-center text-gray-700 hover:text-[#D4AF37] transition-colors"
-                  >
-                    Connexion
-                  </Button>
-                </Link>
-                <Link href="/signup" className="w-full">
-                  <Button
-                    className="w-full justify-center bg-[#D4AF37] text-white hover:bg-[#B59851] transition-colors"
-                  >
-                    Inscription
-                  </Button>
-                </Link>
-              </div>
             </div>
           </div>
         )}

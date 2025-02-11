@@ -90,7 +90,7 @@ const SearchBar = () => {
             setSearchQuery(e.target.value);
             setShowSuggestions(true);
           }}
-          placeholder="Search products..."
+          placeholder="Recherchez des produits..."
           className="w-full px-4 py-2 rounded-full border border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 bg-white placeholder-gray-400"
         />
         <button
@@ -102,19 +102,19 @@ const SearchBar = () => {
       </form>
 
       {showSuggestions && searchQuery.length >= 2 && (
-        <div className="absolute z-50 w-[150%] -left-1/4 mt-2 bg-white rounded-xl shadow-2xl border border-[#D4AF37]/20 max-h-[600px] overflow-y-auto">
+        <div className="absolute z-50 w-full md:w-[150%] left-0 md:-left-1/4 mt-2 bg-white rounded-xl shadow-2xl border border-[#D4AF37]/20 max-h-[80vh] md:max-h-[600px] overflow-y-auto">
           {isLoading ? (
-            <div className="p-6 text-center text-gray-500">Loading...</div>
+            <div className="p-4 md:p-6 text-center text-gray-500">Chargement...</div>
           ) : suggestions && suggestions.length > 0 ? (
             <ul className="divide-y divide-[#D4AF37]/10">
               {suggestions.map((product) => (
                 <li
                   key={product.id}
                   onClick={() => handleSuggestionClick(product.id.toString())}
-                  className="flex items-center gap-6 p-6 hover:bg-[#D4AF37]/5 cursor-pointer transition-colors duration-200"
+                  className="flex items-center gap-3 md:gap-6 p-4 md:p-6 hover:bg-[#D4AF37]/5 cursor-pointer transition-colors duration-200"
                 >
                   {product.colorVariants[0]?.images[0] && (
-                    <div className="relative w-24 h-24 flex-shrink-0">
+                    <div className="relative w-16 h-16 md:w-24 md:h-24 flex-shrink-0">
                       <Image
                         src={product.colorVariants[0].images[0].url}
                         alt={product.name}
@@ -124,16 +124,16 @@ const SearchBar = () => {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-medium text-gray-900 mb-1 truncate">
+                    <h3 className="text-base md:text-lg font-medium text-gray-900 mb-1 truncate">
                       {product.name}
                     </h3>
-                    <p className="text-sm text-gray-500 mb-2 line-clamp-2">
+                    <p className="text-xs md:text-sm text-gray-500 mb-2 line-clamp-2">
                       {product.description}
                     </p>
-                    <p className="text-lg font-semibold text-[#D4AF37]">
+                    <p className="text-base md:text-lg font-semibold text-[#D4AF37]">
                       TND {product.price.toFixed(2)}
                     </p>
-                    <p className="text-sm text-gray-400 mt-1">
+                    <p className="text-xs md:text-sm text-gray-400 mt-1">
                       {product.category}
                     </p>
                   </div>
@@ -141,7 +141,7 @@ const SearchBar = () => {
               ))}
             </ul>
           ) : (
-            <div className="p-6 text-center text-gray-500">No results found</div>
+            <div className="p-4 md:p-6 text-center text-gray-500">Aucun résultat trouvé</div>
           )}
         </div>
       )}

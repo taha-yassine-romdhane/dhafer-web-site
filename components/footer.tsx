@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
+import { BsFacebook, BsInstagram, BsYoutube, BsTiktok } from "react-icons/bs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
 
 export function Footer() {
   return (
@@ -17,12 +16,38 @@ export function Footer() {
               Dar Koftan est votre destination de choix pour des caftans traditionnels de haute qualité.
             </p>
             {/* Social Links */}
-            <div className="flex space-x-4">
-              <Link href="https://www.facebook.com/profile.php?id=100083564652543" className="text-gray-400 hover:text-[#D4AF37] transition-colors">
-                <Facebook className="h-5 w-5" />
+            <div className="flex justify-center space-x-6">
+              <Link 
+                href="https://www.facebook.com/profile.php?id=100064931580253" 
+                className="text-gray-400 hover:text-[#D4AF37] transition-colors transform hover:scale-110"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <BsFacebook className="h-6 w-6" />
               </Link>
-              <Link href="https://www.instagram.com/lamasett_chezsameh/" className="text-gray-400 hover:text-[#D4AF37] transition-colors">
-                <Instagram className="h-5 w-5" />
+              <Link 
+                href="https://www.instagram.com/dar_koftan_alasil/" 
+                className="text-gray-400 hover:text-[#D4AF37] transition-colors transform hover:scale-110"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <BsInstagram className="h-6 w-6" />
+              </Link>
+              <Link 
+                href="https://www.youtube.com/@darkoftan" 
+                className="text-gray-400 hover:text-[#D4AF37] transition-colors transform hover:scale-110"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <BsYoutube className="h-6 w-6" />
+              </Link>
+              <Link 
+                href="https://www.tiktok.com/@darkoftan" 
+                className="text-gray-400 hover:text-[#D4AF37] transition-colors transform hover:scale-110"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <BsTiktok className="h-6 w-6" />
               </Link>
             </div>
           </div>
