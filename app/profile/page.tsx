@@ -37,11 +37,11 @@ export default function ProfilePage() {
       if (!response.ok) throw new Error('Failed to fetch profile');
       
       const data = await response.json();
-      setProfile(data.user);
+      setProfile(data);
       setFormData(prev => ({
         ...prev,
-        username: data.user.username,
-        email: data.user.email,
+        username: data.username,
+        email: data.email,
       }));
     } catch (err) {
       setError('Error loading profile');

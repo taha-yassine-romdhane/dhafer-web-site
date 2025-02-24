@@ -5,7 +5,7 @@ import TopVentSection from './components/TopVentSection'
 
 export default async function Home() {
   return (
-    <main className="flex-1">
+    <main className="gray-50 flex-1">
       <HeroSection />
       <TopProduitsSection />
       <TopVentSection />

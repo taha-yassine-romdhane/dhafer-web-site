@@ -90,7 +90,7 @@ const SearchBar = () => {
             setSearchQuery(e.target.value);
             setShowSuggestions(true);
           }}
-          placeholder="Recherchez des produits..."
+          placeholder="Recherchez ici ..."
           className="w-full px-4 py-2 rounded-full border border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 bg-white placeholder-gray-400"
         />
         <button

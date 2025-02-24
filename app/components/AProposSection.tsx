@@ -20,7 +20,7 @@ export default function AProposSection() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000); // Change slide every 3 seconds
+    }, 5000); // Change slide every 3 seconds
 
     return () => clearInterval(interval); // Cleanup interval on unmount
   }, [images.length]);
@@ -31,7 +31,7 @@ export default function AProposSection() {
   }, []);
 
   return (
-    <section className="bg-gray-50 py-16">
+    <section className="gray-50 py-16">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
           <div className="relative">

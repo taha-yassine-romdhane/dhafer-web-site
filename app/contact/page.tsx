@@ -1,32 +1,113 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Mail, Phone, Send } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
+
+// Contact form validation schema
+const contactSchema = z.object({
+  name: z.string().min(1, "Le nom est requis").optional(),
+  email: z.string().email("Email invalide").optional(),
+  phone: z.string().optional(),
+  message: z.string().min(10, "Le message doit contenir au moins 10 caractères"),
+});
 
 export default function ContactPage() {
+  const [user, setUser] = useState<{ id: number; username: string; email: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch user data on component mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/users/me', {
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+          setFormData(prev => ({
+            ...prev,
+            name: userData.username || "",
+            email: userData.email || "",
+          }));
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) {
-      toast.error("Veuillez remplir tous les champs du formulaire.");
-      return;
+    setIsSubmitting(true);
+
+    try {
+      // Validate form data
+      const validatedData = contactSchema.parse(formData);
+
+      // If user is not logged in, require name and email
+      if (!user) {
+        if (!formData.name || !formData.email) {
+          toast.error("Le nom et l'email sont requis pour les utilisateurs non connectés");
+          return;
+        }
+      }
+
+      // Submit form data
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Important for sending cookies
+        body: JSON.stringify({
+          ...validatedData,
+          userId: user?.id, // Include userId if user is logged in
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Une erreur s'est produite");
+      }
+
+      toast.success("Votre message a été envoyé avec succès!");
+      setFormData({ ...formData, message: "", phone: "" });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Une erreur s'est produite");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
-    toast.success("Votre message a été envoyé avec succès!");
-    setFormData({ name: "", email: "", message: "" });
   };
 
   return (
-    <div className="min-h-screen ">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8 text-[#D4AF37] text-center">
           Contactez-Nous
         </h1>
@@ -38,39 +119,60 @@ export default function ContactPage() {
               Envoyez-Nous un Message
             </h2>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {!user && (
+                <>
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                      Nom Complet *
+                    </label>
+                    <Input
+                      id="name"
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      placeholder="Entrez votre nom complet"
+                      className="mt-1 border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                      Adresse E-mail *
+                    </label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      placeholder="Entrez votre adresse e-mail"
+                      className="mt-1 border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37]"
+                      required
+                    />
+                  </div>
+                </>
+              )}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                  Nom Complet
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                  Téléphone (Optionnel)
                 </label>
                 <Input
-                  id="name"
-                  type="text"
-                  value={formData.name}
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
                   onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
+                    setFormData({ ...formData, phone: e.target.value })
                   }
-                  placeholder="Entrez votre nom complet"
-                  className="mt-1 border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37]"
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Adresse E-mail
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  placeholder="Entrez votre adresse e-mail"
+                  placeholder="Entrez votre numéro de téléphone"
                   className="mt-1 border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37]"
                 />
               </div>
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700">
-                  Message
+                  Message *
                 </label>
                 <Textarea
                   id="message"
@@ -78,17 +180,25 @@ export default function ContactPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, message: e.target.value })
                   }
-                  placeholder="Entrez votre message"
+                  placeholder="Entrez votre message (minimum 10 caractères)"
                   className="mt-1 border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37]"
                   rows={5}
+                  required
                 />
               </div>
               <Button
                 type="submit"
                 className="w-full bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white"
+                disabled={isSubmitting}
               >
-                <Send className="mr-2 h-4 w-4" />
-                Envoyer
+                {isSubmitting ? (
+                  "Envoi en cours..."
+                ) : (
+                  <>
+                    <Send className="mr-2 h-4 w-4" />
+                    Envoyer
+                  </>
+                )}
               </Button>
             </form>
           </div>
@@ -99,32 +209,27 @@ export default function ContactPage() {
               Informations de Contact
             </h2>
             <div className="space-y-6">
-              {/* Address */}
-              <div className="flex items-start gap-4">
+              <div className="flex items-start">
                 <MapPin className="h-6 w-6 text-[#D4AF37] mt-1" />
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">Adresse</h3>
-                  <p className="text-gray-600">
-                    123 Rue de la Mode, Tunis, Tunisie
+                <div className="ml-4">
+                  <h3 className="font-medium">Adresse</h3>
+                  <p className="text-gray-600 mt-1">
+                    123 Rue Example, Ville, Pays
                   </p>
                 </div>
               </div>
-
-              {/* Email */}
-              <div className="flex items-start gap-4">
+              <div className="flex items-start">
                 <Mail className="h-6 w-6 text-[#D4AF37] mt-1" />
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">E-mail</h3>
-                  <p className="text-gray-600">support@darkoftan.com</p>
+                <div className="ml-4">
+                  <h3 className="font-medium">Email</h3>
+                  <p className="text-gray-600 mt-1">contact@dar-koftan.com</p>
                 </div>
               </div>
-
-              {/* Phone */}
-              <div className="flex items-start gap-4">
+              <div className="flex items-start">
                 <Phone className="h-6 w-6 text-[#D4AF37] mt-1" />
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">Téléphone</h3>
-                  <p className="text-gray-600">+216 12 345 678</p>
+                <div className="ml-4">
+                  <h3 className="font-medium">Téléphone</h3>
+                  <p className="text-gray-600 mt-1">+1 234 567 890</p>
                 </div>
               </div>
             </div>

@@ -1,22 +1,21 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import { getUser } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
   try {
-    const cookieStore = cookies();
-    const userId = cookieStore.get('userId');
+    const user = await getUser();
 
-    if (!userId) {
+    if (!user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
+    const userProfile = await prisma.user.findUnique({
       where: {
-        id: parseInt(userId.value)
+        id: user.userId
       },
       select: {
         id: true,
@@ -28,15 +27,15 @@ export async function GET(request: Request) {
       }
     });
 
-    if (!user) {
+    if (!userProfile) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, user });
+    return NextResponse.json(userProfile);
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error('Error fetching user profile:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch user' },
+      { error: 'Error fetching user profile' },
       { status: 500 }
     );
   }
@@ -44,22 +43,21 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const cookieStore = cookies();
-    const userId = cookieStore.get('userId');
+    const user = await getUser();
 
-    if (!userId) {
+    if (!user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
     const { username, email, currentPassword, newPassword } = await request.json();
 
-    const user = await prisma.user.findUnique({
+    const userProfile = await prisma.user.findUnique({
       where: {
-        id: parseInt(userId.value),
+        id: user.userId,
       },
     });
 
-    if (!user) {
+    if (!userProfile) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
@@ -74,7 +72,7 @@ export async function PUT(request: Request) {
     }
 
     if (currentPassword && newPassword) {
-      const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+      const passwordMatch = await bcrypt.compare(currentPassword, userProfile.password);
       if (!passwordMatch) {
         return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 });
       }
@@ -83,7 +81,7 @@ export async function PUT(request: Request) {
     }
 
     await prisma.user.update({
-      where: { id: parseInt(userId.value) },
+      where: { id: user.userId },
       data: updates,
     });
 

@@ -65,7 +65,7 @@ const PromoPage = () => {
       </div>
 
       {/* Promo Products Grid */}
-      <div id="promo-products" className="container mx-auto px-4">
+      <div id="promo-products" className="container mx-auto px-4 py-8">
         <h2 className="text-3xl font-bold text-center text-[#D4AF37] mb-8">
           Nos Produits en Promotion
         </h2>
@@ -100,24 +100,6 @@ const PromoPage = () => {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Call-to-Action Section */}
-      <div className="bg-[#D4AF37] py-12 text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">
-          Ne Manquez Pas Nos Offres Exclusives
-        </h2>
-        <p className="text-xl text-white mb-8">
-          Inscrivez-vous pour recevoir les dernières promotions et nouveautés
-        </p>
-        <Button
-          asChild
-          className="rounded-full bg-white px-8 py-3 text-lg font-semibold text-[#D4AF37] hover:bg-gray-100 transition-colors"
-        >
-          <Link href="/subscribe">
-            S'inscrire Maintenant
-          </Link>
-        </Button>
       </div>
     </div>
   );

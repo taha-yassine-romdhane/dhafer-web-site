@@ -70,6 +70,7 @@ model User {
   isSubscribed    Boolean   @default(false)
   fidelityPoints  Int       @default(0)
   orders          Order[]
+  contacts        Contact[]
 }
 
 model Order {
@@ -119,6 +120,20 @@ model Stock {
   updatedAt DateTime     @updatedAt
 
   @@unique([productId, location, size, colorId])
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String?  // Optional for logged-in users
+  email     String?  // Optional for logged-in users
+  phone     String?  // Optional for logged-in users
+  message   String   @db.Text
+  userId    Int?     // Reference to User if logged in
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 enum OrderStatus {

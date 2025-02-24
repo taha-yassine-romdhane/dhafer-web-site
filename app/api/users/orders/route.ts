@@ -1,19 +1,18 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { cookies } from 'next/headers';
+import { getUser } from '@/lib/auth';
 
 export async function GET(request: Request) {
   try {
-    const cookieStore = cookies();
-    const userId = cookieStore.get('userId');
+    const user = await getUser();
 
-    if (!userId) {
+    if (!user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
     const orders = await prisma.order.findMany({
       where: {
-        userId: parseInt(userId.value)
+        userId: user.userId
       },
       include: {
         items: {
