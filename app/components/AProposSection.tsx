@@ -1,8 +1,6 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
 
 export default function AProposSection() {
   const images = [
@@ -17,58 +15,37 @@ export default function AProposSection() {
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
 
-  const [emblaRef, emblaApi] = useEmblaCarousel(
-    { 
-      loop: true,
-      skipSnaps: false,
-      startIndex: 0,
-      dragFree: false,
-      containScroll: 'trimSnaps',
-    },
-    [Autoplay({ delay: 4000, stopOnInteraction: false, stopOnMouseEnter: true })]
-  );
-
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setCurrentIndex(emblaApi.selectedScrollSnap());
-  }, [emblaApi]);
-
-  const scrollTo = useCallback(
-    (index: number) => emblaApi && emblaApi.scrollTo(index),
-    [emblaApi]
-  );
-
+  // Auto-play functionality
   useEffect(() => {
-    if (!emblaApi) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 3000); // Change slide every 3 seconds
 
-    setScrollSnaps(emblaApi.scrollSnapList());
-    emblaApi.on('select', onSelect);
-    emblaApi.on('reInit', onSelect);
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, [images.length]);
 
-    return () => {
-      emblaApi.off('select', onSelect);
-      emblaApi.off('reInit', onSelect);
-    };
-  }, [emblaApi, onSelect]);
+  // Handle manual navigation
+  const goToSlide = useCallback((index: number) => {
+    setCurrentIndex(index);
+  }, []);
 
   return (
     <section className="bg-gray-50 py-16">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
           <div className="relative">
-            {/* Main Carousel */}
-            <div 
-              className="overflow-hidden rounded-lg bg-black/5 backdrop-blur-sm" 
-              ref={emblaRef}
-            >
-              <div className="flex touch-pan-y">
+            {/* Custom Carousel */}
+            <div className="overflow-hidden rounded-lg bg-black/5 backdrop-blur-sm">
+              <div
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+              >
                 {images.map((src, index) => (
                   <div
-                    className={`relative min-w-0 flex-[0_0_100%] transition-opacity duration-300
-                              ${currentIndex === index ? 'opacity-100' : 'opacity-60'}`}
                     key={index}
+                    className="relative min-w-full flex-shrink-0 transition-opacity duration-200"
+                    style={{ opacity: currentIndex === index ? 1 : 0.6 }}
                   >
                     <div className="aspect-[3/4] overflow-hidden rounded-lg">
                       <div className="relative h-full w-full">
@@ -78,7 +55,8 @@ export default function AProposSection() {
                           fill
                           className="object-cover object-center transition-transform duration-500 hover:scale-105"
                           sizes="(max-width: 768px) 100vw, 50vw"
-                          priority={index === 0}
+                          priority={index === 0} // Only prioritize the first image
+                          loading={index === 0 ? 'eager' : 'lazy'} // Lazy load non-visible images
                         />
                       </div>
                     </div>
@@ -89,20 +67,20 @@ export default function AProposSection() {
 
             {/* Navigation Dots */}
             <div className="mt-4 flex justify-center gap-2">
-              {scrollSnaps.map((_, index) => (
+              {images.map((_, index) => (
                 <button
                   key={index}
                   className={`h-2 rounded-full transition-all duration-300 
                             ${currentIndex === index 
                               ? 'bg-black w-6' 
                               : 'bg-black/20 w-2 hover:bg-black/40'}`}
-                  onClick={() => scrollTo(index)}
+                  onClick={() => goToSlide(index)}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
             </div>
           </div>
-          
+
           <div className="flex flex-col justify-center">
             <h2 className="mb-6 text-3xl font-bold">À Propos de Dar Koftan</h2>
             <p className="mb-6 text-lg text-gray-600">

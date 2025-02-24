@@ -33,7 +33,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
     if (savedCart) {
-      setItems(JSON.parse(savedCart));
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        if (Array.isArray(parsedCart)) {
+          setItems(parsedCart);
+        } else {
+          setItems([]);
+          localStorage.removeItem("cart");
+        }
+      } catch (error) {
+        setItems([]);
+        localStorage.removeItem("cart");
+      }
     }
     setIsInitialized(true);
   }, []);
@@ -95,8 +106,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("cart");
   };
 
-  const totalPrice = items.reduce((total, item) => total + item.price * item.quantity, 0);
-  const totalItems = items.reduce((total, item) => total + item.quantity, 0);
+  const totalPrice = Array.isArray(items) ? items.reduce((total, item) => total + item.price * item.quantity, 0) : 0;
+  const totalItems = Array.isArray(items) ? items.reduce((total, item) => total + item.quantity, 0) : 0;
 
   return (
     <CartContext.Provider
