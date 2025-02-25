@@ -4,7 +4,12 @@ import { cookies } from 'next/headers'
 const secretKey = process.env.JWT_SECRET || 'your-secret-key'
 const key = new TextEncoder().encode(secretKey)
 
-export async function createToken(payload: any) {
+export type UserPayload = {
+  userId: number;
+  email: string;
+}
+
+export async function createToken(payload: UserPayload) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -12,16 +17,16 @@ export async function createToken(payload: any) {
     .sign(key)
 }
 
-export async function verifyJwtToken(token: string) {
+export async function verifyJwtToken(token: string): Promise<UserPayload | null> {
   try {
     const { payload } = await jwtVerify(token, key)
-    return payload
+    return payload as UserPayload
   } catch (error) {
     return null
   }
 }
 
-export async function getUser() {
+export async function getUser(): Promise<UserPayload | null> {
   const cookieStore = cookies()
   const token = cookieStore.get('token')
 
