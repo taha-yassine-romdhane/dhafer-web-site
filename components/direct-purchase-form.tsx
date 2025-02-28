@@ -16,6 +16,7 @@ import * as z from "zod"
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from "@/components/ui/dialog"
 import { ShoppingBag, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
 
 // Add user type based on your schema
 interface User {
@@ -84,7 +85,7 @@ interface DirectPurchaseFormProps {
 }
 
 export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = false, productInfo }: DirectPurchaseFormProps) {
-  const [user, setUser] = useState<User | null>(null)
+  const { user, isLoggedIn } = useAuth()
   const router = useRouter()
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -99,26 +100,12 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
     },
   })
 
-  // Fetch user data if logged in
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch('/api/users/me')
-        if (response.ok) {
-          const userData = await response.json()
-          setUser(userData)
-          
-          // Pre-fill form with user data
-          form.setValue("fullName", userData.username)
-          form.setValue("email", userData.email)
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error)
-      }
+    if (isLoggedIn && user) {
+      form.setValue("fullName", user.username)
+      form.setValue("email", user.email)
     }
-
-    fetchUser()
-  }, [form])
+  }, [isLoggedIn, user])
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false)

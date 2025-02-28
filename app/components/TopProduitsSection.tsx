@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Product, ColorVariant, ProductImage } from "@prisma/client"
+import ProductGrid from "./../../components/product-grid"
 import ProductCard from "./ProductCard"
 import { Loader2 } from "lucide-react"
 import Link from "next/link"
@@ -14,6 +15,22 @@ export default function TopProduitsSection() {
   })[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768) // 768px is the md breakpoint in Tailwind
+    }
+
+    // Initial check
+    checkMobile()
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkMobile)
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -77,11 +94,24 @@ export default function TopProduitsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {isMobile ? (
+          <div className="mb-12">
+            <ProductGrid 
+              filters={{
+                category: 'all',
+                collaborator: 'all',
+                sort: 'featured',
+                product: ''
+              }} 
+            />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
 
         <div className="text-center">
           <Link

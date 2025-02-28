@@ -157,6 +157,13 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                   />
                 )}
 
+                {/* Promo Badge */}
+                {product.salePrice && (
+                  <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-semibold z-10">
+                    Promo
+                  </div>
+                )}
+
                 {/* Quick Add Overlay */}
                 <div className={cn(
                   "absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 transition-opacity duration-300",

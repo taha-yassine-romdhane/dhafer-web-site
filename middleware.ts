@@ -5,14 +5,19 @@ import { verifyJwtToken } from '@/lib/auth'
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')
 
-  // List of protected routes
+  // List of protected routes that require authentication
   const protectedRoutes = ['/dashboard', '/profile', '/orders']
+
+  // List of auth routes (login/signup)
+  const authRoutes = ['/login', '/signup']
 
   // Check if the requested path is protected
   if (protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
     if (!token) {
       // Redirect to login if no token exists
-      return NextResponse.redirect(new URL('/login', request.url))
+      const response = NextResponse.redirect(new URL('/login', request.url))
+      response.cookies.delete('token') // Clear any invalid token
+      return response
     }
 
     try {
@@ -20,28 +25,38 @@ export async function middleware(request: NextRequest) {
       const payload = await verifyJwtToken(token.value)
       if (!payload) {
         // Redirect to login if token is invalid
-        return NextResponse.redirect(new URL('/login', request.url))
+        const response = NextResponse.redirect(new URL('/login', request.url))
+        response.cookies.delete('token')
+        return response
       }
+      return NextResponse.next()
     } catch (error) {
       // Redirect to login if token verification fails
-      return NextResponse.redirect(new URL('/login', request.url))
+      const response = NextResponse.redirect(new URL('/login', request.url))
+      response.cookies.delete('token')
+      return response
     }
   }
 
-  // List of auth routes (login/signup)
-  const authRoutes = ['/login', '/signup']
-
-  // Redirect to dashboard if user is already logged in and trying to access auth routes
-  if (authRoutes.includes(request.nextUrl.pathname) && token) {
-    try {
-      const payload = await verifyJwtToken(token.value)
-      if (payload) {
-        return NextResponse.redirect(new URL('/dashboard', request.url))
+  // Handle auth routes (login/signup)
+  if (authRoutes.includes(request.nextUrl.pathname)) {
+    if (token) {
+      try {
+        const payload = await verifyJwtToken(token.value)
+        if (payload) {
+          // If user is already logged in and tries to access auth routes,
+          // redirect them to home page
+          return NextResponse.redirect(new URL('/', request.url))
+        }
+      } catch (error) {
+        // If token is invalid, clear it and allow access to auth routes
+        const response = NextResponse.next()
+        response.cookies.delete('token')
+        return response
       }
-    } catch (error) {
-      // If token is invalid, allow access to auth routes
-      return NextResponse.next()
     }
+    // If no token, allow access to auth routes
+    return NextResponse.next()
   }
 
   return NextResponse.next()

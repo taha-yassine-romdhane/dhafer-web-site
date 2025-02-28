@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Product, ColorVariant, ProductImage } from "@prisma/client";
 import { Loader2 } from "lucide-react";
-import ProductCard from "@/app/components/ProductCard"; // Ensure you have this component
+import ProductCard from "@/app/components/ProductCard";
+import ProductGrid from "../../components/product-grid";
 
 type PromoProduct = Product & {
   colorVariants: (ColorVariant & {
@@ -18,6 +19,7 @@ const PromoPage = () => {
   const [products, setProducts] = useState<PromoProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const fetchPromoProducts = async () => {
@@ -41,8 +43,22 @@ const PromoPage = () => {
       }
     };
 
-    fetchPromoProducts();
-  }, []);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768) // 768px is the md breakpoint in Tailwind
+    }
+
+    // Initial check
+    checkMobile()
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkMobile)
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', checkMobile)
+      fetchPromoProducts();
+    }
+  }, [])
 
   return (
     <div className="min-h-screen">
@@ -91,14 +107,27 @@ const PromoPage = () => {
             <p className="text-gray-500 mt-2">Revenez bientôt pour découvrir nos nouvelles offres!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product) => (
-              <ProductCard 
-                key={product.id} 
-                product={product}
+          <>
+            {isMobile ? (
+              <ProductGrid 
+                filters={{
+                  category: 'all',
+                  collaborator: 'all',
+                  sort: 'promo',
+                  product: ''
+                }} 
               />
-            ))}
-          </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {products.map((product) => (
+                  <ProductCard 
+                    key={product.id} 
+                    product={product}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

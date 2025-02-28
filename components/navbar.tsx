@@ -19,6 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/auth-context";
 
 interface Subcategory {
   name: string;
@@ -69,14 +70,13 @@ const collectionCategories: Category[] = [
   },
 ];
 
-const Navbar = () => {
+export default function Navbar() {
+  const { isLoggedIn, user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState<string | null>(null);
-  const router = useRouter();
-  const { items } = useCart();
   const menuRef = useRef<HTMLDivElement>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<{ username: string } | null>(null);
+  const { items } = useCart();
+  const router = useRouter();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -86,32 +86,6 @@ const Navbar = () => {
   const toggleCategory = (category: string) => {
     setOpenCategory(openCategory === category ? null : category);
   };
-
-  useEffect(() => {
-    // Check authentication status
-    const checkAuth = async () => {
-      try {
-        const response = await fetch('/api/users/me', {
-          credentials: 'include'
-        });
-        
-        if (response.ok) {
-          const userData = await response.json();
-          setIsLoggedIn(true);
-          setUser(userData);
-        } else {
-          setIsLoggedIn(false);
-          setUser(null);
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        setIsLoggedIn(false);
-        setUser(null);
-      }
-    };
-
-    checkAuth();
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -126,21 +100,7 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      const response = await fetch('/api/users/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        // Force a hard refresh to clear all states
-        window.location.href = '/';
-      } else {
-        console.error('Logout failed');
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    await logout();
   };
 
   return (
@@ -355,6 +315,4 @@ const Navbar = () => {
       </Container>
     </div>
   );
-};
-
-export default Navbar;
+}

@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Mail, Phone, Send } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useAuth } from "@/contexts/auth-context";
 
 // Contact form validation schema
 const contactSchema = z.object({
@@ -16,49 +17,31 @@ const contactSchema = z.object({
   message: z.string().min(10, "Le message doit contenir au moins 10 caractères"),
 });
 
-export default function ContactPage() {
-  const [user, setUser] = useState<{ id: number; username: string; email: string } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
+const ContactPage = () => {
+  const { user, isLoggedIn, checkAuth } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     message: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Fetch user data on component mount
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch('/api/users/me', {
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-          setFormData(prev => ({
-            ...prev,
-            name: userData.username || "",
-            email: userData.email || "",
-          }));
-        }
-      } catch (error) {
-        console.error('Auth check error:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
+    if (isLoggedIn && user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: user.username || "",
+        email: user.email || "",
+      }));
+    }
+  }, [isLoggedIn, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setLoading(true);
 
     try {
       // Validate form data
@@ -101,7 +84,7 @@ export default function ContactPage() {
         toast.error("Une erreur s'est produite");
       }
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
@@ -189,9 +172,9 @@ export default function ContactPage() {
               <Button
                 type="submit"
                 className="w-full bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white"
-                disabled={isSubmitting}
+                disabled={loading}
               >
-                {isSubmitting ? (
+                {loading ? (
                   "Envoi en cours..."
                 ) : (
                   <>
@@ -238,4 +221,6 @@ export default function ContactPage() {
       </div>
     </div>
   );
-}
+};
+
+export default ContactPage;

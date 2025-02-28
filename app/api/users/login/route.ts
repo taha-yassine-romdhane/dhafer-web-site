@@ -1,7 +1,8 @@
 import { PrismaClient } from '@prisma/client'
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcrypt'
-import { createToken, setAuthCookie } from '@/lib/auth'
+import { createToken } from '@/lib/auth'
+import { cookies } from 'next/headers'
 
 const prisma = new PrismaClient()
 
@@ -40,24 +41,31 @@ export async function POST(request: Request) {
       email: user.email
     })
 
-    // Set token in cookie
-    setAuthCookie(token)
-
-    return NextResponse.json({
+    // Create the response
+    const response = NextResponse.json({
       message: 'Logged in successfully',
       user: {
         id: user.id,
         username: user.username,
         email: user.email,
-        isSubscribed: user.isSubscribed,
-        fidelityPoints: user.fidelityPoints
       }
     })
+
+    // Set the token cookie
+    cookies().set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24, // 24 hours
+      path: '/',
+    })
+
+    return response
 
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
-      { error: 'Error during login' },
+      { error: 'An error occurred during login' },
       { status: 500 }
     )
   }
