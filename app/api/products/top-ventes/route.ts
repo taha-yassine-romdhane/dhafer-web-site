@@ -10,17 +10,25 @@ export async function GET() {
       where: {
         showInTopSales: true,
       },
+      orderBy: [
+        {
+          priority: 'desc', // First order by priority
+        },
+        {
+          orderCount: 'desc', // Then by number of orders
+        }
+      ],
       include: {
         colorVariants: {
           include: {
             images: true,
+            stocks: true, // Include stocks for each color variant
           },
         },
       },
     });
 
-    console.log('Products fetched:', products); 
-    console.log('Fetched products:', JSON.stringify(products, null, 2));
+    console.log(`Found ${products.length} top sales products`);
 
     return NextResponse.json(products);
   } catch (error) {

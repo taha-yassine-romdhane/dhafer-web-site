@@ -2,22 +2,22 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Product, ProductImage } from "@/lib/types";
+import { Product, ColorVariant, ProductImage, Stock } from "@prisma/client";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Loader2 } from "lucide-react";
 import ProductCard from "../components/ProductCard";
-import ProductGrid from "../../components/product-grid";
+import MobileProductCard from "../components/MobileProductCard";
 
-export type ProductWithImages = Product & {
-  images: ProductImage[];
-  salePrice: number | null;
-  viewCount: number;
-  orderCount: number;
+type TopProduct = Product & {
+  colorVariants: (ColorVariant & {
+    images: ProductImage[];
+    stocks: Stock[];
+  })[];
 };
 
 const TopVentePage = () => {
-  const [products, setProducts] = useState<ProductWithImages[]>([]);
+  const [products, setProducts] = useState<TopProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -46,50 +46,25 @@ const TopVentePage = () => {
         }
 
         const data = await response.json();
-        console.log('Fetched products:', data);
-
-        // Transform the fetched products to match the ProductWithImages type
-        const transformedProducts = data.map((product: Product) => ({
-          ...product,
-          colorVariants: product.colorVariants || [], // Ensure colorVariants is defined
-          images: product.colorVariants.length > 0 ? product.colorVariants[0].images : [],
-          salePrice: product.salePrice || null,
-          viewCount: product.viewCount || 0, // Ensure viewCount is defined
-          orderCount: product.orderCount || 0, // Ensure orderCount is defined
-        }));
-
-        setProducts(transformedProducts);
-      } catch (err) {
-        console.error('Error fetching products:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching top products:', error);
+        setError(error instanceof Error ? error.message : 'Failed to load top products');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTopProducts();
-  }, []);
-
-  useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768) // 768px is the md breakpoint in Tailwind
+      setIsMobile(window.innerWidth < 768)
     }
 
-    // Initial check
-    checkMobile()
+    fetchTopProducts();
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
 
-    // Add event listener for window resize
-    window.addEventListener('resize', checkMobile)
-
-    // Cleanup
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-
-  useEffect(() => {
-    console.log('Loading:', loading);
-    console.log('Error:', error);
-    console.log('Fetched Products:', products);
-  }, [loading, error, products]);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -146,14 +121,11 @@ const TopVentePage = () => {
         ) : (
           <>
             {isMobile ? (
-              <ProductGrid 
-                filters={{
-                  category: 'all',
-                  collaborator: 'all',
-                  sort: 'top-ventes',
-                  product: ''
-                }} 
-              />
+              <div className="grid grid-cols-2 gap-3">
+                {products.map((product) => (
+                  <MobileProductCard key={product.id} product={product} />
+                ))}
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {products.map((product) => (

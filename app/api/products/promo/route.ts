@@ -8,7 +8,6 @@ export async function GET() {
     const promoProducts = await prisma.product.findMany({
       where: {
         showInPromo: true, // Only fetch products marked for promotions
-      
       },
       orderBy: [
         {
@@ -22,6 +21,7 @@ export async function GET() {
         colorVariants: {
           include: {
             images: true,
+            stocks: true, // Include stocks for each color variant
           },
         },
       },

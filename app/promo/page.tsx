@@ -4,14 +4,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { Product, ColorVariant, ProductImage } from "@prisma/client";
+import { Product, ColorVariant, ProductImage, Stock } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import ProductCard from "@/app/components/ProductCard";
+import MobileProductCard from "@/app/components/MobileProductCard";
 import ProductGrid from "../../components/product-grid";
 
 type PromoProduct = Product & {
   colorVariants: (ColorVariant & {
     images: ProductImage[];
+    stocks: Stock[];
   })[];
 };
 
@@ -109,21 +111,15 @@ const PromoPage = () => {
         ) : (
           <>
             {isMobile ? (
-              <ProductGrid 
-                filters={{
-                  category: 'all',
-                  collaborator: 'all',
-                  sort: 'promo',
-                  product: ''
-                }} 
-              />
+              <div className="grid grid-cols-2 gap-3">
+                {products.map((product) => (
+                  <MobileProductCard key={product.id} product={product} />
+                ))}
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {products.map((product) => (
-                  <ProductCard 
-                    key={product.id} 
-                    product={product}
-                  />
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             )}
