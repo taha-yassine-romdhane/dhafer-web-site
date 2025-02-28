@@ -5,20 +5,21 @@ export async function GET() {
   try {
     const products = await prisma.product.findMany({
       where: {
-        showInTopSales: true, // Only fetch products marked as top sales
+        showInHome: true, // Only fetch products marked to show in home
       },
       orderBy: [
         {
           priority: 'desc', // First order by priority
         },
         {
-          orderCount: 'desc', // Then by order count
+          createdAt: 'desc', // Then by creation date
         }
       ],
       include: {
         colorVariants: {
           include: {
             images: true,
+            stocks: true, // Include stocks for each color variant
           },
         },
       },
@@ -32,9 +33,9 @@ export async function GET() {
 
     return NextResponse.json(filteredProducts)
   } catch (error) {
-    console.error('Error fetching top sale products:', error)
+    console.error('Error fetching home products:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch top sale products' },
+      { error: 'Failed to fetch home products' },
       { status: 500 }
     )
   }

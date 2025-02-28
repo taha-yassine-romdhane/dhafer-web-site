@@ -1,125 +1,91 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Product, ColorVariant, ProductImage } from "@prisma/client"
-import ProductGrid from "./../../components/product-grid"
+import { Product, ColorVariant, ProductImage, Stock } from "@prisma/client"
 import ProductCard from "./ProductCard"
+import MobileProductCard from "./MobileProductCard"
 import { Loader2 } from "lucide-react"
 import Link from "next/link"
 
+type HomeProduct = Product & {
+  colorVariants: (ColorVariant & {
+    images: ProductImage[]
+    stocks: Stock[]
+  })[]
+}
+
 export default function TopProduitsSection() {
-  const [products, setProducts] = useState<(Product & {
-    colorVariants: (ColorVariant & {
-      images: ProductImage[]
-    })[]
-  })[]>([])
+  const [products, setProducts] = useState<HomeProduct[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768) // 768px is the md breakpoint in Tailwind
-    }
-
-    // Initial check
-    checkMobile()
-
-    // Add event listener for window resize
-    window.addEventListener('resize', checkMobile)
-
-    // Cleanup
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-
-  useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchHomeProducts = async () => {
       try {
         setLoading(true)
         setError(null)
-        const response = await fetch('/api/products/top')
+        const response = await fetch('/api/products/home')
 
         if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+          throw new Error('Failed to load home products')
         }
 
         const data = await response.json()
         setProducts(data)
       } catch (error) {
-        console.error('Error fetching products:', error)
-        setError(error instanceof Error ? error.message : 'Failed to load products')
+        console.error('Error fetching home products:', error)
+        setError('Failed to load home products')
       } finally {
         setLoading(false)
       }
     }
 
-    fetchProducts()
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    fetchHomeProducts()
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+
+    return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
   if (loading) {
     return (
-      <section className="container mx-auto  px-4 py-16">
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
-          <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
-          <p className="mt-4 text-gray-600">Chargement des produits...</p>
-        </div>
-      </section>
+      <div className="flex justify-center items-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
+      </div>
     )
   }
 
   if (error) {
     return (
-      <section className="container mx-auto px-4 py-16">
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
-          <p className="text-red-500 text-center">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="mt-4 text-[#D4AF37] hover:underline"
-          >
-            Réessayer
-          </button>
-        </div>
-      </section>
+      <div className="text-center py-12">
+        <p className="text-red-500">{error}</p>
+      </div>
     )
   }
 
+  if (products.length === 0) {
+    return null
+  }
+
   return (
-    <section className="bg-gray-50 py-16">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Nos Meilleurs Produits</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Découvrez notre sélection des produits les plus populaires, choisis avec soin pour leur qualité exceptionnelle et leur style unique.
-          </p>
+    <section className="py-12 px-4 md:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
         </div>
-
-        {isMobile ? (
-          <div className="mb-12">
-            <ProductGrid 
-              filters={{
-                category: 'all',
-                collaborator: 'all',
-                sort: 'featured',
-                product: ''
-              }} 
-            />
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12">
-            {products.map((product) => (
+        
+        <div className={isMobile ? "grid grid-cols-2 gap-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"}>
+          {products.map((product) => (
+            isMobile ? (
+              <MobileProductCard key={product.id} product={product} />
+            ) : (
               <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
-
-        <div className="text-center">
-          <Link
-            href="/collections"
-            className="inline-flex items-center justify-center px-8 py-3 text-lg font-semibold text-white bg-[#D4AF37] rounded-full hover:bg-[#D4AF37]/90 transition-colors"
-          >
-            Voir Toute la Collection
-          </Link>
+            )
+          ))}
         </div>
       </div>
     </section>
