@@ -19,17 +19,17 @@ interface ProductAvailabilityProps {
 }
 
 const LOCATIONS = {
-  monastir: {
-    name: "Monastir",
-    address: "Avenue Habib Bourguiba, Monastir"
+  Jammel: {
+    name: "Jammel",
+    address: "105 Av. Habib Bourguiba, Jammel"
   },
   tunis: {
     name: "Tunis",
-    address: "Avenue Habib Bourguiba, Tunis"
+    address: "40 Av. Fattouma Bourguiba, Tunis"
   },
-  sfax: {
-    name: "Sfax",
-    address: "Route de Tunis, Sfax"
+  sousse: {
+    name: "Sousse",
+    address: "Avenue Khezama, Sousse"
   },
   online: {
     name: "En ligne",
