@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
 import { getUser } from '@/lib/auth';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcrypt';
 
 export async function GET(request: Request) {
   try {

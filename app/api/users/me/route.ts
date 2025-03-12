@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import { cookies } from 'next/headers'
 import { verifyJwtToken } from '@/lib/auth'
-
-const prisma = new PrismaClient()
+import { cookies } from 'next/headers'
+import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   try {
@@ -39,7 +37,7 @@ export async function GET() {
 
     return NextResponse.json(user)
   } catch (error) {
-    console.error('Error getting user data:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Auth error:', error)
+    return NextResponse.json({ error: 'Authentication failed' }, { status: 401 })
   }
 }
