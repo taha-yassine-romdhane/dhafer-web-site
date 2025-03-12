@@ -71,6 +71,7 @@ model User {
   fidelityPoints  Int       @default(0)
   orders          Order[]
   contacts        Contact[]
+  resetTokens     PasswordResetToken[]
 }
 
 model Order {
@@ -134,6 +135,18 @@ model Contact {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([token])
 }
 
 enum OrderStatus {

@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 
 export async function POST() {
   try {
-    // Clear the token cookie
-    cookies().delete('token')
-
+    // With localStorage-based authentication, server-side logout is simpler
+    // The token is cleared on the client side
     return NextResponse.json({ message: 'Logged out successfully' })
   } catch (error) {
     console.error('Logout error:', error)

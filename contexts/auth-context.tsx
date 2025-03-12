@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import { getAuthToken, setAuthToken, removeAuthToken, apiGet, apiPost } from '@/lib/api-client';
 
 interface User {
   id: number;
@@ -15,6 +16,7 @@ interface AuthContextType {
   isLoggedIn: boolean;
   checkAuth: () => Promise<void>;
   logout: () => Promise<void>;
+  getAuthToken: () => string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,29 +29,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/users/me', {
-        credentials: 'include',
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      });
+      const token = getAuthToken();
       
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        setIsLoggedIn(true);
-        // Store auth state in localStorage for cross-tab sync
-        localStorage.setItem('isAuthenticated', 'true');
-      } else {
+      if (!token) {
         setUser(null);
         setIsLoggedIn(false);
-        localStorage.removeItem('isAuthenticated');
+        setIsLoading(false);
+        return;
+      }
+      
+      try {
+        const userData = await apiGet('/api/users/me');
+        setUser(userData);
+        setIsLoggedIn(true);
+      } catch (error) {
+        setUser(null);
+        setIsLoggedIn(false);
+        removeAuthToken();
       }
     } catch (error) {
       console.error('Auth check failed:', error);
       setUser(null);
       setIsLoggedIn(false);
-      localStorage.removeItem('isAuthenticated');
+      removeAuthToken();
     } finally {
       setIsLoading(false);
     }
@@ -57,26 +59,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      const response = await fetch('/api/users/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        setUser(null);
-        setIsLoggedIn(false);
-        localStorage.removeItem('isAuthenticated');
-        window.location.href = '/login';
+      if (getAuthToken()) {
+        try {
+          await apiPost('/api/users/logout', {});
+        } catch (error) {
+          console.error('Logout API error:', error);
+        }
       }
+      
+      // Even if API call fails, clear local state
+      removeAuthToken();
+      setUser(null);
+      setIsLoggedIn(false);
+      window.location.href = '/login';
     } catch (error) {
       console.error('Logout error:', error);
+      // Even if there's an error, clear local state
+      removeAuthToken();
+      setUser(null);
+      setIsLoggedIn(false);
+      window.location.href = '/login';
     }
   };
 
   // Check auth status on initial load
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    if (isAuthenticated) {
+    const token = getAuthToken();
+    if (token) {
       checkAuth();
     } else {
       setIsLoading(false);
@@ -86,8 +95,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Listen for storage events to sync auth state across tabs
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'isAuthenticated') {
-        if (e.newValue === 'true') {
+      if (e.key === 'auth_token') {
+        if (e.newValue) {
           checkAuth();
         } else {
           setUser(null);
@@ -102,7 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isLoggedIn, checkAuth, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, isLoggedIn, checkAuth, logout, getAuthToken }}>
       {children}
     </AuthContext.Provider>
   );

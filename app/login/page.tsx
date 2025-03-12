@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/auth-context'
+import { setAuthToken, apiPost } from '@/lib/api-client'
 
 export default function Login() {
   const router = useRouter()
@@ -33,19 +34,14 @@ export default function Login() {
     setLoading(true)
 
     try {
-      const res = await fetch('/api/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-        credentials: 'include'
-      })
+      // Use the apiPost utility function
+      const data = await apiPost('/api/users/login', formData);
 
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Error logging in')
+      // Store token in localStorage using the utility function
+      if (data.token) {
+        setAuthToken(data.token);
+      } else {
+        throw new Error('No token received from server');
       }
 
       // Update auth state after successful login

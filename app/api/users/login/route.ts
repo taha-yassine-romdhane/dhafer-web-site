@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcrypt'
 import { createToken } from '@/lib/auth'
-import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(request: Request) {
@@ -84,34 +83,16 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create the response
-    const response = NextResponse.json({
+    // Return the token in the response body
+    return NextResponse.json({
       message: 'Logged in successfully',
+      token: token, // Include the token in the response
       user: {
         id: user.id,
         username: user.username,
         email: user.email,
       }
     });
-
-    // Set the token cookie with error handling
-    try {
-      cookies().set('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 60 * 60 * 24, // 24 hours
-        path: '/',
-      });
-    } catch (cookieError) {
-      console.error('Cookie setting error:', cookieError);
-      return NextResponse.json(
-        { error: 'Error setting authentication cookie' },
-        { status: 500 }
-      );
-    }
-
-    return response;
 
   } catch (error) {
     console.error('Login error:', error);
