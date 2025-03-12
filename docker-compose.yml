@@ -10,9 +10,8 @@ services:
       - "3000:3000"
     depends_on:
       - db
-    environment:
-      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/darkoftan?schema=public
-      # Add other environment variables from your .env file here
+    env_file:
+      - .env
     networks:
       - app-network
 
