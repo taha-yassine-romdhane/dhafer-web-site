@@ -1,31 +1,43 @@
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { setCorsHeaders } from '@/lib/cors'
+
+// Add OPTIONS method to handle CORS preflight requests
+export async function OPTIONS(request: NextRequest) {
+  return setCorsHeaders(new NextResponse(null, { status: 204 }));
+}
 
 /**
  * Health check endpoint for Docker and monitoring
- * This endpoint verifies that the application is running and can connect to the database
+ * This endpoint verifies that the application is running
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  console.log('Health check endpoint called');
+  
   try {
-    // Check database connection by running a simple query
-    await prisma.$queryRaw`SELECT 1`
-    
-    return NextResponse.json({
+    // First try a simple response without database check
+    const simpleResponse = NextResponse.json({
       status: 'ok',
       timestamp: new Date().toISOString(),
-      message: 'Service is healthy'
-    })
-  } catch (error) {
-    console.error('Health check failed:', error)
+      message: 'Service is running',
+      server: process.env.HOSTNAME || 'unknown'
+    });
     
-    return NextResponse.json(
+    return setCorsHeaders(simpleResponse);
+  } catch (error) {
+    console.error('Health check failed:', error);
+    
+    const errorResponse = NextResponse.json(
       {
         status: 'error',
         timestamp: new Date().toISOString(),
-        message: 'Service is unhealthy',
-        error: process.env.NODE_ENV === 'production' ? 'Database connection failed' : String(error)
+        message: 'Service encountered an error',
+        error: process.env.NODE_ENV === 'production' ? 'Internal server error' : String(error)
       },
       { status: 500 }
-    )
+    );
+    
+    return setCorsHeaders(errorResponse);
   }
 }

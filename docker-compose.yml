@@ -13,6 +13,8 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
       - NEXT_PUBLIC_APP_URL=http://54.37.38.58:3000
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
     deploy:
       resources:
         limits:
