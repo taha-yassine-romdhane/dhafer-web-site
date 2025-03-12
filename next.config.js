@@ -21,6 +21,11 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Configure image domains
+  images: {
+    domains: ['ik.imagekit.io'],
+    unoptimized: true,
+  },
   // Increase timeout for API routes
   api: {
     responseLimit: '8mb',

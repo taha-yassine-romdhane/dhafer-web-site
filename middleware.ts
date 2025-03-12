@@ -20,6 +20,13 @@ export async function middleware(request: NextRequest) {
     '/api/users/signup',
     '/api/health',
     '/api/webhook',
+    '/api/products/home',
+    '/api/products/featured',
+    '/api/products/categories',
+    '/api/products/search',
+    '/api/products/details',
+    '/api/products/related',
+    '/api/categories',
   ];
 
   // Check if the path is public
