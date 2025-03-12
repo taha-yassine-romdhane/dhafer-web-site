@@ -1,30 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  images: { unoptimized: true },
-  // Increase timeouts for API routes
   experimental: {
     serverComponentsExternalPackages: ['bcrypt'],
-    serverActions: {
-      bodySizeLimit: '2mb',
-    },
   },
-  // Increase the body parser size limit
+  webpack: (config) => {
+    config.externals = [...config.externals, 'bcrypt'];
+    return config;
+  },
+  // Configure hostname and port to listen on all interfaces
+  serverRuntimeConfig: {
+    hostname: '0.0.0.0',
+    port: parseInt(process.env.PORT || '3000', 10),
+  },
+  // Increase timeout for API routes
   api: {
+    responseLimit: '8mb',
     bodyParser: {
-      sizeLimit: '2mb',
+      sizeLimit: '8mb',
     },
-    responseLimit: false,
-  },
-  // Ensure proper handling of CORS and network issues
-  poweredByHeader: false,
-  // Increase the timeout for long-running operations
-  httpAgentOptions: {
-    keepAlive: true,
-    timeout: 60000, // 60 seconds
   },
 };
 
