@@ -10,7 +10,26 @@ function logMiddlewareInfo(request: NextRequest, message: string, data?: any) {
   });
 }
 
+// Function to add CORS headers to the response
+function addCorsHeaders(response: NextResponse) {
+  // Allow requests from any origin for development
+  // In production, you might want to restrict this to specific origins
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  response.headers.set('Access-Control-Allow-Credentials', 'true');
+  response.headers.set('Access-Control-Max-Age', '86400');
+  
+  return response;
+}
+
 export async function middleware(request: NextRequest) {
+  // Handle preflight requests
+  if (request.method === 'OPTIONS') {
+    logMiddlewareInfo(request, 'Handling OPTIONS preflight request');
+    return addCorsHeaders(new NextResponse(null, { status: 204 }));
+  }
+  
   // Get the pathname of the request
   const path = request.nextUrl.pathname
   
@@ -20,7 +39,7 @@ export async function middleware(request: NextRequest) {
   // This ensures these pages are always accessible
   if (path === '/login' || path === '/signup') {
     logMiddlewareInfo(request, 'Auth page detected, bypassing middleware checks');
-    return NextResponse.next();
+    return addCorsHeaders(NextResponse.next());
   }
   
   // Get token from Authorization header
@@ -42,7 +61,7 @@ export async function middleware(request: NextRequest) {
   // If the path is not protected, allow access
   if (!isProtectedRoute) {
     logMiddlewareInfo(request, 'Path is not protected, allowing access');
-    return NextResponse.next()
+    return addCorsHeaders(NextResponse.next());
   }
   
   // For protected routes: verify token and redirect to login if invalid
@@ -52,7 +71,8 @@ export async function middleware(request: NextRequest) {
     // If no token exists, redirect to login
     if (!token) {
       logMiddlewareInfo(request, 'No token found, redirecting to login');
-      return NextResponse.redirect(new URL('/login', request.url))
+      const redirectResponse = NextResponse.redirect(new URL('/login', request.url));
+      return addCorsHeaders(redirectResponse);
     }
     
     try {
@@ -61,20 +81,22 @@ export async function middleware(request: NextRequest) {
       
       if (payload) {
         logMiddlewareInfo(request, 'Token is valid, allowing access to protected route');
-        return NextResponse.next()
+        return addCorsHeaders(NextResponse.next());
       } else {
         logMiddlewareInfo(request, 'Token is invalid, redirecting to login');
-        return NextResponse.redirect(new URL('/login', request.url))
+        const redirectResponse = NextResponse.redirect(new URL('/login', request.url));
+        return addCorsHeaders(redirectResponse);
       }
     } catch (err) {
       const error = err as Error;
       logMiddlewareInfo(request, 'Token verification failed', { error: error.message });
-      return NextResponse.redirect(new URL('/login', request.url))
+      const redirectResponse = NextResponse.redirect(new URL('/login', request.url));
+      return addCorsHeaders(redirectResponse);
     }
   }
 
   logMiddlewareInfo(request, 'Default fallback, allowing access');
-  return NextResponse.next()
+  return addCorsHeaders(NextResponse.next());
 }
 
 export const config = {
@@ -83,6 +105,7 @@ export const config = {
     '/profile/:path*',
     '/orders/:path*',
     '/login',
-    '/signup'
+    '/signup',
+    '/api/:path*'  // Add API routes to the matcher
   ]
 }
