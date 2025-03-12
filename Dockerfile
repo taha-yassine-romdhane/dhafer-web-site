@@ -4,6 +4,9 @@ FROM node:18-alpine AS base
 FROM base AS deps
 WORKDIR /app
 
+# Install additional dependencies for bcrypt
+RUN apk add --no-cache make gcc g++ python3 git
+
 # Copy package.json and package-lock.json
 COPY package.json package-lock.json* ./
 
@@ -48,6 +51,7 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 
 USER nextjs
 
