@@ -16,17 +16,7 @@ export async function middleware(request: NextRequest) {
 
   // Define public paths that don't require authentication
   const publicPaths = [
-    '/api/users/login',
-    '/api/users/signup',
-    '/api/health',
-    '/api/webhook',
-    '/api/products/home',
-    '/api/products/featured',
-    '/api/products/categories',
-    '/api/products/search',
-    '/api/products/details',
-    '/api/products/related',
-    '/api/categories',
+    '/api',
   ];
 
   // Check if the path is public
