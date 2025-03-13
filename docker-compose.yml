@@ -6,8 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
-    ports:
-      - "3000:3000"
+    network_mode: "host"
     environment:
       - NODE_ENV=production
       - DATABASE_URL=${DATABASE_URL}
@@ -35,9 +34,3 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
