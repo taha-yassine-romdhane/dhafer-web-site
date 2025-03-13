@@ -4,8 +4,8 @@ FROM node:18-alpine AS base
 FROM base AS deps
 WORKDIR /app
 
-# Install additional dependencies for bcrypt
-RUN apk add --no-cache make gcc g++ python3 git
+# Remove bcrypt-specific dependencies
+RUN apk add --no-cache git
 
 # Copy package.json and package-lock.json
 COPY package.json package-lock.json* ./

@@ -2,10 +2,9 @@
 const nextConfig = {
   output: 'standalone',
   experimental: {
-    serverComponentsExternalPackages: ['bcrypt'],
+    serverComponentsExternalPackages: [],
   },
   webpack: (config) => {
-    config.externals = [...config.externals, 'bcrypt'];
     return config;
   },
   // Configure hostname and port to listen on all interfaces

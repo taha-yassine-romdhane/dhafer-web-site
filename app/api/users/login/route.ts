@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import bcrypt from 'bcrypt'
+import crypto from 'crypto'
 import { createToken } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { setCorsHeaders, handleCors } from '@/lib/cors'
@@ -72,31 +72,32 @@ export async function POST(request: NextRequest) {
       return setCorsHeaders(errorResponse);
     }
 
-    // Verify password with error handling and timeout
-    let passwordMatch;
+    // Verify password with crypto instead of bcrypt
+    let passwordMatch = false;
     try {
       console.log('Comparing password');
       
-      // Use a lower cost factor for bcrypt in Docker environment
-      // This is a workaround for memory issues in constrained environments
-      const bcryptPromise = bcrypt.compare(password, user.password);
-      
-      // Increase timeout to 20 seconds
-      const timeoutPromise = new Promise<boolean>((_, reject) => 
-        setTimeout(() => reject(new Error('Password verification timed out')), 20000)
-      );
-      
-      // Add more detailed logging
-      console.log('Starting password comparison...');
-      try {
-        passwordMatch = await Promise.race([bcryptPromise, timeoutPromise]);
-        console.log('Password comparison completed successfully');
-      } catch (innerError) {
-        console.error('Inner error during password comparison:', innerError);
-        throw innerError;
+      // Check if the stored password is in the new format (has a salt separator)
+      if (user.password.includes(':')) {
+        // Split the stored hash and salt
+        const [storedHash, salt] = user.password.split(':');
+        
+        // Hash the provided password with the same salt
+        const hash = crypto
+          .pbkdf2Sync(password, salt, 1000, 64, 'sha512')
+          .toString('hex');
+        
+        // Compare the generated hash with the stored hash
+        passwordMatch = storedHash === hash;
+      } else {
+        // Handle legacy bcrypt passwords - this will fail but allows migration
+        console.log('Legacy password format detected, authentication will fail');
+        passwordMatch = false;
       }
-    } catch (bcryptError) {
-      console.error('Bcrypt error:', bcryptError);
+      
+      console.log('Password comparison completed successfully');
+    } catch (cryptoError) {
+      console.error('Crypto error:', cryptoError);
       const errorResponse = NextResponse.json(
         { error: 'Error verifying password' },
         { status: 500 }

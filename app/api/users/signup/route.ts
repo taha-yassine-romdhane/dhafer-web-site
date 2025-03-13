@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import bcrypt from 'bcrypt'
+import crypto from 'crypto'
 import { createToken } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { setCorsHeaders, handleCors } from '@/lib/cors'
@@ -71,28 +71,25 @@ export async function POST(request: NextRequest) {
       return setCorsHeaders(errorResponse);
     }
 
-    // Hash password with error handling
+    // Hash password with crypto instead of bcrypt
     let hashedPassword;
     try {
       console.log('Hashing password');
       
-      // Add a timeout for bcrypt operation
-      const bcryptPromise = bcrypt.hash(password, 10);
-      const timeoutPromise = new Promise<string>((_, reject) => 
-        setTimeout(() => reject(new Error('Password hashing timed out')), 20000)
-      );
+      // Generate a random salt
+      const salt = crypto.randomBytes(16).toString('hex');
       
-      // Add more detailed logging
-      console.log('Starting password hashing...');
-      try {
-        hashedPassword = await Promise.race([bcryptPromise, timeoutPromise]);
-        console.log('Password hashed successfully');
-      } catch (innerError) {
-        console.error('Inner error during password hashing:', innerError);
-        throw innerError;
-      }
-    } catch (bcryptError) {
-      console.error('Bcrypt error:', bcryptError);
+      // Hash the password using PBKDF2
+      const hash = crypto
+        .pbkdf2Sync(password, salt, 1000, 64, 'sha512')
+        .toString('hex');
+      
+      // Store both the hash and salt, separated by a colon
+      hashedPassword = `${hash}:${salt}`;
+      
+      console.log('Password hashed successfully');
+    } catch (cryptoError) {
+      console.error('Crypto error:', cryptoError);
       const errorResponse = NextResponse.json(
         { error: 'Error hashing password' },
         { status: 500 }
