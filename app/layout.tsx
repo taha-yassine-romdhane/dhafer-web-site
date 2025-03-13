@@ -23,6 +23,7 @@ export default function RootLayout({
             <Navbar />
             <CartDropdown />
             <main className="min-h-screen">
+              {children}
             </main>
             <Footer />
           </CartProvider>
