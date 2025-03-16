@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Product, ProductImage, ColorVariant } from "@prisma/client";
+import { Product, ProductImage, ColorVariant, Stock } from "@prisma/client";
 import { useCart } from "@/lib/context/cart-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import { DirectPurchaseForm } from "@/components/direct-purchase-form";
-import { ProductAvailability } from "@/components/product-availability";
 import { toast } from "sonner";
 import { SuccessDialog } from "@/components/success-dialog";
 import ProductGrid from "@/components/product-grid";
@@ -36,6 +35,8 @@ export default function ProductPage({ params }: { params: { productId: string } 
     phone: "",
   });
   const [suggestedProducts, setSuggestedProducts] = useState<ProductWithColorVariants[]>([]);
+  const [stockData, setStockData] = useState<Stock[]>([]);
+  const [loadingStock, setLoadingStock] = useState(false);
   const { addItem } = useCart();
 
   const formatPrice = (price: number) => {
@@ -80,9 +81,58 @@ export default function ProductPage({ params }: { params: { productId: string } 
     fetchProduct();
   }, [params.productId]);
 
+  // Fetch stock data when color or product changes
+  useEffect(() => {
+    const fetchStockData = async () => {
+      if (!product || !selectedColorVariant) return;
+      
+      setLoadingStock(true);
+      try {
+        const response = await fetch(`/api/products/${params.productId}/stock`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch stock information');
+        }
+        
+        const data = await response.json();
+        setStockData(data);
+      } catch (error) {
+        console.error('Error fetching stock:', error);
+      } finally {
+        setLoadingStock(false);
+      }
+    };
+
+    fetchStockData();
+  }, [params.productId, selectedColorVariant]);
+
+  const isColorInStock = (colorId: number) => {
+    return stockData.some(stock => stock.colorId === colorId && stock.inStock);
+  };
+
+  const isSizeInStock = (size: string) => {
+    return stockData.some(stock => 
+      stock.size === size && 
+      stock.colorId === selectedColorVariant?.id && 
+      stock.inStock
+    );
+  };
+
+  const isCurrentSelectionInStock = () => {
+    return stockData.some(stock => 
+      stock.size === selectedSize && 
+      stock.colorId === selectedColorVariant?.id && 
+      stock.inStock
+    );
+  };
+
   const handleAddToCart = () => {
     if (!product || !selectedColorVariant || !selectedSize) {
       toast.error("Please select both size and color");
+      return;
+    }
+
+    if (!isCurrentSelectionInStock()) {
+      toast.error("This product is currently out of stock");
       return;
     }
 
@@ -99,6 +149,11 @@ export default function ProductPage({ params }: { params: { productId: string } 
   const handleDirectPurchase = async (formData: any) => {
     if (!product || !selectedColorVariant || !selectedSize) {
       toast.error("Veuillez sélectionner une taille et une couleur");
+      return;
+    }
+
+    if (!isCurrentSelectionInStock()) {
+      toast.error("Ce produit est actuellement en rupture de stock");
       return;
     }
 
@@ -295,18 +350,27 @@ export default function ProductPage({ params }: { params: { productId: string } 
             <div className="flex flex-wrap gap-2">
               {product.colorVariants.map((variant) => {
                 const variantMainImage = variant.images.find((img: ProductImage) => img.isMain)?.url || variant.images[0]?.url;
+                const colorAvailable = isColorInStock(variant.id);
                 return (
                   <button
                     key={variant.id}
                     onClick={() => {
-                      setSelectedColorVariant(variant);
-                      setSelectedImageUrl(variantMainImage);
+                      if (colorAvailable) {
+                        setSelectedColorVariant(variant);
+                        setSelectedImageUrl(variantMainImage);
+                        setSelectedSize(""); // Reset size when color changes
+                      } else {
+                        toast.error(`La couleur ${variant.color} est en rupture de stock`);
+                      }
                     }}
+                    disabled={!colorAvailable}
                     className={cn(
                       "w-10 h-10 rounded-full border-2 relative overflow-hidden group",
                       selectedColorVariant.id === variant.id
                         ? "border-[#7c3f61] ring-2 ring-[#7c3f61] ring-offset-1"
-                        : "border-transparent hover:border-[#7c3f61]/50"
+                        : colorAvailable 
+                          ? "border-transparent hover:border-[#7c3f61]/50" 
+                          : "border-gray-200 opacity-50 cursor-not-allowed"
                     )}
                     aria-label={variant.color}
                   >
@@ -315,7 +379,10 @@ export default function ProductPage({ params }: { params: { productId: string } 
                         src={variantMainImage}
                         alt={`${product.name} in ${variant.color}`}
                         fill
-                        className="object-cover transition-transform duration-200 scale-110 group-hover:scale-125"
+                        className={cn(
+                          "object-cover transition-transform duration-200 scale-110",
+                          colorAvailable ? "group-hover:scale-125" : "grayscale"
+                        )}
                         sizes="40px"
                       />
                     </div>
@@ -330,31 +397,52 @@ export default function ProductPage({ params }: { params: { productId: string } 
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">Size</label>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={cn(
-                      "px-4 py-2 text-sm rounded-md border-2 transition-colors",
-                      selectedSize === size
-                        ? "border-[#7c3f61] bg-[#7c3f61] text-white"
-                        : "border-gray-200 hover:border-[#7c3f61]/50"
-                    )}
-                  >
-                    {size}
-                  </button>
-                ))}
+                {product.sizes.map((size) => {
+                  const sizeAvailable = isSizeInStock(size);
+                  return (
+                    <button
+                      key={size}
+                      onClick={() => {
+                        if (sizeAvailable) {
+                          setSelectedSize(size);
+                        } else {
+                          toast.error(`La taille ${size} est en rupture de stock pour cette couleur`);
+                        }
+                      }}
+                      disabled={!sizeAvailable}
+                      className={cn(
+                        "px-4 py-2 text-sm rounded-md border-2 transition-colors",
+                        selectedSize === size
+                          ? "border-[#7c3f61] bg-[#7c3f61] text-white"
+                          : sizeAvailable
+                            ? "border-gray-200 hover:border-[#7c3f61]/50"
+                            : "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
+                      )}
+                    >
+                      {size}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
 
+          {/* Stock Status */}
           <div className="mt-4">
-            <ProductAvailability
-              productId={Number(params.productId)}
-              selectedSize={selectedSize}
-              selectedColorId={selectedColorVariant?.id || 0}
-              className="mb-4"
-            />
+            {loadingStock ? (
+              <div className="h-6 w-24 bg-gray-200 animate-pulse rounded"></div>
+            ) : selectedSize && selectedColorVariant ? (
+              <div className={cn(
+                "inline-block px-3 py-1 rounded-full text-sm font-medium",
+                isCurrentSelectionInStock() 
+                  ? "bg-green-100 text-green-800" 
+                  : "bg-red-100 text-red-800"
+              )}>
+                {isCurrentSelectionInStock() ? "En stock" : "Rupture de stock"}
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500">Veuillez sélectionner une taille et une couleur</div>
+            )}
           </div>
 
           {/* Direct Purchase Form */}
@@ -375,7 +463,13 @@ export default function ProductPage({ params }: { params: { productId: string } 
             {/* Add to Cart Button */}
             <Button
               onClick={handleAddToCart}
-              className="w-full py-6 text-lg bg-[#7c3f61] hover:bg-[#7c3f61]/90 text-white"
+              disabled={!isCurrentSelectionInStock() || !selectedSize || !selectedColorVariant}
+              className={cn(
+                "w-full py-6 text-lg text-white",
+                isCurrentSelectionInStock() && selectedSize && selectedColorVariant
+                  ? "bg-[#7c3f61] hover:bg-[#7c3f61]/90"
+                  : "bg-gray-400 cursor-not-allowed"
+              )}
               size="lg"
             >
               Ajouter au Panier
@@ -405,12 +499,9 @@ export default function ProductPage({ params }: { params: { productId: string } 
       <SuccessDialog
         isOpen={isSuccessDialogOpen}
         onClose={() => setIsSuccessDialogOpen(false)}
-        message="Votre commande a été placée avec succès!"
         onConfirm={handleConfirmOrder}
-        product={product}
-        selectedColorVariant={selectedColorVariant}
-        selectedSize={selectedSize}
-        userDetails={userDetails}
+        title="Commande Réussie!"
+        description={`Merci pour votre commande! Nous vous contacterons bientôt au ${userDetails.phone} pour confirmer.`}
       />
     </div>
   );

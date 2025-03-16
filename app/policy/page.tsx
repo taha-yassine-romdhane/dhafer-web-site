@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
               Introduction
             </h2>
             <p className="text-gray-600">
-              Chez Dar Koftan, nous accordons une grande importance à la
+              Chez Aichic, nous accordons une grande importance à la
               protection de vos données personnelles. Cette politique de
               confidentialité explique comment nous collectons, utilisons et
               protégeons vos informations lorsque vous utilisez notre site web.
@@ -129,7 +129,7 @@ export default function PrivacyPolicyPage() {
               veuillez nous contacter à l'adresse suivante :
             </p>
             <p className="text-gray-600 font-medium mt-2">
-              E-mail : <strong>support@darkoftan.com</strong>
+              E-mail : <strong>support@aichic.com</strong>
             </p>
           </div>
 

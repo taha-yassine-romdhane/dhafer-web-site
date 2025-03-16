@@ -16,31 +16,24 @@ import {
 const CATEGORIES = [
   { value: "Tous", label: "Voir Tous" },
   { value: "abaya", label: "ABAYA" },
-  { value: "caftan", label: "CAFTAN" },
-  { value: "robe-soire", label: "ROBE SOIRE" },
   { value: "jebba", label: "JEBBA" },
-  { value: "enfants-caftan", label: "ENFANTS CAFTAN" },
-  { value: "enfants-robe-soire", label: "ENFANTS ROBE SOIRE" },
-  { value: "tabdila", label: "TABDILA" },
-  { value: "chachia", label: "CHACHIA" },
-  { value: "pochette", label: "POCHETTE" },
-  { value: "eventaille", label: "EVENTAILLE" },
-  { value: "foulard", label: "FOULARD" }
+  { value: "pull", label: "PULL" },
+  { value: "pantalon", label: "PANTALON" },
+  { value: "enfants-abaya", label: "ENFANTS ABAYA" },
+  { value: "enfants-pull", label: "ENFANTS PULL" },
+  { value: "enfants-pantalon", label: "ENFANTS PANTALON" },
+  { value: "enfants-jebba", label: "ENFANTS JEBBA" }
 ];
 
 const CATEGORY_GROUPS = [
   {
     label: "Femme",
-    categories: ["abaya", "caftan", "robe-soire", "jebba"]
+    categories: ["abaya","pull","pantalon", "jebba"]
   },
   {
     label: "Enfants",
-    categories: ["enfants-caftan", "enfants-robe-soire", "tabdila"]
+    categories: ["enfants-abaya", "enfants-pull", "enfants-pantalon", "enfants-jebba"]
   },
-  {
-    label: "Accessoires",
-    categories: ["chachia", "pochette", "eventaille", "foulard"]
-  }
 ];
 
 const SORT_OPTIONS = [

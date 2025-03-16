@@ -19,7 +19,7 @@ export default function RefundPolicyPage() {
               Notre Engagement envers Vous
             </h2>
             <p className="text-gray-600">
-              Chez Dar Koftan, nous nous engageons à vous offrir une expérience
+              Chez Aichic, nous nous engageons à vous offrir une expérience
               d'achat exceptionnelle. Si vous n'êtes pas entièrement satisfait de
               votre achat, nous sommes là pour vous aider.
             </p>
@@ -59,7 +59,7 @@ export default function RefundPolicyPage() {
               <ol className="list-decimal list-inside text-gray-600">
                 <li>
                   Contactez notre service client à l'adresse{" "}
-                  <strong>support@darkoftan.com</strong> pour initier une demande
+                  <strong>support@aichic.com</strong> pour initier une demande
                   de remboursement.
                 </li>
                 <li>

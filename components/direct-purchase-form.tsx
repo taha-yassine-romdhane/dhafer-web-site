@@ -269,7 +269,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
             />
             <Button
               type="submit"
-              className="flex-1 bg-[#d1a72e] text-white hover:bg-[#7c3f61]/80 rounded !border-[#7c3f61]"
+              className="flex-1 bg-[#7c3f61] text-white hover:bg-[#7c3f61]/80 rounded !border-[#7c3f61]"
               disabled={isSubmitting}
             >
               {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShoppingBag className="mr-2 h-4 w-4" />}

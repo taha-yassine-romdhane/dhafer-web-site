@@ -10,18 +10,22 @@ export async function GET(
     const size = searchParams.get('size')
     const colorId = searchParams.get('colorId')
 
-    if (!size || !colorId) {
-      return NextResponse.json(
-        { error: 'Size and colorId are required' },
-        { status: 400 }
-      )
+    // If size and colorId are provided, filter by them
+    if (size && colorId) {
+      const stocks = await prisma.stock.findMany({
+        where: {
+          productId: parseInt(params.productId),
+          size,
+          colorId: parseInt(colorId),
+        },
+      })
+      return NextResponse.json(stocks)
     }
-
+    
+    // Otherwise return all stock data for this product
     const stocks = await prisma.stock.findMany({
       where: {
         productId: parseInt(params.productId),
-        size,
-        colorId: parseInt(colorId),
       },
     })
 

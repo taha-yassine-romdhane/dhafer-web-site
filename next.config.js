@@ -4,6 +4,9 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: [],
   },
+  images: {
+    domains: ['kd0je2widk.ufs.sh'],
+  },
   webpack: (config) => {
     return config;
   },
@@ -19,18 +22,6 @@ const nextConfig = {
   // Disable TypeScript type checking during build
   typescript: {
     ignoreBuildErrors: true,
-  },
-  // Configure image domains
-  images: {
-    domains: ['ik.imagekit.io'],
-    unoptimized: true,
-  },
-  // Increase timeout for API routes
-  api: {
-    responseLimit: '8mb',
-    bodyParser: {
-      sizeLimit: '8mb',
-    },
   },
 };
 

@@ -110,8 +110,7 @@ model OrderItem {
 
 model Stock {
   id        Int          @id @default(autoincrement())
-  location  String       // "monastir", "tunis", "sfax", "online"
-  quantity  Int          @default(0)
+  inStock   Boolean      @default(false)
   product   Product      @relation("ProductStock", fields: [productId], references: [id], onDelete: Cascade)
   productId Int
   size      String
@@ -120,7 +119,7 @@ model Stock {
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 
-  @@unique([productId, location, size, colorId])
+  @@unique([productId, size, colorId])
 }
 
 model Contact {

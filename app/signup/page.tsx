@@ -80,7 +80,7 @@ export default function SignUp() {
                 name="username"
                 type="text"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C6A961] focus:border-[#C6A961]"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61]"
                 placeholder="Username"
                 value={formData.username}
                 onChange={handleChange}
@@ -95,7 +95,7 @@ export default function SignUp() {
                 name="email"
                 type="email"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C6A961] focus:border-[#C6A961]"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61]"
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
@@ -110,7 +110,7 @@ export default function SignUp() {
                 name="password"
                 type="password"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C6A961] focus:border-[#C6A961]"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61]"
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
@@ -125,7 +125,7 @@ export default function SignUp() {
                 name="confirmPassword"
                 type="password"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C6A961] focus:border-[#C6A961]"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61]"
                 placeholder="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
@@ -143,7 +143,7 @@ export default function SignUp() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#C6A961] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C6A961] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#7c3f61] hover:bg-[#7c3f61]\90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7c3f61] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Creating account...' : 'Sign up'}
             </button>
@@ -153,7 +153,7 @@ export default function SignUp() {
             <span className="text-gray-600">Already have an account?</span>{' '}
             <Link
               href="/login"
-              className="font-medium text-[#C6A961] hover:text-[#B59851]"
+              className="font-medium text-[#7c3f61] hover:text-[#7c3f61]"
             >
               Sign in
             </Link>
@@ -162,11 +162,11 @@ export default function SignUp() {
 
         <div className="mt-6 text-center text-xs text-gray-500">
           By signing up, you agree to our{' '}
-          <Link href="/terms" className="text-[#C6A961] hover:text-[#B59851]">
+          <Link href="/terms" className="text-[#7c3f61] hover:text-[#7c3f61]">
             Terms of Service
           </Link>{' '}
           and{' '}
-          <Link href="/privacy" className="text-[#C6A961] hover:text-[#B59851]">
+          <Link href="/privacy" className="text-[#7c3f61] hover:text-[#7c3f61]">
             Privacy Policy
           </Link>
         </div>

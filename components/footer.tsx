@@ -11,14 +11,14 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-[#7c3f61]">DAR KOFTAN EL ASIL</h3>
+            <h3 className="text-lg font-bold text-[#7c3f61]">Aichic</h3>
             <p className="text-sm text-gray-600">
-              Dar Koftan est votre destination de choix pour des caftans traditionnels de haute qualité.
+              Aichic est votre destination de choix pour des caftans traditionnels de haute qualité.
             </p>
             {/* Social Links */}
             <div className="flex justify-center space-x-6">
               <Link 
-                href="https://www.facebook.com/profile.php?id=100064931580253" 
+                href="https://www.facebook.com/profile.php?id=61573119575107&mibextid=wwXIfr&mibextid=wwXIfr" 
                 className="text-gray-400 hover:text-[#7c3f61] transition-colors transform hover:scale-110"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -26,7 +26,7 @@ export function Footer() {
                 <BsFacebook className="h-6 w-6" />
               </Link>
               <Link 
-                href="https://www.instagram.com/dar_koftan_alasil/" 
+                href="https://www.instagram.com/aichic.couture?igsh=ZmNhZThsbHc4NDFt" 
                 className="text-gray-400 hover:text-[#7c3f61] transition-colors transform hover:scale-110"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -34,15 +34,7 @@ export function Footer() {
                 <BsInstagram className="h-6 w-6" />
               </Link>
               <Link 
-                href="https://www.youtube.com/@darkoftan" 
-                className="text-gray-400 hover:text-[#7c3f61] transition-colors transform hover:scale-110"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <BsYoutube className="h-6 w-6" />
-              </Link>
-              <Link 
-                href="https://www.tiktok.com/@darkoftan" 
+                href="https://www.tiktok.com/@aichic.couture?_t=ZM-8ujv4qmSFvD&_r=1" 
                 className="text-gray-400 hover:text-[#7c3f61] transition-colors transform hover:scale-110"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -90,7 +82,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/about" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
-                  Dar Koftan al assil
+                  A propos de <span className="font-semibold">Aichic</span>
                 </Link>
               </li>
               <li>
@@ -134,7 +126,7 @@ export function Footer() {
         <div className="border-t border-[#7c3f61]/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-gray-600">
-              {new Date().getFullYear()} <span className="font-semibold">DAR KOFTAN EL ASIL</span>  Tous droits reservés .
+              {new Date().getFullYear()} <span className="font-semibold">Aichic</span>  Tous droits reservés .
             </p>
             <div className="flex space-x-6">
               

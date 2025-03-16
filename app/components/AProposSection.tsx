@@ -4,14 +4,11 @@ import Image from 'next/image';
 
 export default function AProposSection() {
   const images = [
-    '/carousel/img7.JPG',
-    '/carousel/img8.JPG',
-    '/carousel/img9.JPG',
-    '/carousel/img10.png',
-    '/carousel/img11.png',
-    '/carousel/img12.png',
-    '/carousel/img13.png',
-    '/carousel/img14.png',
+    '/image00002.jpeg',
+    '/image00003.jpeg',
+    '/image00004.jpeg',
+    '/image00007.jpeg',
+    '/image00006.jpeg',
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -82,9 +79,9 @@ export default function AProposSection() {
           </div>
 
           <div className="flex flex-col justify-center">
-            <h2 className="mb-6 text-3xl font-bold">À Propos de Dar Koftan</h2>
+            <h2 className="mb-6 text-3xl font-bold">À Propos de Aichic</h2>
             <p className="mb-6 text-lg text-gray-600">
-              Dar Koftan est votre destination de choix pour des caftans traditionnels de haute qualité. 
+              Aichic est votre destination de choix pour des vêtements  de haute qualité. 
               Nous sommes fiers de perpétuer l&apos;héritage de l&apos;artisanat tunisien tout en apportant 
               une touche moderne à nos créations.
             </p>

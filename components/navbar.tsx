@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/lib/context/cart-context";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import SearchBar from "@/components/search-bar";
@@ -38,26 +37,18 @@ const collectionCategories: Category[] = [
     label: "Femme",
     subcategories: [
       { name: "ABAYA", query: "abaya" },
-      { name: "CAFTAN", query: "caftan" },
-      { name: "ROBE SOIRE", query: "robe-soire" },
+      { name: "PULL", query: "pull" },
+      { name: "PANTALON", query: "pantalon" },
       { name: "JEBBA", query: "jebba" },
     ],
   },
   {
     label: "Enfants",
     subcategories: [
-      { name: "CAFTAN", query: "enfants-caftan" },
-      { name: "ROBE SOIRE", query: "enfants-robe-soire" },
-      { name: "TABDILA", query: "tabdila" },
-    ],
-  },
-  {
-    label: "Accessoires",
-    subcategories: [
-      { name: "CHACHIA", query: "chachia" },
-      { name: "POCHETTE", query: "pochette" },
-      { name: "EVENTAILLE", query: "eventaille" },
-      { name: "FOULARD", query: "foulard" },
+      { name: "ABAYA", query: "enfants-abaya" },
+      { name: "PULL", query: "enfants-pull" },
+      { name: "PANTALON", query: "enfants-pantalon" },
+      { name: "JEBBA", query: "enfants-jebba" },
     ],
   },
   {
@@ -245,7 +236,7 @@ export default function Navbar() {
                 </Link>
                 <Link href="/signup">
                   <Button
-                    className="bg-[#7c3f61] text-white hover:bg-[#B59851] transition-colors"
+                    className="bg-[#7c3f61] text-white hover:bg-[#7c3f61]/90 transition-colors"
                   >
                     Inscription
                   </Button>

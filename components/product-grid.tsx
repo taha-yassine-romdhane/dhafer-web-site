@@ -263,7 +263,7 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
           <DialogDescription>
             Vous devez sélectionner une taille et une couleur avant d'ajouter ce produit au panier.
           </DialogDescription>
-          <Button onClick={() => setDialogOpen(false)} className="bg-[#7c3f61] hover:bg-[#B59851] text-white">
+          <Button onClick={() => setDialogOpen(false)} className="bg-[#7c3f61] hover:bg-[#7c3f61]/80 text-white">
             D'accord
           </Button>
         </DialogContent>
