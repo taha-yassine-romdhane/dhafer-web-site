@@ -95,7 +95,6 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
       address: "",
       governorate: "",
       phone: "",
-      email: "",
       quantity: 1,
     },
   })
@@ -290,7 +289,6 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
             <p><strong>Adresse:</strong> {formData?.address}</p>
             <p><strong>Gouvernorat:</strong> {formData?.governorate}</p>
             <p><strong>Téléphone:</strong> {formData?.phone}</p>
-            <p><strong>Email:</strong> {formData?.email}</p>
             <p><strong>Quantité:</strong> {formData?.quantity}</p>
             <p><strong>Produit:</strong> {productInfo.name}</p>
             <p><strong>Prix:</strong> {productInfo.price * (formData?.quantity || 1)} TND</p>

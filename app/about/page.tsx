@@ -18,7 +18,7 @@ const AboutUs = () => {
                     objectFit="contain"
                 />
             </div>
-            
+
             <motion.h1 className="text-5xl font-extrabold text-center text-[#7c3f61] mb-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                 À Propos de Aichic
             </motion.h1>
@@ -29,10 +29,10 @@ const AboutUs = () => {
                 <div className="grid gap-8 items-center">
                     <div>
                         <p className="text-lg mb-6 leading-relaxed">
-                            Le coftan est apprécié par la plupart des femmes pour sa légèreté et sa souplesse, 
-                            et son style est flexible pour permettre la liberté et la participation à la création 
-                            d'un style artistique qui correspond aux tendances et aux préférences personnelles, 
-                            quel que soit le sens, du bas vers le haut.
+                            Bienvenue chez AICHIC COUTURE, votre destination mode pour une élégance intemporelle et un style raffiné. Nous proposons des collections uniques, alliant tendances modernes et qualité exceptionnelle, pour sublimer chaque femme au quotidien. Notre mission est de vous offrir des vêtements qui reflètent votre personnalité avec chic et simplicité.
+
+                            Rejoignez-nous et adoptez l'élégance à la tunisienne !
+
                         </p>
                         <a href="/collections" className="bg-[#7c3f61] text-white py-2 px-6 rounded-lg font-medium hover:bg-gray-700 transition">
                             Découvrez Nos Produits
@@ -59,7 +59,7 @@ const AboutUs = () => {
                                 </div>
                                 <div className="flex items-center">
                                     <Phone className="mr-2 h-5 w-5 text-[#7c3f61] space-x-2" />
-                                    <p className="text-gray-600 px-3" >57 038 398</p> 
+                                    <p className="text-gray-600 px-3" >57 038 398</p>
                                     <Phone className="mr-2 h-5 w-5 text-[#7c3f61] space-x-2" />
                                     <p className="text-gray-600 px-3" >57 038 399</p>
                                     <Phone className="mr-2 h-5 w-5 text-[#7c3f61] space-x-2" />

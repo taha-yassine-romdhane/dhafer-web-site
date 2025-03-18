@@ -11,9 +11,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-[#7c3f61]">Aichic</h3>
+            <h3 className="text-lg font-bold text-[#7c3f61]">Aichic Couture</h3>
             <p className="text-sm text-gray-600">
-              Aichic est votre destination de choix pour des caftans traditionnels de haute qualité.
+            Mode féminine chic, moderne et de qualité. Soyez élégante chaque jour !
             </p>
             {/* Social Links */}
             <div className="flex justify-center space-x-6">

@@ -197,7 +197,7 @@ const ContactPage = () => {
                 <div className="ml-4">
                   <h3 className="font-medium">Adresse</h3>
                   <p className="text-gray-600 mt-1">
-                    123 Rue Example, Ville, Pays
+                    M'saken, Sousse, Tunisie
                   </p>
                 </div>
               </div>
@@ -205,14 +205,14 @@ const ContactPage = () => {
                 <Mail className="h-6 w-6 text-[#7c3f61] mt-1" />
                 <div className="ml-4">
                   <h3 className="font-medium">Email</h3>
-                  <p className="text-gray-600 mt-1">contact@dar-koftan.com</p>
+                  <p className="text-gray-600 mt-1">contact@aichic.tn</p>
                 </div>
               </div>
               <div className="flex items-start">
                 <Phone className="h-6 w-6 text-[#7c3f61] mt-1" />
                 <div className="ml-4">
                   <h3 className="font-medium">Téléphone</h3>
-                  <p className="text-gray-600 mt-1">+1 234 567 890</p>
+                  <p className="text-gray-600 mt-1">+216 57 038 398</p>
                 </div>
               </div>
             </div>
