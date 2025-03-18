@@ -342,7 +342,9 @@ export default function ProductPage({ params }: { params: { productId: string } 
           </div>
 
           {/* Description */}
-          <p className="text-gray-600">{product.description}</p>
+          <div className="text-gray-600 whitespace-pre-line">
+            {product.description}
+          </div>
 
           {/* Color Variants */}
           <div className="space-y-3">
