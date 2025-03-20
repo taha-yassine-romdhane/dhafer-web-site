@@ -210,24 +210,6 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    placeholder="Email"
-                    {...field}
-                    className="rounded-full border-[#7c3f61]/20 focus:border-[#7c3f61] focus:ring-[#7c3f61] hover:border-[#7c3f61] !border-[#7c3f61]/20"
-                    disabled={!!user}
-                  />
-                </FormControl>
-                <FormMessage className="text-[#7c3f61]" />
-              </FormItem>
-            )}
-          />
-
           <div className="flex items-center gap-4">
             <FormField
               control={form.control}
@@ -291,7 +273,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
             <p><strong>Téléphone:</strong> {formData?.phone}</p>
             <p><strong>Quantité:</strong> {formData?.quantity}</p>
             <p><strong>Produit:</strong> {productInfo.name}</p>
-            <p><strong>Prix:</strong> {productInfo.price * (formData?.quantity || 1)} TND</p>
+            <p><strong>Prix:</strong> <span className="text-[#7c3f61]">{productInfo.price * (formData?.quantity || 1)}</span> TND + <span className="text-[#7c3f61]">7 TND</span> de frais de livraison</p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
