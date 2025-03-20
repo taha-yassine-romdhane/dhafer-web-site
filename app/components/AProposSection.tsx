@@ -4,11 +4,12 @@ import Image from 'next/image';
 
 export default function AProposSection() {
   const images = [
-    '/image00002.jpeg',
-    '/image00003.jpeg',
-    '/image00004.jpeg',
-    '/image00007.jpeg',
-    '/image00006.jpeg',
+    '/carousel/car1.jpg',
+    '/carousel/car2.jpg',
+    '/carousel/car3.jpg',
+    '/carousel/car4.jpg',
+    '/carousel/car5.jpg',
+    '/carousel/car6.jpg',
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);

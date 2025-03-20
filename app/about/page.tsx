@@ -29,10 +29,10 @@ const AboutUs = () => {
                 <div className="grid gap-8 items-center">
                     <div>
                         <p className="text-lg mb-6 leading-relaxed">
-                            Bienvenue chez AICHIC COUTURE, votre destination mode pour une élégance intemporelle et un style raffiné. Nous proposons des collections uniques, alliant tendances modernes et qualité exceptionnelle, pour sublimer chaque femme au quotidien. Notre mission est de vous offrir des vêtements qui reflètent votre personnalité avec chic et simplicité.
-
+                            Bienvenue chez AICHIC COUTURE, votre destination mode pour une élégance intemporelle et un style raffiné. Nous proposons des collections uniques, 
+                            alliant tendances modernes et qualité exceptionnelle, pour sublimer chaque femme au quotidien. Notre mission 
+                            est de vous offrir des vêtements qui reflètent votre personnalité avec chic et simplicité.
                             Rejoignez-nous et adoptez l'élégance à la tunisienne !
-
                         </p>
                         <a href="/collections" className="bg-[#7c3f61] text-white py-2 px-6 rounded-lg font-medium hover:bg-gray-700 transition">
                             Découvrez Nos Produits

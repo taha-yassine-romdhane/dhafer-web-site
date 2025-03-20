@@ -5,8 +5,8 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
 const TopVentSection: React.FC = () => {
-  const imagesTop1 = ['/products/image00001.png', '/products/image00002.jpg', '/products/image00003.jpeg'];
-  const imagesBottom = ['/products/image00006.jpg', '/products/image00024.jpeg', '/products/image00026.jpeg'];
+  const imagesTop1 = ['/products/biege1.jpg', '/products/blue1.jpg', '/products/red1.jpg'];
+  const imagesBottom = ['/products/prod21.jpeg', '/products/prod22.jpeg', '/products/prod23.jpeg'];
 
   const [currentIndexTop, setCurrentIndexTop] = useState(0);
   const [currentIndexBottom, setCurrentIndexBottom] = useState(0);

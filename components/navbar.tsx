@@ -53,11 +53,11 @@ const collectionCategories: Category[] = [
   },
   {
     label: "Promo",
-    url: "/promo",
+    url: "/",
   },
   {
     label: "Top Vente",
-    url: "/top-vente",
+    url: "/",
   },
 ];
 
