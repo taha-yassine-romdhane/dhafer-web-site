@@ -116,6 +116,21 @@ export default function Navbar() {
                 width={70}
                 height={70}
                 className="object-contain"
+                priority={true}
+                loading="eager"
+                onError={(e) => {
+                  console.error("Failed to load logo image");
+                  const target = e.target as HTMLImageElement;
+                  // Fallback to a text logo if image fails to load
+                  if (target.parentElement) {
+                    target.style.display = 'none';
+                    const textLogo = document.createElement('span');
+                    textLogo.textContent = 'Dhafer';
+                    textLogo.className = 'text-xl font-bold text-[#7c3f61]';
+                    target.parentElement.appendChild(textLogo);
+                  }
+                }}
+                quality={100}
               />
             </Link>
           </div>

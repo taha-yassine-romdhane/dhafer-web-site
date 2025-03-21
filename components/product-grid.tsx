@@ -176,9 +176,20 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                     fill
                     className="object-cover object-center transition-opacity duration-300"
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    priority={products.indexOf(product) < 4} // Add priority to first 4 products
+                    loading={products.indexOf(product) < 4 ? "eager" : "lazy"}
+                    onError={(e) => {
+                      // Fallback to first image if available or placeholder
+                      const target = e.target as HTMLImageElement;
+                      const fallbackImg = product.images[0]?.url || '/placeholder-image.jpg';
+                      if (target.src !== fallbackImg) {
+                        target.src = fallbackImg;
+                      }
+                    }}
+                    quality={75}
                   />
                 )}
-
+                
                 {/* Promo Badge */}
                 {product.salePrice && (
                   <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-semibold z-10">
@@ -274,6 +285,17 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 300px"
+                  priority={true}
+                  loading="eager"
+                  onError={(e) => {
+                    // Fallback to first image if available or placeholder
+                    const target = e.target as HTMLImageElement;
+                    const fallbackImg = currentProduct.images[0]?.url || '/placeholder-image.jpg';
+                    if (target.src !== fallbackImg) {
+                      target.src = fallbackImg;
+                    }
+                  }}
+                  quality={75}
                 />
               </div>
             )}

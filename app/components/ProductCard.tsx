@@ -69,6 +69,16 @@ export default function ProductCard({ product }: ProductCardProps) {
             className="object-cover transform transition-transform duration-500"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority
+            loading="eager"
+            quality={75}
+            onError={(e) => {
+              console.error(`Failed to load image: ${currentImage}`);
+              const target = e.target as HTMLImageElement;
+              // Fallback to a placeholder if image fails to load
+              if (target.src !== '/placeholder-image.jpg') {
+                target.src = '/placeholder-image.jpg';
+              }
+            }}
           />
 
           {/* Mobile Navigation */}
@@ -119,6 +129,15 @@ export default function ProductCard({ product }: ProductCardProps) {
                     fill
                     className="object-cover"
                     sizes="64px"
+                    quality={75}
+                    onError={(e) => {
+                      console.error(`Failed to load thumbnail image: ${image.url}`);
+                      const target = e.target as HTMLImageElement;
+                      // Fallback to a placeholder if image fails to load
+                      if (target.src !== '/placeholder-image.jpg') {
+                        target.src = '/placeholder-image.jpg';
+                      }
+                    }}
                   />
                 </button>
               ))}
@@ -131,34 +150,43 @@ export default function ProductCard({ product }: ProductCardProps) {
               {/* Desktop - Right Side Vertical */}
               {!isMobile && isHovered && (
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {product.colorVariants.map((variant, index) => (
-                    <button
-                      key={variant.id}
-                      className={`relative w-16 h-20 overflow-hidden rounded-md transition-all duration-200 ${
-                        currentColorIndex === index 
-                          ? 'ring-2 ring-[#7c3f61] ring-offset-2 scale-110' 
-                          : 'ring-1 ring-white/50 hover:ring-[#7c3f61] hover:scale-105'
-                      }`}
-                      onMouseEnter={() => {
-                        setCurrentColorIndex(index)
-                        setCurrentImageIndex(0)
+                {product.colorVariants.map((variant, index) => (
+                  <button
+                    key={variant.id}
+                    className={`relative w-16 h-20 overflow-hidden rounded-md transition-all duration-200 ${
+                      currentColorIndex === index 
+                        ? 'ring-2 ring-[#7c3f61] ring-offset-2 scale-110' 
+                        : 'ring-1 ring-white/50 hover:ring-[#7c3f61] hover:scale-105'
+                    }`}
+                    onMouseEnter={() => {
+                      setCurrentColorIndex(index)
+                      setCurrentImageIndex(0)
+                    }}
+                  >
+                    <Image
+                      src={variant.images[0]?.url || '/placeholder-image.jpg'}
+                      alt={`${product.name} - ${variant.color}`}
+                      fill
+                      className="object-cover"
+                      sizes="64px"
+                      quality={75}
+                      onError={(e) => {
+                        console.error(`Failed to load variant image: ${variant.images[0]?.url}`);
+                        const target = e.target as HTMLImageElement;
+                        // Fallback to a placeholder if image fails to load
+                        if (target.src !== '/placeholder-image.jpg') {
+                          target.src = '/placeholder-image.jpg';
+                        }
                       }}
-                    >
-                      <Image
-                        src={variant.images[0]?.url || '/default-image.jpg'}
-                        alt={`${product.name} - ${variant.color}`}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
-                      <div className="absolute inset-x-0 bottom-0 bg-black/50 py-1">
-                        <p className="text-xs text-white text-center capitalize">
-                          {variant.color}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+                    />
+                    <div className="absolute inset-x-0 bottom-0 bg-black/50 py-1">
+                      <p className="text-xs text-white text-center capitalize">
+                        {variant.color}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
               )}
 
               {/* Mobile - Horizontal Scroll */}
@@ -180,11 +208,20 @@ export default function ProductCard({ product }: ProductCardProps) {
                         }`}
                       >
                         <Image
-                          src={variant.images[0]?.url || '/default-image.jpg'}
+                          src={variant.images[0]?.url || '/placeholder-image.jpg'}
                           alt={variant.color}
                           fill
                           className="object-cover"
                           sizes="40px"
+                          quality={75}
+                          onError={(e) => {
+                            console.error(`Failed to load mobile variant image: ${variant.images[0]?.url}`);
+                            const target = e.target as HTMLImageElement;
+                            // Fallback to a placeholder if image fails to load
+                            if (target.src !== '/placeholder-image.jpg') {
+                              target.src = '/placeholder-image.jpg';
+                            }
+                          }}
                         />
                       </button>
                     ))}

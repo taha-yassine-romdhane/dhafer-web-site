@@ -66,6 +66,15 @@ const TopVentSection: React.FC = () => {
                   priority={index === 0}
                   sizes="(max-width: 768px) 33vw, 25vw"
                   quality={75}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  onError={(e) => {
+                    console.error(`Failed to load image: ${src}`);
+                    const target = e.target as HTMLImageElement;
+                    // Fallback to a placeholder if image fails to load
+                    if (target.src !== '/placeholder-image.jpg') {
+                      target.src = '/placeholder-image.jpg';
+                    }
+                  }}
                 />
               </div>
             ))}
@@ -89,9 +98,17 @@ const TopVentSection: React.FC = () => {
                   fill
                   className="object-cover rounded-lg"
                   priority={index === 0}
-                  loading={index === 0 ? 'eager' : 'lazy'}
+                  loading={index === 0 ? "eager" : "lazy"}
                   sizes="(max-width: 768px) 33vw, 25vw"
                   quality={75}
+                  onError={(e) => {
+                    console.error(`Failed to load image: ${src}`);
+                    const target = e.target as HTMLImageElement;
+                    // Fallback to a placeholder if image fails to load
+                    if (target.src !== '/placeholder-image.jpg') {
+                      target.src = '/placeholder-image.jpg';
+                    }
+                  }}
                 />
               </div>
             ))}
@@ -128,7 +145,7 @@ const TopVentSection: React.FC = () => {
           <p className="text-xl mb-8 max-w-[80%] text-gray-700">
             Explorez nos produits les plus populaires et profitez des meilleures offres.
           </p>
-          <Link href="/top-vente" passHref>
+          <Link href="/collections" passHref>
             <Button
               className="inline-flex items-center justify-center px-8 py-3 text-xl font-semibold text-white bg-[#7c3f61] rounded-full hover:bg-[#7c3f61]/90 transition-colors shadow-lg hover:shadow-xl"
               onClick={handleButtonClick}
