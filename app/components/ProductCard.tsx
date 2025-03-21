@@ -205,7 +205,9 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Product Details */}
         <div className="p-4">
           <h3 className="text-lg font-semibold line-clamp-1">{product.name}</h3>
-          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{product.description}</p>
+          <p className="text-sm text-gray-600 mt-1 line-clamp-1">
+            {product.description.split('\n')[0]}
+          </p>
 
           {/* Price */}
           <div className="mt-3 flex items-baseline space-x-2">
