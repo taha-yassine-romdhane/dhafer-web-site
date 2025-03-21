@@ -81,6 +81,7 @@ interface DirectPurchaseFormProps {
     name: string
     price: number
     mainImageUrl: string | null
+    selectedColor?: string
   }
 }
 
@@ -273,6 +274,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
             <p><strong>Téléphone:</strong> {formData?.phone}</p>
             <p><strong>Quantité:</strong> {formData?.quantity}</p>
             <p><strong>Produit:</strong> {productInfo.name}</p>
+            {productInfo.selectedColor && <p><strong>Couleur:</strong> {productInfo.selectedColor}</p>}
             <p><strong>Prix:</strong> <span className="text-[#7c3f61]">{productInfo.price * (formData?.quantity || 1)}</span> TND + <span className="text-[#7c3f61]">7 TND</span> de frais de livraison</p>
           </div>
           <DialogFooter>

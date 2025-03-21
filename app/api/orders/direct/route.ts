@@ -44,7 +44,7 @@ export async function POST(request: Request) {
 
     const stock = product.colorVariants[0].stocks[0];
 
-    if (!stock || stock.quantity < data.quantity) {
+    if (!stock || !stock.inStock) {
       return NextResponse.json(
         { error: 'Insufficient stock' },
         { status: 400 }
@@ -69,6 +69,7 @@ export async function POST(request: Request) {
               quantity: data.quantity,
               size: data.size,
               price: data.price,
+              color: data.color,
             },
           ],
         },

@@ -163,6 +163,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
       ...formData,
       productId: product.id,
       colorId: selectedColorVariant.id,
+      color: selectedColorVariant.color,
       size: selectedSize,
       price: product.salePrice || product.price,
     };
@@ -201,6 +202,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
     const orderData = {
       productId: product!.id,
       colorId: selectedColorVariant!.id,
+      color: selectedColorVariant!.color,
       size: selectedSize,
       price: product!.salePrice || product!.price,
       ...userDetails,
@@ -457,6 +459,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
                 name: product.name,
                 price: product.salePrice || product.price,
                 mainImageUrl: selectedImageUrl,
+                selectedColor: selectedColorVariant.color,
               }}
             />
           </div>
