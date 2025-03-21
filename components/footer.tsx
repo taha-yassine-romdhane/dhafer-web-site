@@ -64,12 +64,12 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/promo" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
+                <Link href="/" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
                   Promotions
                 </Link>
               </li>
               <li>
-                <Link href="/top-vente" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
+                <Link href="/" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
                   TOP Vente
                 </Link>
               </li>

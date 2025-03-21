@@ -8,7 +8,7 @@ import { useCart } from "@/lib/context/cart-context";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle,  DialogFooter } from "@/components/ui/dialog";
 
 interface ProductWithColorVariants extends Product {
   images: ProductImage[];
@@ -36,6 +36,7 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<{ [key: string]: string }>({});
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState<ProductWithColorVariants | null>(null);
   const { addItem } = useCart();
 
   const formatPrice = (price: number) => {
@@ -82,14 +83,32 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
   }, [filters]);
 
   const handleAddToCart = (product: ProductWithColorVariants) => {
-    if (!selectedColors[product.id] || !selectedSizes[product.id]) {
-      setDialogOpen(true);
+    // Set the current product for the dialog
+    setCurrentProduct(product);
+    
+    // If a color is already selected, use it, otherwise default to the first color
+    if (!selectedColors[product.id] && product.colorVariants.length > 0) {
+      const firstVariant = product.colorVariants[0];
+      setSelectedColors({ ...selectedColors, [product.id]: firstVariant.color });
+      
+      const mainImage = firstVariant.images.find(img => img.isMain)?.url || firstVariant.images[0]?.url;
+      if (mainImage) {
+        setSelectedImage({ ...selectedImage, [product.id]: mainImage });
+      }
+    }
+    
+    // Open the dialog to select size
+    setDialogOpen(true);
+  };
+
+  const confirmAddToCart = () => {
+    if (!currentProduct || !selectedColors[currentProduct.id] || !selectedSizes[currentProduct.id]) {
       return;
     }
 
     // Find the selected color variant and its images
-    const selectedColorVariant = product.colorVariants.find(
-      variant => variant.color === selectedColors[product.id]
+    const selectedColorVariant = currentProduct.colorVariants.find(
+      variant => variant.color === selectedColors[currentProduct.id]
     );
 
     if (!selectedColorVariant) {
@@ -99,15 +118,18 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
 
     // Create a modified product with the correct images
     const productWithImages = {
-      ...product,
+      ...currentProduct,
       images: selectedColorVariant.images
     };
 
     addItem(
       productWithImages,
-      selectedSizes[product.id],
-      selectedColors[product.id]
+      selectedSizes[currentProduct.id],
+      selectedColors[currentProduct.id]
     );
+    
+    // Close the dialog
+    setDialogOpen(false);
   };
 
   return (
@@ -233,39 +255,103 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                   );
                 })}
               </div>
-
-              {/* Size Options */}
-              <div className="mt-1 flex flex-wrap gap-1">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSizes({ ...selectedSizes, [product.id]: size })}
-                    className={cn(
-                      "px-1 py-0.5 text-xs rounded border",
-                      selectedSizes[product.id] === size
-                        ? "border-[#7c3f61] bg-[#7c3f61] text-white"
-                        : "border-gray-200 hover:border-gray-300"
-                    )}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
             </div>
           ))}
         </div>
       )}
       
-      {/* Dialog */}
+      {/* Updated Dialog with Size Selection */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          <DialogTitle>Veuillez sélectionner une taille et une couleur</DialogTitle>
-          <DialogDescription>
-            Vous devez sélectionner une taille et une couleur avant d'ajouter ce produit au panier.
-          </DialogDescription>
-          <Button onClick={() => setDialogOpen(false)} className="bg-[#7c3f61] hover:bg-[#7c3f61]/80 text-white">
-            D'accord
-          </Button>
+        <DialogContent className="sm:max-w-md">
+          <DialogTitle>Veuillez sélectionner une taille</DialogTitle>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+            {/* Product Image */}
+            {currentProduct && selectedImage[currentProduct.id] && (
+              <div className="relative aspect-square rounded-md overflow-hidden">
+                <Image
+                  src={selectedImage[currentProduct.id]}
+                  alt={currentProduct.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 300px"
+                />
+              </div>
+            )}
+            
+            {/* Product Info and Size Selection */}
+            <div className="flex flex-col justify-between">
+              {currentProduct && (
+                <>
+                  <div>
+                    <h3 className="font-semibold text-lg">{currentProduct.name}</h3>
+                    <p className="text-sm text-gray-500 mt-1">{currentProduct.description.split('\n')[0]}</p>
+                    
+                    {/* Price */}
+                    <div className="mt-2">
+                      {currentProduct.salePrice ? (
+                        <>
+                          <p className="text-xs text-gray-500 line-through">{formatPrice(currentProduct.price)} TND</p>
+                          <p className="text-sm text-[#7c3f61] font-semibold">
+                            <span className="text-red-600 mr-1">Promo :</span> {formatPrice(currentProduct.salePrice)} TND
+                          </p>
+                        </>
+                      ) : (
+                        <p className="text-sm text-[#7c3f61]">{formatPrice(currentProduct.price)} TND</p>
+                      )}
+                    </div>
+                    
+                    {/* Selected Color */}
+                    {selectedColors[currentProduct.id] && (
+                      <div className="mt-2">
+                        <p className="text-sm">
+                          Couleur: <span className="font-medium capitalize">{selectedColors[currentProduct.id]}</span>
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Size Options */}
+                  <div className="mt-4">
+                    <p className="text-sm font-medium mb-2">Sélectionnez une taille:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {currentProduct.sizes.map((size) => (
+                        <button
+                          key={size}
+                          onClick={() => setSelectedSizes({ ...selectedSizes, [currentProduct.id]: size })}
+                          className={cn(
+                            "px-3 py-1 text-sm rounded border",
+                            selectedSizes[currentProduct.id] === size
+                              ? "border-[#7c3f61] bg-[#7c3f61] text-white"
+                              : "border-gray-200 hover:border-gray-300"
+                          )}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              onClick={() => setDialogOpen(false)} 
+              variant="outline" 
+              className="mr-2"
+            >
+              Annuler
+            </Button>
+            <Button 
+              onClick={confirmAddToCart} 
+              className="bg-[#7c3f61] hover:bg-[#7c3f61]/80 text-white"
+              disabled={!currentProduct || !selectedSizes[currentProduct?.id]}
+            >
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              Ajouter au panier
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

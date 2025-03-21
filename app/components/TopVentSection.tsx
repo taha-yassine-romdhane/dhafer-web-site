@@ -109,7 +109,7 @@ const TopVentSection: React.FC = () => {
           <p className="text-base sm:text-lg mb-4 text-gray-700 mx-auto">
             Explorez nos produits les plus populaires et profitez des meilleures offres.
           </p>
-          <Link href="/top-vente" passHref className="block">
+          <Link href="/collections" passHref className="block">
             <Button
               className="inline-flex items-center justify-center px-6 py-2.5 text-base font-semibold text-white bg-[#7c3f61] rounded-full hover:bg-[#7c3f61]/90 transition-colors shadow-lg hover:shadow-xl mx-auto w-full"
               onClick={handleButtonClick}
