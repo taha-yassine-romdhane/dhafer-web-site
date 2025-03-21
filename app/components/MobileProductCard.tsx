@@ -112,15 +112,6 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
             );
           })}
         </div>
-
-        {/* Size Options */}
-        <div className="flex gap-2 mt-1">
-          {product.sizes.map((size) => (
-            <span key={size} className="text-xs text-gray-600 uppercase">
-              {size}
-            </span>
-          ))}
-        </div>
       </div>
     </div>
   );
