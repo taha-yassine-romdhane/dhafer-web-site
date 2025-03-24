@@ -65,15 +65,15 @@ export default function SignUp() {
             height={150}
             className="mx-auto"
           />
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Create your account
+          <h2 className="mt-6 text-3xl font-bold  text-[#7c3f61]">
+            Créer un compte
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="username" className="sr-only">
-                Username
+                Nom d'utilisateur
               </label>
               <input
                 id="username"
@@ -81,7 +81,7 @@ export default function SignUp() {
                 type="text"
                 required
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61]"
-                placeholder="Username"
+                placeholder="Nom d'utilisateur"
                 value={formData.username}
                 onChange={handleChange}
               />
@@ -103,7 +103,7 @@ export default function SignUp() {
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
-                Password
+                Mot de passe
               </label>
               <input
                 id="password"
@@ -111,14 +111,14 @@ export default function SignUp() {
                 type="password"
                 required
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61]"
-                placeholder="Password"
+                placeholder="Mot de passe"
                 value={formData.password}
                 onChange={handleChange}
               />
             </div>
             <div>
               <label htmlFor="confirmPassword" className="sr-only">
-                Confirm Password
+                Confirmer le mot de passe
               </label>
               <input
                 id="confirmPassword"
@@ -126,7 +126,7 @@ export default function SignUp() {
                 type="password"
                 required
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61]"
-                placeholder="Confirm Password"
+                placeholder="Confirmer le mot de passe"
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
@@ -150,24 +150,24 @@ export default function SignUp() {
           </div>
 
           <div className="text-center text-sm">
-            <span className="text-gray-600">Already have an account?</span>{' '}
+            <span className="text-gray-600">Déjà un compte?</span>{' '}
             <Link
               href="/login"
               className="font-medium text-[#7c3f61] hover:text-[#7c3f61]"
             >
-              Sign in
+              Se connecter
             </Link>
           </div>
         </form>
 
         <div className="mt-6 text-center text-xs text-gray-500">
-          By signing up, you agree to our{' '}
-          <Link href="/terms" className="text-[#7c3f61] hover:text-[#7c3f61]">
-            Terms of Service
+          En vous inscrivant, vous acceptez nos{' '}
+          <Link href="/policy" className="text-[#7c3f61] hover:text-[#7c3f61]">
+            Conditions d'utilisation
           </Link>{' '}
-          and{' '}
-          <Link href="/privacy" className="text-[#7c3f61] hover:text-[#7c3f61]">
-            Privacy Policy
+          et{' '}
+          <Link href="/policy" className="text-[#7c3f61] hover:text-[#7c3f61]">
+            Politique de confidentialité
           </Link>
         </div>
       </div>

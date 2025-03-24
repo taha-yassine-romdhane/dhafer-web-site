@@ -47,11 +47,11 @@ export default function ForgotPassword() {
             className="mx-auto"
           />
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Forgot your password?
+        <h2 className="mt-6 text-center text-3xl font-bold text-[#7c3f61]">
+          Vous avez oublié votre mot de passe ?
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Enter your email address and we'll send you instructions to reset your password.
+        <p className="mt-2 text-center text-sm text-[#7c3f61]">
+          Entrez votre adresse e-mail et nous vous enverrons des instructions pour réinitialiser votre mot de passe.
         </p>
       </div>
 
@@ -59,7 +59,7 @@ export default function ForgotPassword() {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-[#7c3f61]">
                 Email address
               </label>
               <div className="mt-1">
@@ -88,7 +88,7 @@ export default function ForgotPassword() {
                 disabled={isSubmitting}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#7c3f61] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7c3f61]"
               >
-                {isSubmitting ? 'Sending...' : 'Send Reset Instructions'}
+                {isSubmitting ? 'Sending...' : 'Envoyer les instructions de réinitialisation'}
               </button>
             </div>
           </form>
@@ -108,7 +108,7 @@ export default function ForgotPassword() {
                 href="/login"
                 className="font-medium text-[#7c3f61] hover:text-[#B59851]"
               >
-                Back to login
+                Retour à la connexion
               </Link>
             </div>
           </div>
