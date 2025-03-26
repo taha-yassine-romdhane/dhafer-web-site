@@ -66,7 +66,7 @@ export default function CartPage() {
           customerName: customerDetails.name,
           phoneNumber: customerDetails.phone,
           address: customerDetails.address,
-          totalAmount: total,
+          totalAmount: totalPrice,
           items: items.map((item) => ({
             productId: item.id,
             quantity: item.quantity,
