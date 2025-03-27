@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Product, ProductImage, ColorVariant } from "@prisma/client";
+import { Product, ProductImage, ColorVariant, Stock } from "@prisma/client";
 import { useCart } from "@/lib/context/cart-context";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
@@ -15,6 +15,14 @@ interface ProductWithColorVariants extends Product {
   colorVariants: (ColorVariant & {
     images: ProductImage[];
   })[];
+}
+
+interface StockInfo {
+  [productId: string]: {
+    [colorId: string]: {
+      [size: string]: boolean;
+    };
+  };
 }
 
 interface ProductGridProps {
@@ -37,6 +45,7 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
   const [selectedImage, setSelectedImage] = useState<{ [key: string]: string }>({});
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<ProductWithColorVariants | null>(null);
+  const [stockInfo, setStockInfo] = useState<StockInfo>({});
   const { addItem } = useCart();
 
   const formatPrice = (price: number) => {
@@ -71,6 +80,28 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
           }
         });
         setSelectedImage(initialSelectedImages);
+
+        // Fetch stock information for each product
+        const stockData: StockInfo = {};
+        await Promise.all(data.map(async (product: ProductWithColorVariants) => {
+          const stockResponse = await fetch(`/api/products/${product.id}/stock`);
+          if (stockResponse.ok) {
+            const stocks = await stockResponse.json();
+            
+            // Initialize stock data structure for this product
+            stockData[product.id] = {};
+            
+            // Process stock data
+            stocks.forEach((stock: Stock) => {
+              if (!stockData[product.id][stock.colorId]) {
+                stockData[product.id][stock.colorId] = {};
+              }
+              stockData[product.id][stock.colorId][stock.size] = stock.inStock;
+            });
+          }
+        }));
+        
+        setStockInfo(stockData);
       } catch (error) {
         console.error('Error fetching products:', error);
         setError(error instanceof Error ? error.message : 'Failed to fetch products');
@@ -81,6 +112,25 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
 
     fetchProducts();
   }, [filters]);
+
+  // Check if a color has any sizes in stock
+  const isColorInStock = (productId: number, colorId: number) => {
+    if (!stockInfo[productId] || !stockInfo[productId][colorId]) {
+      return true; // Default to true if we don't have stock info yet
+    }
+    
+    // Check if any size for this color is in stock
+    return Object.values(stockInfo[productId][colorId]).some(inStock => inStock);
+  };
+
+  // Check if a specific size is in stock for a color
+  const isSizeInStock = (productId: number, colorId: number, size: string) => {
+    if (!stockInfo[productId] || !stockInfo[productId][colorId]) {
+      return true; // Default to true if we don't have stock info yet
+    }
+    
+    return stockInfo[productId][colorId][size] === true;
+  };
 
   const handleAddToCart = (product: ProductWithColorVariants) => {
     // Set the current product for the dialog
@@ -234,22 +284,28 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
               <div className="mt-1 flex gap-1.5">
                 {product.colorVariants.map((variant) => {
                   const variantMainImage = variant.images.find(img => img.isMain)?.url || variant.images[0]?.url;
+                  const colorInStock = isColorInStock(product.id, variant.id);
                   return (
                     <button
                       key={variant.id}
                       onClick={() => {
-                        setSelectedColors({ ...selectedColors, [product.id]: variant.color });
-                        if (variantMainImage) {
-                          setSelectedImage({ ...selectedImage, [product.id]: variantMainImage });
+                        if (colorInStock) {
+                          setSelectedColors({ ...selectedColors, [product.id]: variant.color });
+                          if (variantMainImage) {
+                            setSelectedImage({ ...selectedImage, [product.id]: variantMainImage });
+                          }
                         }
                       }}
                       className={cn(
                         "w-6 h-6 rounded-full border-2 relative overflow-hidden group",
                         selectedColors[product.id] === variant.color
                           ? "border-[#7c3f61] ring-2 ring-[#7c3f61] ring-offset-1"
-                          : "border-transparent hover:border-gray-300"
+                          : colorInStock 
+                            ? "border-transparent hover:border-gray-300" 
+                            : "border-transparent opacity-50 cursor-not-allowed"
                       )}
                       aria-label={variant.color}
+                      disabled={!colorInStock}
                     >
                       {variantMainImage && (
                         <div className="absolute inset-[-50%] w-[200%] h-[200%]">
@@ -257,9 +313,17 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                             src={variantMainImage}
                             alt={`${product.name} in ${variant.color}`}
                             fill
-                            className="object-cover transition-transform duration-200 scale-150 group-hover:scale-170"
+                            className={cn(
+                              "object-cover transition-transform duration-200 scale-150 group-hover:scale-170",
+                              !colorInStock && "opacity-50"
+                            )}
                             sizes="24px"
                           />
+                        </div>
+                      )}
+                      {!colorInStock && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-white/30">
+                          <span className="text-[8px] font-bold text-red-600">OUT</span>
                         </div>
                       )}
                     </button>
@@ -336,20 +400,39 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                   <div className="mt-4">
                     <p className="text-sm font-medium mb-2">Sélectionnez une taille:</p>
                     <div className="flex flex-wrap gap-2">
-                      {currentProduct.sizes.map((size) => (
-                        <button
-                          key={size}
-                          onClick={() => setSelectedSizes({ ...selectedSizes, [currentProduct.id]: size })}
-                          className={cn(
-                            "px-3 py-1 text-sm rounded border",
-                            selectedSizes[currentProduct.id] === size
-                              ? "border-[#7c3f61] bg-[#7c3f61] text-white"
-                              : "border-gray-200 hover:border-gray-300"
-                          )}
-                        >
-                          {size}
-                        </button>
-                      ))}
+                      {currentProduct.sizes.map((size) => {
+                        const selectedColorVariant = currentProduct.colorVariants.find(
+                          variant => variant.color === selectedColors[currentProduct.id]
+                        );
+                        const sizeInStock = selectedColorVariant 
+                          ? isSizeInStock(currentProduct.id, selectedColorVariant.id, size)
+                          : false;
+                        
+                        return (
+                          <button
+                            key={size}
+                            onClick={() => {
+                              if (sizeInStock) {
+                                setSelectedSizes({ ...selectedSizes, [currentProduct.id]: size });
+                              }
+                            }}
+                            className={cn(
+                              "px-3 py-1 text-sm rounded border",
+                              selectedSizes[currentProduct.id] === size
+                                ? "border-[#7c3f61] bg-[#7c3f61] text-white"
+                                : sizeInStock
+                                  ? "border-gray-200 hover:border-gray-300"
+                                  : "border-gray-200 opacity-50 cursor-not-allowed"
+                            )}
+                            disabled={!sizeInStock}
+                          >
+                            {size}
+                            {!sizeInStock && (
+                              <span className="ml-1 text-xs text-red-500">•</span>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </>
