@@ -5,8 +5,10 @@ import { cn } from "@/lib/utils"
 import { MapPin } from "lucide-react"
 
 interface StockInfo {
-  location: string
-  quantity: number
+  inStockJammel: boolean
+  inStockTunis: boolean
+  inStockSousse: boolean
+  inStockOnline: boolean
   size: string
   colorId: number
 }
@@ -113,9 +115,15 @@ export function ProductAvailability({
       <h3 className="text-sm font-medium text-[#D4AF37]">Disponibilité en magasin</h3>
       <div className="space-y-2">
         {Object.entries(LOCATIONS).map(([key, location]) => {
-          const stockInfo = stocks.find(s => s.location === key)
-          const isAvailable = stockInfo && stockInfo.quantity > 0
-
+          // Map location key to the correct boolean field
+          let isAvailable = false;
+          if (stocks.length > 0) {
+            const stock = stocks[0]; // Only one stock record per product/size/color
+            if (key === "Jammel") isAvailable = stock.inStockJammel;
+            else if (key === "tunis") isAvailable = stock.inStockTunis;
+            else if (key === "sousse") isAvailable = stock.inStockSousse;
+            else if (key === "online") isAvailable = stock.inStockOnline;
+          }
           return (
             <div
               key={key}

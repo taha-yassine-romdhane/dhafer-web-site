@@ -95,7 +95,6 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
       address: "",
       governorate: "",
       phone: "",
-      email: "",
       quantity: 1,
     },
   })
@@ -103,12 +102,10 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
   useEffect(() => {
     if (isLoggedIn && user) {
       form.setValue("fullName", user.username)
-      form.setValue("email", user.email)
     }
   }, [isLoggedIn, user])
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false)
   const [formData, setFormData] = useState<z.infer<typeof formSchema> | null>(null)
 
   const incrementQuantity = () => {
@@ -127,7 +124,6 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
     if (formData) {
       await onSubmit(formData)
       setIsDialogOpen(false)
-      setIsSuccessDialogOpen(true)
     }
   }
 
@@ -147,7 +143,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                   <Input
                     placeholder="Nom et prénom"
                     {...field}
-                    className="rounded-full border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
+                    className="rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
                     disabled={!!user}
                   />
                 </FormControl>
@@ -165,7 +161,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                   <Input
                     placeholder="Adresse *"
                     {...field}
-                    className="rounded-full border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
+                    className="rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
                   />
                 </FormControl>
                 <FormMessage className="text-[#D4AF37]" />
@@ -180,7 +176,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
               <FormItem>
                 <FormControl>
                   <select
-                    className="w-full p-2 rounded-full border border-[#D4AF37]/20 bg-background focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20 outline-none"
+                    className="w-full p-2 rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20 outline-none"
                     {...field}
                   >
                     <option value="">Sélectionnez un gouvernorat</option>
@@ -203,7 +199,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                   <Input
                     placeholder="Téléphone"
                     {...field}
-                    className="rounded-full border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
+                    className="rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
                   />
                 </FormControl>
                 <FormMessage className="text-[#D4AF37]" />
@@ -211,23 +207,6 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    placeholder="Email"
-                    {...field}
-                    className="rounded-full border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
-                    disabled={!!user}
-                  />
-                </FormControl>
-                <FormMessage className="text-[#D4AF37]" />
-              </FormItem>
-            )}
-          />
 
           <div className="flex items-center gap-4">
             <FormField
@@ -241,7 +220,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                       variant="outline"
                       size="icon"
                       onClick={decrementQuantity}
-                      className="rounded-full w-8 h-8 border-[#D4AF37]/20 hover:bg-[#D4AF37]/10 hover:border-[#D4AF37] text-[#D4AF37] !border-[#D4AF37]/20"
+                      className="rounded-full w-8 h-8 hover:bg-[#D4AF37]/10 hover:border-[#D4AF37] text-[#D4AF37] !border-[#D4AF37]/20"
                     >
                       -
                     </Button>
@@ -250,7 +229,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                         type="number"
                         {...field}
                         onChange={(e) => field.onChange(parseInt(e.target.value))}
-                        className="text-center w-16 border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
+                        className="text-center w-16 focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
                       />
                     </FormControl>
                     <Button
@@ -258,7 +237,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                       variant="outline"
                       size="icon"
                       onClick={incrementQuantity}
-                      className="rounded-full w-8 h-8 border-[#D4AF37]/20 hover:bg-[#D4AF37]/10 hover:border-[#D4AF37] text-[#D4AF37] !border-[#D4AF37]/20"
+                      className="rounded-full w-8 h-8 hover:bg-[#D4AF37]/10 hover:border-[#D4AF37] text-[#D4AF37] !border-[#D4AF37]/20"
                     >
                       +
                     </Button>
@@ -290,7 +269,6 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
             <p><strong>Adresse:</strong> {formData?.address}</p>
             <p><strong>Gouvernorat:</strong> {formData?.governorate}</p>
             <p><strong>Téléphone:</strong> {formData?.phone}</p>
-            <p><strong>Email:</strong> {formData?.email}</p>
             <p><strong>Quantité:</strong> {formData?.quantity}</p>
             <p><strong>Produit:</strong> {productInfo.name}</p>
             <p><strong>Prix:</strong> {productInfo.price * (formData?.quantity || 1)} TND</p>

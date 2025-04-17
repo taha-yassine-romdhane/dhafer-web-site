@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -8,7 +7,6 @@ import { Product, ColorVariant, ProductImage, Stock } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import ProductCard from "@/app/components/ProductCard";
 import MobileProductCard from "@/app/components/MobileProductCard";
-import ProductGrid from "../../components/product-grid";
 
 type PromoProduct = Product & {
   colorVariants: (ColorVariant & {
@@ -26,20 +24,54 @@ const PromoPage = () => {
   useEffect(() => {
     const fetchPromoProducts = async () => {
       try {
+        console.log('Starting to fetch promo products...');
         setLoading(true);
         setError(null);
-        const response = await fetch('/api/products/promo');
-
+        
+        // Create an AbortController to handle timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+        
+        const response = await fetch('/api/products/promo', {
+          signal: controller.signal,
+          // Add cache: 'no-store' to prevent caching issues
+          cache: 'no-store'
+        });
+        
+        // Clear the timeout since we got a response
+        clearTimeout(timeoutId);
+        
+        console.log('Received response with status:', response.status);
+        
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+          const errorText = await response.text();
+          console.error('API error response:', errorText);
+          let errorMessage = `HTTP error! status: ${response.status}`;
+          
+          try {
+            // Try to parse as JSON, but handle case where it's not JSON
+            const errorData = JSON.parse(errorText);
+            if (errorData.error) errorMessage = errorData.error;
+          } catch (e) {
+            // Not JSON, use the text as is
+            if (errorText) errorMessage = errorText;
+          }
+          
+          throw new Error(errorMessage);
         }
-
+        
         const data = await response.json();
+        console.log(`Fetched ${data.length} promo products successfully`);
         setProducts(data);
-      } catch (error) {
-        console.error('Error fetching promotional products:', error);
-        setError(error instanceof Error ? error.message : 'Failed to load promotional products');
+      } catch (error: unknown) {
+        // Handle specific error types
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.error('Request timed out after 15 seconds');
+          setError('Request timed out. The server took too long to respond.');
+        } else {
+          console.error('Error fetching promotional products:', error);
+          setError(error instanceof Error ? error.message : 'Failed to load promotional products');
+        }
       } finally {
         setLoading(false);
       }

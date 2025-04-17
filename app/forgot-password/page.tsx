@@ -48,10 +48,10 @@ export default function ForgotPassword() {
           />
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Forgot your password?
+          Mot de passe oublié?
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Enter your email address and we'll send you instructions to reset your password.
+          Saisissez votre adresse e-mail et nous vous enverrons des instructions pour réinitialiser votre mot de passe.
         </p>
       </div>
 
@@ -60,7 +60,7 @@ export default function ForgotPassword() {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+                Email
               </label>
               <div className="mt-1">
                 <input
@@ -108,7 +108,7 @@ export default function ForgotPassword() {
                 href="/login"
                 className="font-medium text-[#D4AF37] hover:text-[#B59851]"
               >
-                Back to login
+                Retour à la connexion
               </Link>
             </div>
           </div>

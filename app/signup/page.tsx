@@ -66,14 +66,14 @@ export default function SignUp() {
             className="mx-auto"
           />
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Create your account
+            Ajouter un compte
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="username" className="sr-only">
-                Username
+                Nom d'utilisateur
               </label>
               <input
                 id="username"
@@ -88,7 +88,7 @@ export default function SignUp() {
             </div>
             <div>
               <label htmlFor="email" className="sr-only">
-                Email address
+                Email
               </label>
               <input
                 id="email"
@@ -103,7 +103,7 @@ export default function SignUp() {
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
-                Password
+                Mot de passe
               </label>
               <input
                 id="password"
@@ -118,7 +118,7 @@ export default function SignUp() {
             </div>
             <div>
               <label htmlFor="confirmPassword" className="sr-only">
-                Confirm Password
+                Confirmer le mot de passe
               </label>
               <input
                 id="confirmPassword"
@@ -126,7 +126,7 @@ export default function SignUp() {
                 type="password"
                 required
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C6A961] focus:border-[#C6A961]"
-                placeholder="Confirm Password"
+                placeholder="Confirmer le mot de passe"
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
@@ -145,29 +145,29 @@ export default function SignUp() {
               disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#C6A961] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C6A961] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Creating account...' : 'Sign up'}
+              {loading ? 'Creating account...' : 'Ajouter un compte'}
             </button>
           </div>
 
           <div className="text-center text-sm">
-            <span className="text-gray-600">Already have an account?</span>{' '}
+            <span className="text-gray-600">Déjà un compte?</span>{' '}
             <Link
               href="/login"
               className="font-medium text-[#C6A961] hover:text-[#B59851]"
             >
-              Sign in
+              Se connecter
             </Link>
           </div>
         </form>
 
         <div className="mt-6 text-center text-xs text-gray-500">
-          By signing up, you agree to our{' '}
+          En vous inscrivant, vous acceptez nos{' '}
           <Link href="/terms" className="text-[#C6A961] hover:text-[#B59851]">
-            Terms of Service
+            Conditions d'utilisation
           </Link>{' '}
-          and{' '}
+          et{' '}
           <Link href="/privacy" className="text-[#C6A961] hover:text-[#B59851]">
-            Privacy Policy
+            Politique de confidentialité
           </Link>
         </div>
       </div>

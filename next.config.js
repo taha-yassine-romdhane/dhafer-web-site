@@ -25,13 +25,6 @@ const nextConfig = {
     domains: ['ik.imagekit.io'],
     unoptimized: true,
   },
-  // Increase timeout for API routes
-  api: {
-    responseLimit: '8mb',
-    bodyParser: {
-      sizeLimit: '8mb',
-    },
-  },
 };
 
 module.exports = nextConfig;

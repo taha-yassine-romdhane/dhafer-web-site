@@ -137,7 +137,7 @@ export default function Login() {
                     htmlFor="remember_me"
                     className="ml-2 block text-sm text-gray-900"
                   >
-                    Remember me
+                    Se souvenir de moi
                   </label>
                 </div>
 
@@ -146,7 +146,7 @@ export default function Login() {
                     href="/forgot-password"
                     className="font-medium text-[#D4AF37] hover:text-[#B59851]"
                   >
-                    Forgot your password?
+                    Mot de passe oublié?
                   </Link>
                 </div>
               </div>
@@ -161,7 +161,7 @@ export default function Login() {
                   disabled={loading}
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37]"
                 >
-                  {loading ? 'Loading...' : 'Sign in'}
+                  {loading ? 'Loading...' : 'Se connecter'}
                 </button>
               </div>
             </form>

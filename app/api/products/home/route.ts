@@ -19,7 +19,6 @@ export async function GET() {
         colorVariants: {
           include: {
             images: true,
-            stocks: true, // Include stocks for each color variant
           },
         },
       },
