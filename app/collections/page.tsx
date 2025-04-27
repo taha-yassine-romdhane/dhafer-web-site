@@ -31,7 +31,7 @@ const CATEGORIES = [
 const CATEGORY_GROUPS = [
   {
     label: "Femme",
-    categories: ["abaya", "caftan", "robe-soire", "jebba"]
+    categories: ["abaya", "caftan", "robe-soire", "jebba" ,"tabdila"]
   },
   {
     label: "Enfants",

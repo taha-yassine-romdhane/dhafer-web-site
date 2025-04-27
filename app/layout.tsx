@@ -74,9 +74,9 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "ClothingStore",
               "name": "Dar El Koftan Al Assil",
-              "image": "https://www.darelkoftan.tn/logo.png",
-              "@id": "https://www.darelkoftan.tn",
-              "url": "https://www.darelkoftan.tn",
+              "image": "https://www.daralkoftanalassil.com/logo.png",
+              "@id": "https://www.daralkoftanalassil.com",
+              "url": "https://www.daralkoftanalassil.com",
               "telephone": "+216 56 047 691",
               "address": {
                 "@type": "PostalAddress",

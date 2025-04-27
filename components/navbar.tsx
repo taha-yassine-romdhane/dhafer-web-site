@@ -41,6 +41,7 @@ const collectionCategories: Category[] = [
       { name: "CAFTAN", query: "caftan" },
       { name: "ROBE SOIRE", query: "robe-soire" },
       { name: "JEBBA", query: "jebba" },
+      { name: "TABDILA", query: "tabdila" },
     ],
   },
   {
