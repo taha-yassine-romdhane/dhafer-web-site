@@ -18,14 +18,6 @@ import { ShoppingBag, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 
-// Add user type based on your schema
-interface User {
-  id: number
-  username: string
-  email: string
-  isSubscribed: boolean
-  fidelityPoints: number
-}
 
 const formSchema = z.object({
   fullName: z.string().min(2, {
@@ -81,6 +73,7 @@ interface DirectPurchaseFormProps {
     name: string
     price: number
     mainImageUrl: string | null
+    email?: string
   }
 }
 
@@ -95,6 +88,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
       address: "",
       governorate: "",
       phone: "",
+      email: "",
       quantity: 1,
     },
   })
@@ -207,6 +201,23 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    placeholder="Email (facultatif)"
+                    {...field}
+                    className="rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
+                  />
+                </FormControl>
+                <FormMessage className="text-[#D4AF37]" />
+              </FormItem>
+            )}
+          />
+
 
           <div className="flex items-center gap-4">
             <FormField
@@ -266,6 +277,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
           <div className="space-y-4">
             {productInfo.mainImageUrl && <img src={productInfo.mainImageUrl} alt="Product Main Image" style={{ width: '150px', height: 'auto' }} />}
             <p><strong>Nom et prénom:</strong> {formData?.fullName}</p>
+            <p><strong>Email:</strong> {formData?.email}</p>
             <p><strong>Adresse:</strong> {formData?.address}</p>
             <p><strong>Gouvernorat:</strong> {formData?.governorate}</p>
             <p><strong>Téléphone:</strong> {formData?.phone}</p>

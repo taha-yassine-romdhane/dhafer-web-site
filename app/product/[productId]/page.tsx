@@ -29,11 +29,12 @@ export default function ProductPage({ params }: { params: { productId: string } 
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
-  const [userDetails, setUserDetails] = useState<{ fullName: string; address: string; governorate: string; phone: string }>({
+  const [userDetails, setUserDetails] = useState<{ fullName: string; address: string; governorate: string; phone: string; email: string }>({
     fullName: "",
     address: "",
     governorate: "",
     phone: "",
+    email: ""
   });
   const [suggestedProducts, setSuggestedProducts] = useState<ProductWithColorVariants[]>([]);
   const { addItem } = useCart();
@@ -130,6 +131,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
         address: formData.address,
         governorate: formData.governorate,
         phone: formData.phone,
+        email: formData.email
       });
 
       setIsSuccessDialogOpen(true);
@@ -366,6 +368,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
               productInfo={{
                 name: product.name,
                 price: product.salePrice || product.price,
+                email: userDetails.email,
                 mainImageUrl: selectedImageUrl,
               }}
             />

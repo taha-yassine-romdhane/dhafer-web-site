@@ -43,6 +43,9 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
   };
 
   useEffect(() => {
+    // Track if the component is still mounted
+    let isMounted = true;
+    
     async function fetchProducts() {
       try {
         const params = new URLSearchParams();
@@ -56,29 +59,65 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
           throw new Error('Failed to fetch products');
         }
         const data = await response.json();
-        setProducts(data);
-
-        const initialSelectedImages: { [key: string]: string } = {};
-        data.forEach((product: ProductWithColorVariants) => {
-          // Find the first color variant and its main image
-          const firstVariant = product.colorVariants[0];
-          if (firstVariant) {
-            const mainImage = firstVariant.images.find(img => img.isMain)?.url || firstVariant.images[0]?.url;
-            if (mainImage) {
-              initialSelectedImages[product.id] = mainImage;
+        
+        // Process in batches to prevent UI freezing
+        if (isMounted) {
+          // First set the products without images to get the UI ready
+          setProducts(data);
+          
+          // Then process images in a separate tick
+          setTimeout(() => {
+            if (isMounted) {
+              const initialSelectedImages: { [key: string]: string } = {};
+              
+              // Process 2 products at a time with a small delay between batches
+              const processProductBatch = (startIndex: number) => {
+                if (!isMounted) return;
+                
+                const endIndex = Math.min(startIndex + 2, data.length);
+                
+                for (let i = startIndex; i < endIndex; i++) {
+                  const product = data[i];
+                  const firstVariant = product.colorVariants[0];
+                  if (firstVariant) {
+                    const mainImage = firstVariant.images.find((img: ProductImage) => img.isMain)?.url || firstVariant.images[0]?.url;
+                    if (mainImage) {
+                      initialSelectedImages[product.id] = mainImage;
+                    }
+                  }
+                }
+                
+                // Update images for processed products
+                setSelectedImage(prev => ({ ...prev, ...initialSelectedImages }));
+                
+                // Process next batch if there are more products
+                if (endIndex < data.length && isMounted) {
+                  setTimeout(() => processProductBatch(endIndex), 50);
+                } else if (isMounted) {
+                  setLoading(false);
+                }
+              };
+              
+              // Start processing from the first product
+              processProductBatch(0);
             }
-          }
-        });
-        setSelectedImage(initialSelectedImages);
+          }, 100);
+        }
       } catch (error) {
-        console.error('Error fetching products:', error);
-        setError(error instanceof Error ? error.message : 'Failed to fetch products');
-      } finally {
-        setLoading(false);
+        if (isMounted) {
+          console.error('Error fetching products:', error);
+          setError(error instanceof Error ? error.message : 'Failed to fetch products');
+          setLoading(false);
+        }
       }
     }
 
     fetchProducts();
+    
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      isMounted = false;
+    };
   }, [filters]);
 
   const handleAddToCart = (product: ProductWithColorVariants) => {
@@ -154,6 +193,10 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                     fill
                     className="object-cover object-center transition-opacity duration-300"
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    loading="lazy"
+                    quality={50}
+                    placeholder="blur"
+                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
                   />
                 )}
 
@@ -226,6 +269,10 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                             fill
                             className="object-cover transition-transform duration-200 scale-150 group-hover:scale-170"
                             sizes="24px"
+                            loading="lazy"
+                            quality={30}
+                            placeholder="blur"
+                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
                           />
                         </div>
                       )}
