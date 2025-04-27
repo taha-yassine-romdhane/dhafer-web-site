@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Product, ProductImage, ColorVariant } from "@prisma/client";
-import { useCart } from "@/lib/context/cart-context";
+// Removed cart context import as it's no longer needed in this component
+// import { useCart } from "@/lib/context/cart-context";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+// Dialog components no longer needed
+// import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 interface ProductWithColorVariants extends Product {
   images: ProductImage[];
@@ -35,8 +37,9 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
   const [selectedColors, setSelectedColors] = useState<{ [key: string]: string }>({});
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<{ [key: string]: string }>({});
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const { addItem } = useCart();
+  // No longer need dialog or cart context for quick add
+  // const [dialogOpen, setDialogOpen] = useState(false);
+  // const { addItem } = useCart();
 
   const formatPrice = (price: number) => {
     return price.toFixed(2);
@@ -120,34 +123,7 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
     };
   }, [filters]);
 
-  const handleAddToCart = (product: ProductWithColorVariants) => {
-    if (!selectedColors[product.id] || !selectedSizes[product.id]) {
-      setDialogOpen(true);
-      return;
-    }
-
-    // Find the selected color variant and its images
-    const selectedColorVariant = product.colorVariants.find(
-      variant => variant.color === selectedColors[product.id]
-    );
-
-    if (!selectedColorVariant) {
-      console.error('Selected color variant not found');
-      return;
-    }
-
-    // Create a modified product with the correct images
-    const productWithImages = {
-      ...product,
-      images: selectedColorVariant.images
-    };
-
-    addItem(
-      productWithImages,
-      selectedSizes[product.id],
-      selectedColors[product.id]
-    );
-  };
+  // Removed handleAddToCart function as we're directing users to the product page instead
 
   return (
     <>
@@ -207,7 +183,7 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                   </div>
                 )}
 
-                {/* Quick Add Overlay */}
+                {/* See More Details Overlay */}
                 <div className={cn(
                   "absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 transition-opacity duration-300",
                   hoveredProduct === product.id.toString() && "opacity-100"
@@ -215,12 +191,12 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                   <Button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleAddToCart(product);
+                      router.push(`/product/${product.id}`);
                     }}
                     className="bg-white text-black hover:bg-gray-100 bg-gray-200 text-gray-900 hover:bg-[#D4AF37] hover:text-white"
                   >
-                    <ShoppingCart className="w-4 h-4 mr-2 " />
-                    Ajout Rapide
+                    <Eye className="w-4 h-4 mr-2 " />
+                    Voir Détails
                   </Button>
                 </div>
               </div>
@@ -280,41 +256,12 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                   );
                 })}
               </div>
-
-              {/* Size Options */}
-              <div className="mt-1 flex flex-wrap gap-1">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSizes({ ...selectedSizes, [product.id]: size })}
-                    className={cn(
-                      "px-1 py-0.5 text-xs rounded border",
-                      selectedSizes[product.id] === size
-                        ? "border-[#D4AF37] bg-[#D4AF37] text-white"
-                        : "border-gray-200 hover:border-gray-300"
-                    )}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
             </div>
           ))}
         </div>
       )}
       
-      {/* Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          <DialogTitle>Veuillez sélectionner une taille et une couleur</DialogTitle>
-          <DialogDescription>
-            Vous devez sélectionner une taille et une couleur avant d'ajouter ce produit au panier.
-          </DialogDescription>
-          <Button onClick={() => setDialogOpen(false)} className="bg-[#D4AF37] hover:bg-[#B59851] text-white">
-            D'accord
-          </Button>
-        </DialogContent>
-      </Dialog>
+      {/* Dialog removed as it's no longer needed */}
     </>
   );
 };

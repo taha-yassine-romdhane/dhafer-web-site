@@ -29,6 +29,8 @@ export default function ProductPage({ params }: { params: { productId: string } 
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
+  const [isProductAvailable, setIsProductAvailable] = useState(false);
+  const [stockInfo, setStockInfo] = useState<Array<any>>([]);
   const [userDetails, setUserDetails] = useState<{ fullName: string; address: string; governorate: string; phone: string; email: string }>({
     fullName: "",
     address: "",
@@ -83,7 +85,12 @@ export default function ProductPage({ params }: { params: { productId: string } 
 
   const handleAddToCart = () => {
     if (!product || !selectedColorVariant || !selectedSize) {
-      toast.error("Please select both size and color");
+      toast.error("Veuillez sélectionner une taille et une couleur");
+      return;
+    }
+    
+    if (!isProductAvailable) {
+      toast.error("Ce produit n'est pas disponible actuellement");
       return;
     }
 
@@ -94,12 +101,17 @@ export default function ProductPage({ params }: { params: { productId: string } 
 
     addItem(productWithImages, selectedSize, selectedColorVariant.color);
 
-    toast.success("Added to cart successfully");
+    toast.success("Ajouté au panier avec succès");
   };
 
   const handleDirectPurchase = async (formData: any) => {
     if (!product || !selectedColorVariant || !selectedSize) {
       toast.error("Veuillez sélectionner une taille et une couleur");
+      return;
+    }
+    
+    if (!isProductAvailable) {
+      toast.error("Ce produit n'est pas disponible actuellement");
       return;
     }
 
@@ -356,32 +368,35 @@ export default function ProductPage({ params }: { params: { productId: string } 
               selectedSize={selectedSize}
               selectedColorId={selectedColorVariant?.id || 0}
               className="mb-4"
-            />
-          </div>
-
-          {/* Direct Purchase Form */}
-          <div className="border-t border-[#D4AF37]/20 pt-6">
-            <DirectPurchaseForm
-              onSubmit={handleDirectPurchase}
-              className="space-y-4"
-              isSubmitting={submitting}
-              productInfo={{
-                name: product.name,
-                price: product.salePrice || product.price,
-                email: userDetails.email,
-                mainImageUrl: selectedImageUrl,
+              onAvailabilityChange={(available: boolean, stockData: Array<any>) => {
+                setIsProductAvailable(available);
+                setStockInfo(stockData);
               }}
             />
           </div>
 
           <div className="flex flex-col space-y-4">
+            {/* Direct Purchase Form */}
+            <DirectPurchaseForm
+              onSubmit={handleDirectPurchase}
+              className="space-y-4"
+              isSubmitting={submitting}
+              isProductAvailable={isProductAvailable}
+              productInfo={{
+                name: product.name,
+                price: product.salePrice || product.price,
+                mainImageUrl: selectedImageUrl,
+              }}
+            />
+
             {/* Add to Cart Button */}
             <Button
               onClick={handleAddToCart}
-              className="w-full py-6 text-lg bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white"
+              className={`w-full py-6 text-lg ${isProductAvailable ? 'bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
               size="lg"
+              disabled={!isProductAvailable}
             >
-              Ajouter au Panier
+              {isProductAvailable ? 'Ajouter au Panier' : 'Produit Indisponible'}
             </Button>
 
             {/* Additional Information */}

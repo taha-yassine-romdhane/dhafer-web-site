@@ -69,6 +69,7 @@ interface DirectPurchaseFormProps {
   onSubmit: (data: z.infer<typeof formSchema>) => Promise<void>
   className?: string
   isSubmitting?: boolean
+  isProductAvailable?: boolean
   productInfo: {
     name: string
     price: number
@@ -77,7 +78,7 @@ interface DirectPurchaseFormProps {
   }
 }
 
-export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = false, productInfo }: DirectPurchaseFormProps) {
+export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = false, isProductAvailable = true, productInfo }: DirectPurchaseFormProps) {
   const { user, isLoggedIn } = useAuth()
   const router = useRouter()
   
@@ -259,11 +260,11 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
             />
             <Button
               type="submit"
-              className="flex-1 bg-[#d1a72e] text-white hover:bg-[#D4AF37]/80 rounded !border-[#D4AF37]"
-              disabled={isSubmitting}
+              className={`flex-1 ${isProductAvailable ? 'bg-[#d1a72e] text-white hover:bg-[#D4AF37]/80' : 'bg-gray-300 text-gray-600 cursor-not-allowed'} rounded !border-[#D4AF37]`}
+              disabled={isSubmitting || !isProductAvailable}
             >
               {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShoppingBag className="mr-2 h-4 w-4" />}
-              Acheter Maintenant
+              {isProductAvailable ? 'Acheter Maintenant' : 'Produit Indisponible'}
             </Button>
           </div>
         </form>

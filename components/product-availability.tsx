@@ -18,6 +18,7 @@ interface ProductAvailabilityProps {
   selectedSize: string
   selectedColorId: number
   className?: string
+  onAvailabilityChange?: (available: boolean, stockData: StockInfo[]) => void
 }
 
 const LOCATIONS = {
@@ -43,7 +44,8 @@ export function ProductAvailability({
   productId, 
   selectedSize, 
   selectedColorId,
-  className = "" 
+  className = "",
+  onAvailabilityChange
 }: ProductAvailabilityProps) {
   const [stocks, setStocks] = useState<StockInfo[]>([])
   const [loading, setLoading] = useState(false)
@@ -77,9 +79,27 @@ export function ProductAvailability({
         }
         
         setStocks(data)
+        
+        // Check if product is available in any location
+        const isAvailable = data.length > 0 && (
+          data[0].inStockJammel || 
+          data[0].inStockTunis || 
+          data[0].inStockSousse || 
+          data[0].inStockOnline
+        )
+        
+        // Call the onAvailabilityChange callback if provided
+        if (onAvailabilityChange) {
+          onAvailabilityChange(isAvailable, data)
+        }
       } catch (error) {
         console.error('Error fetching stock:', error)
         setError(error instanceof Error ? error.message : 'An error occurred')
+        
+        // Report unavailability in case of error
+        if (onAvailabilityChange) {
+          onAvailabilityChange(false, [])
+        }
       } finally {
         setLoading(false)
       }
