@@ -14,7 +14,7 @@ const locations = [
         email: "ddarelkoftanalassil@gmail.com",
         hours: "09:00 - 20:00",
         image: "/jemmel-store.jpg",
-        mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3225.563145157493!2d10.776340776268795!3d35.62461367271031!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x130212d8427c71a9%3A0x678b7c0525c76c86!2s105%20Avenue%20Habib%20Bourguiba%2C%20Jemmal!5e0!3m2!1sen!2stn!4v1706799661646!5m2!1sen!2stn",
+        mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3243.184097027917!2d10.759540299999998!3d35.6231878!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1302118d3435b8f7%3A0x23da68cbce53bd56!2zREFSIEtPRlRBTiBBTCBBU1NJTCBKRU1NRUwgX9iv2KfYsSDYp9mE2YLZgdi32KfZhiDYp9mE2KPYtdmK2YQg2KzZhdin2YQ!5e0!3m2!1sfr!2stn!4v1746106948690!5m2!1sfr!2stn",
     },
     {
         city: "Sousse",

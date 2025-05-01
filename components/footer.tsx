@@ -34,7 +34,7 @@ export function Footer() {
                 <BsInstagram className="h-6 w-6" />
               </Link>
               <Link 
-                href="https://www.youtube.com/@darkoftan" 
+                href="https://www.youtube.com/@darelkoftanalassildarelkoftana" 
                 className="text-gray-400 hover:text-[#D4AF37] transition-colors transform hover:scale-110"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -42,7 +42,7 @@ export function Footer() {
                 <BsYoutube className="h-6 w-6" />
               </Link>
               <Link 
-                href="https://www.tiktok.com/@darkoftan" 
+                href="https://www.tiktok.com/@dar.koftane.al.asil" 
                 className="text-gray-400 hover:text-[#D4AF37] transition-colors transform hover:scale-110"
                 target="_blank"
                 rel="noopener noreferrer"
