@@ -34,7 +34,7 @@ const formSchema = z.object({
   }),
   email: z.string().email({
     message: "Veuillez entrer une adresse email valide.",
-  }).optional(),
+  }).optional().or(z.literal('')),  // Allow empty string
   quantity: z.number().min(1),
 })
 
@@ -273,12 +273,12 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirmation de la commande</DialogTitle>
+            <DialogTitle>Aperçu de la commande</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             {productInfo.mainImageUrl && <img src={productInfo.mainImageUrl} alt="Product Main Image" style={{ width: '150px', height: 'auto' }} />}
             <p><strong>Nom et prénom:</strong> {formData?.fullName}</p>
-            <p><strong>Email:</strong> {formData?.email}</p>
+            {formData?.email && <p><strong>Email:</strong> {formData?.email}</p>}
             <p><strong>Adresse:</strong> {formData?.address}</p>
             <p><strong>Gouvernorat:</strong> {formData?.governorate}</p>
             <p><strong>Téléphone:</strong> {formData?.phone}</p>
@@ -289,10 +289,10 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              Annuler
+              Modifier
             </Button>
             <Button className="bg-[#D4AF37] text-white hover:bg-[#D4AF37]/90" onClick={handleConfirm}>
-              Confirmer
+              Continuer
             </Button>
           </DialogFooter>
         </DialogContent>

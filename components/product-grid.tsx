@@ -193,7 +193,7 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                       e.stopPropagation();
                       router.push(`/product/${product.id}`);
                     }}
-                    className="bg-white text-black hover:bg-gray-100 bg-gray-200 text-gray-900 hover:bg-[#D4AF37] hover:text-white"
+                    className="bg-[#D4AF37] text-white hover:bg-[#C09C2C]"
                   >
                     <Eye className="w-4 h-4 mr-2 " />
                     Voir Détails
@@ -216,45 +216,54 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                 </div>
               </div>
 
-              {/* Color Options */}
-              <div className="mt-1 flex gap-1.5">
-                {product.colorVariants.map((variant) => {
-                  const variantMainImage = variant.images.find(img => img.isMain)?.url || variant.images[0]?.url;
-                  return (
-                    <button
-                      key={variant.id}
-                      onClick={() => {
-                        setSelectedColors({ ...selectedColors, [product.id]: variant.color });
-                        if (variantMainImage) {
-                          setSelectedImage({ ...selectedImage, [product.id]: variantMainImage });
-                        }
-                      }}
-                      className={cn(
-                        "w-6 h-6 rounded-full border-2 relative overflow-hidden group",
-                        selectedColors[product.id] === variant.color
-                          ? "border-[#D4AF37] ring-2 ring-[#D4AF37] ring-offset-1"
-                          : "border-transparent hover:border-gray-300"
-                      )}
-                      aria-label={variant.color}
-                    >
-                      {variantMainImage && (
-                        <div className="absolute inset-[-50%] w-[200%] h-[200%]">
+              {/* Color Options - Optimized to show only a few variants */}
+              <div className="mt-1 flex items-center">
+                <div className="flex -space-x-2 mr-2">
+                  {product.colorVariants.slice(0, 3).map((variant, idx) => {
+                    const variantMainImage = variant.images.find(img => img.isMain)?.url || variant.images[0]?.url;
+                    return (
+                      <button
+                        key={variant.id}
+                        onClick={() => {
+                          setSelectedColors({ ...selectedColors, [product.id]: variant.color });
+                          if (variantMainImage) {
+                            setSelectedImage({ ...selectedImage, [product.id]: variantMainImage });
+                          }
+                        }}
+                        className={cn(
+                          "relative w-6 h-6 rounded-full overflow-hidden border-2",
+                          selectedColors[product.id] === variant.color
+                            ? "border-[#D4AF37] z-10"
+                            : "border-white"
+                        )}
+                        style={{ zIndex: 3 - idx }}
+                        aria-label={variant.color}
+                      >
+                        {variantMainImage && (
                           <Image
                             src={variantMainImage}
                             alt={`${product.name} in ${variant.color}`}
                             fill
-                            className="object-cover transition-transform duration-200 scale-150 group-hover:scale-170"
+                            className="object-cover"
                             sizes="24px"
                             loading="lazy"
                             quality={30}
-                            placeholder="blur"
-                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
                           />
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
+                        )}
+                      </button>
+                    );
+                  })}
+                  {product.colorVariants.length > 3 && (
+                    <div className="w-6 h-6 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center" style={{ zIndex: 0 }}>
+                      <span className="text-[10px] text-gray-600 font-medium">+{product.colorVariants.length - 3}</span>
+                    </div>
+                  )}
+                </div>
+                {selectedColors[product.id] && (
+                  <span className="text-xs text-gray-600 capitalize">
+                    {selectedColors[product.id]}
+                  </span>
+                )}
               </div>
             </div>
           ))}

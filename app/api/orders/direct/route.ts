@@ -57,6 +57,7 @@ export async function POST(request: Request) {
             {
               productId: data.productId,
               colorVariantId: data.colorId,
+              color: product.colorVariants[0].color,
               quantity: data.quantity,
               size: data.size,
               price: data.price,

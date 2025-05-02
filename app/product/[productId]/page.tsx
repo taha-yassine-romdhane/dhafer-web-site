@@ -115,48 +115,22 @@ export default function ProductPage({ params }: { params: { productId: string } 
       return;
     }
 
-    setSubmitting(true);
+    // Store the form data for later use in the confirmation dialog
+    setUserDetails({
+      fullName: formData.fullName,
+      address: formData.address,
+      governorate: formData.governorate,
+      phone: formData.phone,
+      email: formData.email
+    });
 
-    const orderData = {
-      ...formData,
-      productId: product.id,
-      colorId: selectedColorVariant.id,
-      size: selectedSize,
-      price: product.salePrice || product.price,
-    };
-
-    try {
-      const response = await fetch("/api/orders/direct", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to place order");
-      }
-
-      setUserDetails({
-        fullName: formData.fullName,
-        address: formData.address,
-        governorate: formData.governorate,
-        phone: formData.phone,
-        email: formData.email
-      });
-
-      setIsSuccessDialogOpen(true);
-      toast.success("Commande placée avec succès! Nous vous contacterons bientôt.");
-    } catch (error) {
-      console.error("Error placing order:", error);
-      toast.error("Erreur lors de la commande. Veuillez réessayer.");
-    } finally {
-      setSubmitting(false);
-    }
+    // Show the confirmation dialog without creating the order yet
+    setIsSuccessDialogOpen(true);
   };
 
   const handleConfirmOrder = async () => {
+    setSubmitting(true);
+    
     const orderData = {
       productId: product!.id,
       colorId: selectedColorVariant!.id,
@@ -178,11 +152,12 @@ export default function ProductPage({ params }: { params: { productId: string } 
         throw new Error("Failed to place order");
       }
 
-      toast.success("Commande confirmée avec succès!");
+      toast.success("Commande placée avec succès! Nous vous contacterons bientôt.");
     } catch (error) {
-      console.error("Error confirming order:", error);
-      toast.error("Erreur lors de la confirmation de la commande. Veuillez réessayer.");
+      console.error("Error placing order:", error);
+      toast.error("Erreur lors de la commande. Veuillez réessayer.");
     } finally {
+      setSubmitting(false);
       setIsSuccessDialogOpen(false);
     }
   };
