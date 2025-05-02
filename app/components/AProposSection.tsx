@@ -18,8 +18,9 @@ interface CarouselImage {
 }
 
 export default function AProposSection() {
-  // Fallback images in case API fails
-  const fallbackImages = [
+ 
+
+  const [images, setImages] = useState<string[]>([
     '/carousel/img7.JPG',
     '/carousel/img8.JPG',
     '/carousel/img9.JPG',
@@ -28,9 +29,8 @@ export default function AProposSection() {
     '/carousel/img12.png',
     '/carousel/img13.png',
     '/carousel/img14.png',
-  ];
+  ]);
 
-  const [images, setImages] = useState<string[]>(fallbackImages);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -42,28 +42,22 @@ export default function AProposSection() {
         setLoading(true);
         const response = await fetch('/api/carousel-images');
         
-        if (!response.ok) {
-          throw new Error('Failed to fetch carousel images');
-        }
+        if (!response.ok) throw new Error('Failed to fetch carousel images');
         
         const data = await response.json();
         
         if (data.success && Array.isArray(data.carouselImages)) {
-          // Filter images by section
           const aboutImages = data.carouselImages
             .filter((img: CarouselImage) => img.section === 'about' && img.isActive)
             .sort((a: CarouselImage, b: CarouselImage) => a.position - b.position)
             .map((img: CarouselImage) => img.url);
           
-          // Only update if we have images
-          if (aboutImages.length > 0) {
-            setImages(aboutImages);
-          }
+          if (aboutImages.length > 0) setImages(aboutImages);
         }
       } catch (err) {
-        console.error('Error fetching carousel images:', err);
-        setError('Failed to load carousel images');
-        // Keep using fallback images
+        console.error('Using fallback images:', err);
+        setError('Failed to load carousel images - using defaults');
+        // Keep existing fallback images
       } finally {
         setLoading(false);
       }
