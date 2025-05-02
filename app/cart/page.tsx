@@ -21,8 +21,7 @@ export default function CartPage() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
   
-  const shipping = items.length > 0 ? 7.0 : 0;
-  const total = totalPrice + shipping;
+  const total = totalPrice ;
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -223,11 +222,11 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between mb-4">
                   <span>Frais de livraison</span>
-                  <span className="text-[#D4AF37]">{shipping.toFixed(2)} TND</span>
+                  <span className="text-[#D4AF37]"> 6 TND</span>
                 </div>
                 <div className="flex justify-between font-semibold">
                   <span>Total</span>
-                  <span className="text-[#D4AF37]">{total.toFixed(2)} TND</span>
+                  <span className="text-[#D4AF37]">{totalPrice + 6} TND</span>
                 </div>
               </div>
 
@@ -292,11 +291,11 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between">
                   <span>Frais de livraison</span>
-                  <span className="text-[#D4AF37]">{shipping.toFixed(2)} TND</span>
+                  <span className="text-[#D4AF37]">6 TND</span>
                 </div>
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
-                  <span className="text-[#D4AF37]">{total.toFixed(2)} TND</span>
+                  <span className="text-[#D4AF37]">{totalPrice + 6} TND</span>
                 </div>
               </div>
               <div className="mt-6 space-y-4">

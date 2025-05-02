@@ -284,7 +284,8 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
             <p><strong>Téléphone:</strong> {formData?.phone}</p>
             <p><strong>Quantité:</strong> {formData?.quantity}</p>
             <p><strong>Produit:</strong> {productInfo.name}</p>
-            <p><strong>Prix:</strong> {productInfo.price * (formData?.quantity || 1)} TND</p>
+            <p><strong>Prix:</strong> {productInfo.price * (formData?.quantity || 1)} TND plus frais de livraison 6 TND</p>
+            <p><strong>Total:</strong> {productInfo.price * (formData?.quantity || 1) + 6} TND</p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>

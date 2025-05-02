@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Product, ColorVariant, ProductImage } from "@prisma/client"
 import Image from "next/image"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, Palette } from "lucide-react"
 
 interface ProductCardProps {
   product: Product & {
@@ -17,220 +17,250 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [currentColorIndex, setCurrentColorIndex] = useState(0)
-  const [isHovered, setIsHovered] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [showColorSelector, setShowColorSelector] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Find main image for each color variant
+  const colorVariantsWithMainImages = product.colorVariants.map(variant => {
+    const mainImage = variant.images.find(img => img.isMain) || variant.images[0]
+    return {
+      ...variant,
+      mainImage
+    }
+  })
 
   // Get current color variant and its images
-  const currentColorVariant = product.colorVariants[currentColorIndex]
+  const currentColorVariant = colorVariantsWithMainImages[currentColorIndex]
   const images = currentColorVariant?.images || []
   const currentImage = images[currentImageIndex]?.url || '/default-image.jpg'
 
+  // Auto-advance images on hover
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
+    if (isHovering && images.length > 1 && !isMobile) {
+      autoPlayRef.current = setInterval(() => {
+        setCurrentImageIndex(prev => (prev + 1) % images.length)
+      }, 2000)
     }
+    
+    return () => {
+      if (autoPlayRef.current) {
+        clearInterval(autoPlayRef.current)
+        autoPlayRef.current = null
+      }
+    }
+  }, [isHovering, images.length, isMobile])
 
-    // Initial check
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
     checkMobile()
-
-    // Add event listener for window resize
     window.addEventListener('resize', checkMobile)
-
-    // Cleanup
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length)
+  const handleMouseEnter = () => setIsHovering(true)
+  const handleMouseLeave = () => {
+    setIsHovering(false)
+    // Reset to main image when mouse leaves
+    const mainImageIndex = images.findIndex(img => img.isMain)
+    setCurrentImageIndex(mainImageIndex !== -1 ? mainImageIndex : 0)
   }
 
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)
+  const toggleColorSelector = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setShowColorSelector(!showColorSelector)
   }
 
   return (
     <div 
       className="group relative rounded-xl overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300"
-      {...(!isMobile && {
-        onMouseEnter: () => setIsHovered(true),
-        onMouseLeave: () => {
-          setIsHovered(false)
-          setCurrentImageIndex(0)
-        }
-      })}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      <Link href={`/product/${product.id}`}>
+      <Link href={`/product/${product.id}`} className="block">
         {/* Main Image Container */}
         <div className="relative aspect-[3/4] overflow-hidden">
           <Image
             src={currentImage}
             alt={`${product.name} - ${currentColorVariant?.color}`}
             fill
-            className="object-cover transform transition-transform duration-500"
+            className="object-cover transform transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority
+            priority={currentImageIndex === 0} // Only prioritize the first image
+            loading={currentImageIndex === 0 ? "eager" : "lazy"}
           />
 
-          {/* Mobile Navigation */}
+          {/* Mobile Navigation Controls */}
           {isMobile && images.length > 1 && (
-            <>
+            <div className="absolute inset-x-0 inset-y-0 flex items-center justify-between px-2">
               <button
                 onClick={(e) => {
                   e.preventDefault()
-                  prevImage()
+                  setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)
                 }}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-1.5 z-10"
+                className="bg-white/80 rounded-full p-1.5 z-10 hover:bg-white/90 active:scale-95 transition-all"
               >
-                <ChevronLeft className="w-6 h-6 text-gray-800" />
+                <ChevronLeft className="w-4 h-4 text-gray-800" />
               </button>
               <button
                 onClick={(e) => {
                   e.preventDefault()
-                  nextImage()
+                  setCurrentImageIndex((prev) => (prev + 1) % images.length)
                 }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-1.5 z-10"
+                className="bg-white/80 rounded-full p-1.5 z-10 hover:bg-white/90 active:scale-95 transition-all"
               >
-                <ChevronRight className="w-6 h-6 text-gray-800" />
+                <ChevronRight className="w-4 h-4 text-gray-800" />
               </button>
-              <div className="absolute bottom-2 right-1 -translate-x-1/2 bg-black/50 rounded-full px-2 py-1 z-10">
-                <p className="text-xs text-white">
-                  {currentImageIndex + 1} / {images.length}
-                </p>
-              </div>
-            </>
+            </div>
           )}
 
-          {/* Desktop Thumbnail Gallery - Left Side */}
-          {!isMobile && isHovered && images.length > 1 && (
-            <div className="absolute left-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              {images.map((image, index) => (
-                <button
-                  key={index}
-                  className={`relative w-16 h-20 overflow-hidden rounded-md border-2 transition-all duration-200 ${
-                    currentImageIndex === index 
-                      ? 'border-[#D4AF37] scale-110' 
-                      : 'border-white/50 hover:border-[#D4AF37] hover:scale-105'
-                  }`}
-                  onMouseEnter={() => setCurrentImageIndex(index)}
-                >
-                  <Image
-                    src={image.url}
-                    alt={`${product.name} view ${index + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="64px"
-                  />
-                </button>
+          {/* Image Position Indicator */}
+          {images.length > 1 && (
+            <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10">
+              {images.map((_, idx) => (
+                <button 
+                  key={idx}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setCurrentImageIndex(idx)
+                  }}
+                  className={`w-1.5 h-1.5 rounded-full transition-all ${currentImageIndex === idx ? 'bg-white scale-125' : 'bg-white/50'}`}
+                  aria-label={`View image ${idx + 1}`}
+                />
               ))}
             </div>
           )}
 
-          {/* Color Variants */}
-          {product.colorVariants.length > 1 && (
-            <>
-              {/* Desktop - Right Side Vertical */}
-              {!isMobile && isHovered && (
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {product.colorVariants.map((variant, index) => (
-                    <button
-                      key={variant.id}
-                      className={`relative w-16 h-20 overflow-hidden rounded-md transition-all duration-200 ${
-                        currentColorIndex === index 
-                          ? 'ring-2 ring-[#D4AF37] ring-offset-2 scale-110' 
-                          : 'ring-1 ring-white/50 hover:ring-[#D4AF37] hover:scale-105'
-                      }`}
-                      onMouseEnter={() => {
-                        setCurrentColorIndex(index)
-                        setCurrentImageIndex(0)
-                      }}
-                    >
-                      <Image
-                        src={variant.images[0]?.url || '/default-image.jpg'}
-                        alt={`${product.name} - ${variant.color}`}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
-                      <div className="absolute inset-x-0 bottom-0 bg-black/50 py-1">
-                        <p className="text-xs text-white text-center capitalize">
-                          {variant.color}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+          {/* Color Selector Toggle */}
+          <button
+            onClick={toggleColorSelector}
+            className="absolute bottom-3 right-3 bg-white/90 rounded-full p-1.5 z-10 shadow-md hover:bg-white transition-all"
+            aria-label="View color options"
+          >
+            <div className="relative w-5 h-5 flex items-center justify-center">
+              <Palette className="w-4 h-4 text-gray-700" />
+              {product.colorVariants.length > 1 && (
+                <span className="absolute -top-1 -right-1 bg-[#D4AF37] text-white text-[10px] rounded-full w-3.5 h-3.5 flex items-center justify-center font-bold">
+                  {product.colorVariants.length}
+                </span>
               )}
-
-              {/* Mobile - Horizontal Scroll */}
-              {isMobile && (
-                <div className="absolute bottom-0 left-0 right-0 bg-black/20 backdrop-blur-sm p-2">
-                  <div className="flex space-x-2 overflow-x-auto">
-                    {product.colorVariants.map((variant, index) => (
-                      <button
-                        key={variant.id}
-                        onClick={(e) => {
-                          e.preventDefault()
-                          setCurrentColorIndex(index)
-                          setCurrentImageIndex(0)
-                        }}
-                        className={`relative flex-shrink-0 w-10 h-10 rounded-full overflow-hidden ${
-                          currentColorIndex === index 
-                            ? 'ring-2 ring-[#D4AF37] ring-offset-2' 
-                            : 'ring-1 ring-white'
-                        }`}
-                      >
-                        <Image
-                          src={variant.images[0]?.url || '/default-image.jpg'}
-                          alt={variant.color}
-                          fill
-                          className="object-cover"
-                          sizes="40px"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
+            </div>
+          </button>
 
           {/* Sale Badge */}
           {product.salePrice && (
-            <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-sm font-medium z-10">
+            <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-0.5 rounded-md text-xs font-bold z-10">
               -{Math.round((1 - product.salePrice / product.price) * 100)}%
             </div>
           )}
         </div>
 
         {/* Product Details */}
-        <div className="p-4">
-          <h3 className="text-lg font-semibold line-clamp-1">{product.name}</h3>
-          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{product.description}</p>
-
+        <div className="p-3">
+          <h3 className="text-base font-semibold line-clamp-1">{product.name}</h3>
+          
           {/* Price */}
-          <div className="mt-3 flex items-baseline space-x-2">
+          <div className="mt-1.5 flex items-baseline space-x-2">
             {product.salePrice ? (
               <>
-                <span className="text-xl font-bold text-[#D4AF37]">
+                <span className="text-base font-bold text-[#D4AF37]">
                   {product.salePrice.toFixed(2)} TND
                 </span>
-                <span className="text-sm text-gray-500 line-through">
+                <span className="text-xs text-gray-500 line-through">
                   {product.price.toFixed(2)} TND
                 </span>
               </>
             ) : (
-              <span className="text-xl font-bold text-[#D4AF37]">
+              <span className="text-base font-bold text-[#D4AF37]">
                 {product.price.toFixed(2)} TND
               </span>
             )}
           </div>
 
-          {/* Current Color Name */}
-          <div className="mt-2 text-sm text-gray-600">
-            Couleur: <span className="font-medium capitalize">{currentColorVariant?.color}</span>
+          {/* Color Indicator */}
+          <div className="mt-1.5 flex items-center">
+            <div className="flex -space-x-1 mr-2">
+              {colorVariantsWithMainImages.slice(0, 3).map((variant, idx) => (
+                <div 
+                  key={variant.id}
+                  className={`w-4 h-4 rounded-full border ${idx === currentColorIndex ? 'border-[#D4AF37] z-10' : 'border-white'}`}
+                  style={{ backgroundColor: variant.color, zIndex: 3 - idx }}
+                />
+              ))}
+              {colorVariantsWithMainImages.length > 3 && (
+                <div className="w-4 h-4 rounded-full bg-gray-200 border border-white flex items-center justify-center">
+                  <span className="text-[8px] text-gray-600 font-medium">+{colorVariantsWithMainImages.length - 3}</span>
+                </div>
+              )}
+            </div>
+            <span className="text-xs text-gray-600 capitalize">{currentColorVariant?.color}</span>
           </div>
         </div>
       </Link>
+
+      {/* Color Selector Modal */}
+      {showColorSelector && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+          onClick={(e) => {
+            e.preventDefault()
+            setShowColorSelector(false)
+          }}
+        >
+          <div 
+            className="bg-white rounded-lg max-w-md w-full max-h-[80vh] overflow-hidden" 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="font-medium text-gray-800">{product.name}</h3>
+              <button 
+                onClick={() => setShowColorSelector(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="p-4 overflow-y-auto max-h-[calc(80vh-4rem)]">
+              <h4 className="text-sm font-medium text-gray-500 mb-3">Select Color</h4>
+              <div className="grid grid-cols-2 gap-3">
+                {colorVariantsWithMainImages.map((variant, index) => (
+                  <button
+                    key={variant.id}
+                    className={`rounded-lg overflow-hidden border-2 transition-all ${currentColorIndex === index ? 'border-[#D4AF37] shadow-md' : 'border-transparent hover:border-gray-300'}`}
+                    onClick={() => {
+                      setCurrentColorIndex(index)
+                      setCurrentImageIndex(0)
+                      setShowColorSelector(false)
+                    }}
+                  >
+                    <div className="relative aspect-square">
+                      {variant.mainImage && (
+                        <Image
+                          src={variant.mainImage.url}
+                          alt={variant.color}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 50vw, 200px"
+                        />
+                      )}
+                    </div>
+                    <div className="p-2 flex items-center bg-gray-50">
+                      <div 
+                        className="w-4 h-4 rounded-full mr-2" 
+                        style={{ backgroundColor: variant.color }}
+                      />
+                      <span className="text-sm capitalize">{variant.color}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
