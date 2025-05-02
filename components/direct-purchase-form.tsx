@@ -117,8 +117,14 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
 
   const handleConfirm = async () => {
     if (formData) {
-      await onSubmit(formData)
-      setIsDialogOpen(false)
+      // Make sure we're passing the quantity as a number
+      const dataWithQuantity = {
+        ...formData,
+        quantity: Number(formData.quantity) || 1
+      };
+      console.log('Submitting form data:', dataWithQuantity);
+      await onSubmit(dataWithQuantity);
+      setIsDialogOpen(false);
     }
   }
 

@@ -72,8 +72,8 @@ export function SuccessDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button onClick={onClose} className="bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white">Fermer</Button>
-          <Button onClick={onConfirm} className="bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white">Confirmer la commande</Button>
+          <Button onClick={onClose} variant="outline">Annuler</Button>
+          <Button onClick={onConfirm} className="bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white font-bold">Confirmer la commande</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

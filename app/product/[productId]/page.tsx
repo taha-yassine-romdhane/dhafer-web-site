@@ -31,7 +31,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const [isProductAvailable, setIsProductAvailable] = useState(false);
   const [stockInfo, setStockInfo] = useState<Array<any>>([]);
-  const [userDetails, setUserDetails] = useState<{ fullName: string; address: string; governorate: string; phone: string; email: string }>({
+  const [userDetails, setUserDetails] = useState<{ fullName: string; address: string; governorate: string; phone: string; email: string; quantity?: number }>({
     fullName: "",
     address: "",
     governorate: "",
@@ -121,7 +121,8 @@ export default function ProductPage({ params }: { params: { productId: string } 
       address: formData.address,
       governorate: formData.governorate,
       phone: formData.phone,
-      email: formData.email
+      email: formData.email,
+      quantity: formData.quantity || 1 // Make sure we capture quantity
     });
 
     // Show the confirmation dialog without creating the order yet
@@ -131,13 +132,21 @@ export default function ProductPage({ params }: { params: { productId: string } 
   const handleConfirmOrder = async () => {
     setSubmitting(true);
     
+    // Include quantity from the form data
     const orderData = {
       productId: product!.id,
       colorId: selectedColorVariant!.id,
       size: selectedSize,
       price: product!.salePrice || product!.price,
-      ...userDetails,
+      quantity: userDetails.quantity || 1, // Use the quantity from form data
+      fullName: userDetails.fullName,
+      phone: userDetails.phone,
+      address: userDetails.address,
+      governorate: userDetails.governorate,
+      email: userDetails.email,
     };
+
+    console.log('Sending order data:', orderData);
 
     try {
       const response = await fetch("/api/orders/direct", {
@@ -148,8 +157,11 @@ export default function ProductPage({ params }: { params: { productId: string } 
         body: JSON.stringify(orderData),
       });
 
+      const result = await response.json();
+      console.log('Order API response:', result);
+
       if (!response.ok) {
-        throw new Error("Failed to place order");
+        throw new Error(result.error || "Failed to place order");
       }
 
       toast.success("Commande placée avec succès! Nous vous contacterons bientôt.");
@@ -398,7 +410,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
       <SuccessDialog
         isOpen={isSuccessDialogOpen}
         onClose={() => setIsSuccessDialogOpen(false)}
-        message="Votre commande a été placée avec succès!"
+        message="Veuillez confirmer votre commande"
         onConfirm={handleConfirmOrder}
         product={product}
         selectedColorVariant={selectedColorVariant}
