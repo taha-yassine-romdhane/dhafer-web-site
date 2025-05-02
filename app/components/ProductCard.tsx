@@ -6,6 +6,83 @@ import Image from "next/image"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, Palette } from "lucide-react"
 
+// Color mapping system
+const colorMap: Record<string, string> = {
+  // French color names to hex codes
+  "noir": "#000000",
+  "blanc": "#FFFFFF",
+  "rouge": "#FF0000",
+  "bleu": "#0000FF",
+  "vert": "#008000",
+  "jaune": "#FFFF00",
+  "orange": "#FFA500",
+  "violet": "#800080",
+  "rose": "#FFC0CB",
+  "marron": "#8B4513",
+  "gris": "#808080",
+  "beige": "#F5F5DC",
+  "turquoise": "#40E0D0",
+  "bordeaux": "#800020",
+  "marine": "#000080",
+  "corail": "#FF7F50",
+  "doré": "#D4AF37",
+  "argenté": "#C0C0C0",
+  "ivoire": "#FFFFF0",
+  "kaki": "#C3B091",
+  "lavande": "#E6E6FA",
+  "menthe": "#98FB98",
+  "moutarde": "#DFBE00",
+  "olive": "#808000",
+  "pêche": "#FFDAB9",
+  "prune": "#DDA0DD",
+  "saumon": "#FA8072",
+  "taupe": "#483C32",
+  "bleu ciel": "#87CEEB",
+  "bleu marine": "#000080",
+  "rouge vif": "#FF0000",
+  "rouge brique": "#B22222",
+  "vert gazon": "#7CFC00",
+  "vert olive": "#808000",
+  
+  // English color names as fallback
+  "black": "#000000",
+  "white": "#FFFFFF",
+  "red": "#FF0000",
+  "blue": "#0000FF",
+  "green": "#008000",
+  "yellow": "#FFFF00",
+  "purple": "#800080",
+  "pink": "#FFC0CB",
+  "brown": "#8B4513",
+  "gray": "#808080",
+  "grey": "#808080",
+  "burgundy": "#800020",
+  "navy": "#000080",
+  "coral": "#FF7F50",
+  "gold": "#D4AF37",
+  "silver": "#C0C0C0",
+  "ivory": "#FFFFF0",
+  "khaki": "#C3B091",
+  "lavender": "#E6E6FA",
+  "mint": "#98FB98",
+  "mustard": "#DFBE00",
+  "peach": "#FFDAB9",
+  "plum": "#DDA0DD",
+  "salmon": "#FA8072",
+  "sky blue": "#87CEEB",
+  "navy blue": "#000080",
+  "bright red": "#FF0000",
+  "brick red": "#B22222",
+  "grass green": "#7CFC00",
+  "olive green": "#808000",
+}
+
+// Function to get color hex code from name
+const getColorHex = (colorName: string): string => {
+  const lowerCaseName = colorName.toLowerCase()
+  return colorMap[lowerCaseName] || colorName // Return the color name itself if not found in map
+}
+
 interface ProductCardProps {
   product: Product & {
     colorVariants: (ColorVariant & {
@@ -22,12 +99,13 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isHovering, setIsHovering] = useState(false)
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Find main image for each color variant
+  // Find main image for each color variant and add hex color code
   const colorVariantsWithMainImages = product.colorVariants.map(variant => {
     const mainImage = variant.images.find(img => img.isMain) || variant.images[0]
     return {
       ...variant,
-      mainImage
+      mainImage,
+      colorHex: getColorHex(variant.color)
     }
   })
 
@@ -127,7 +205,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     setCurrentImageIndex(idx)
                   }}
                   className={`w-1.5 h-1.5 rounded-full transition-all ${currentImageIndex === idx ? 'bg-white scale-125' : 'bg-white/50'}`}
-                  aria-label={`View image ${idx + 1}`}
+                  aria-label={`Voir image ${idx + 1}`}
                 />
               ))}
             </div>
@@ -137,7 +215,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <button
             onClick={toggleColorSelector}
             className="absolute bottom-3 right-3 bg-white/90 rounded-full p-1.5 z-10 shadow-md hover:bg-white transition-all"
-            aria-label="View color options"
+            aria-label="Voir options de couleur"
           >
             <div className="relative w-5 h-5 flex items-center justify-center">
               <Palette className="w-4 h-4 text-gray-700" />
@@ -186,7 +264,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 <div 
                   key={variant.id}
                   className={`w-4 h-4 rounded-full border ${idx === currentColorIndex ? 'border-[#D4AF37] z-10' : 'border-white'}`}
-                  style={{ backgroundColor: variant.color, zIndex: 3 - idx }}
+                  style={{ backgroundColor: variant.colorHex, zIndex: 3 - idx }}
                 />
               ))}
               {colorVariantsWithMainImages.length > 3 && (
@@ -224,7 +302,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
             
             <div className="p-4 overflow-y-auto max-h-[calc(80vh-4rem)]">
-              <h4 className="text-sm font-medium text-gray-500 mb-3">Select Color</h4>
+              <h4 className="text-sm font-medium text-gray-500 mb-3">Sélectionner la couleur</h4>
               <div className="grid grid-cols-2 gap-3">
                 {colorVariantsWithMainImages.map((variant, index) => (
                   <button
@@ -250,7 +328,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <div className="p-2 flex items-center bg-gray-50">
                       <div 
                         className="w-4 h-4 rounded-full mr-2" 
-                        style={{ backgroundColor: variant.color }}
+                        style={{ backgroundColor: variant.colorHex }}
                       />
                       <span className="text-sm capitalize">{variant.color}</span>
                     </div>
