@@ -8,6 +8,7 @@ import { Loader2, RefreshCw } from "lucide-react";
 import ProductCard from "@/app/components/ProductCard";
 import MobileProductCard from "@/app/components/MobileProductCard";
 import Link from "next/link";
+import { transformProductForMobileCard, isProductValidForMobileCard } from "@/lib/product-utils";
 
 type PromoProduct = Product & {
   colorVariants: (ColorVariant & {
@@ -188,14 +189,18 @@ const PromoPage = () => {
           </div>
         ) : (
           <div key={`promo-grid-${products.length}-${retryCount}`}>
-            {/* Show products count for debugging */}
-            <p className="text-sm text-gray-500 mb-4">{products.length} produit(s) en promotion</p>
+           
             
             {isMobile ? (
               <div className="grid grid-cols-2 gap-3">
-                {products.map((product) => (
-                  <MobileProductCard key={`mobile-${product.id}`} product={product} />
-                ))}
+                {products.map((product) => {
+                  const transformedProduct = transformProductForMobileCard(product);
+                  return isProductValidForMobileCard(transformedProduct) ? (
+                    <MobileProductCard key={`mobile-${product.id}`} product={transformedProduct} />
+                  ) : (
+                    <div key={`mobile-${product.id}`} className="text-red-500">Invalid product data</div>
+                  );
+                })}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -3,19 +3,31 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const category = url.searchParams.get('category');
+  const categoryId = url.searchParams.get('category');
   const exclude = url.searchParams.get('exclude');
 
-  if (!category) {
+  if (!categoryId) {
     return NextResponse.json({ error: 'Missing category parameter' }, { status: 400 });
   }
 
   try {
+    // Convert categoryId to number
+    const categoryIdNum = parseInt(categoryId, 10);
+    
+    if (isNaN(categoryIdNum)) {
+      return NextResponse.json({ error: 'Invalid category ID' }, { status: 400 });
+    }
+    
+    // Use the categories relation with some
     const products = await prisma.product.findMany({
       where: {
-        category,
+        categories: {
+          some: {
+            categoryId: categoryIdNum
+          }
+        },
         id: {
-          not: Number(exclude),
+          not: Number(exclude) || 0,
         },
       },
       include: {

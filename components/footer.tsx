@@ -16,7 +16,7 @@ export function Footer() {
               Dar Koftan est votre destination de choix pour des caftans traditionnels de haute qualité.
             </p>
             {/* Social Links */}
-            <div className="flex justify-center space-x-6">
+            <div className="flex space-x-6">
               <Link 
                 href="https://www.facebook.com/profile.php?id=100064931580253" 
                 className="text-gray-400 hover:text-[#D4AF37] transition-colors transform hover:scale-110"
@@ -137,11 +137,9 @@ export function Footer() {
               {new Date().getFullYear()} <span className="font-semibold">DAR KOFTAN EL ASIL</span>  Tous droits reservés .
             </p>
             <div className="flex space-x-6">
-              
               <Link href="/policy" className="text-sm text-gray-600 hover:text-[#D4AF37] transition-colors">
                 Politique de confidentialité
               </Link>
-             
             </div>
           </div>
         </div>

@@ -4,14 +4,81 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
-const TopVentSection: React.FC = () => {
-  const imagesTop1 = ['/carousel/img1.JPG', '/carousel/img2.JPG', '/carousel/img3.JPG'];
-  const imagesBottom = ['/carousel/img4.JPG', '/carousel/img5.JPG', '/carousel/img6.JPG'];
+interface CarouselImage {
+  id: number;
+  url: string;
+  section: string;
+  filename?: string;
+  title?: string;
+  description?: string;
+  buttonText?: string;
+  buttonLink?: string;
+  position: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
+const TopVentSection: React.FC = () => {
+  // Fallback images in case API fails
+  const fallbackImagesTop1 = ['/carousel/img1.JPG', '/carousel/img2.JPG', '/carousel/img3.JPG'];
+  const fallbackImagesBottom = ['/carousel/img4.JPG', '/carousel/img5.JPG', '/carousel/img6.JPG'];
+  
+  const [imagesTop1, setImagesTop1] = useState<string[]>(fallbackImagesTop1);
+  const [imagesBottom, setImagesBottom] = useState<string[]>(fallbackImagesBottom);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   const [currentIndexTop, setCurrentIndexTop] = useState(0);
   const [currentIndexBottom, setCurrentIndexBottom] = useState(0);
 
-  // Preload images - FIXED
+  // Fetch carousel images from the API
+  useEffect(() => {
+    const fetchCarouselImages = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/carousel-images');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch carousel images');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && Array.isArray(data.carouselImages)) {
+          // Filter images by section
+          const topVente1Images = data.carouselImages
+            .filter((img: CarouselImage) => img.section === 'topvente1' && img.isActive)
+            .sort((a: CarouselImage, b: CarouselImage) => a.position - b.position)
+            .map((img: CarouselImage) => img.url);
+            
+          const topVente2Images = data.carouselImages
+            .filter((img: CarouselImage) => img.section === 'topvente2' && img.isActive)
+            .sort((a: CarouselImage, b: CarouselImage) => a.position - b.position)
+            .map((img: CarouselImage) => img.url);
+          
+          // Only update if we have images
+          if (topVente1Images.length > 0) {
+            setImagesTop1(topVente1Images);
+          }
+          
+          if (topVente2Images.length > 0) {
+            setImagesBottom(topVente2Images);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching carousel images:', err);
+        setError('Failed to load carousel images');
+        // Keep using fallback images
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchCarouselImages();
+  }, []);
+  
+  // Preload images
   useEffect(() => {
     const preloadImages = (images: string[]) => {
       images.forEach((src) => {

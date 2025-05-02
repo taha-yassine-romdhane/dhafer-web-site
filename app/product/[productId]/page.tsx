@@ -18,6 +18,14 @@ interface ProductWithColorVariants extends Omit<Product, "images"> {
     images: ProductImage[];
   })[];
   images: ProductImage[];
+  categories?: {
+    categoryId: number;
+    category?: {
+      id: number;
+      name: string;
+    };
+  }[];
+  sizes?: string[];
 }
 
 export default function ProductPage({ params }: { params: { productId: string } }) {
@@ -65,13 +73,19 @@ export default function ProductPage({ params }: { params: { productId: string } 
         }
 
         // Fetch suggested products
-        const suggestedResponse = await fetch(`/api/products/suggestions?category=${data.category}&exclude=${data.id}`);
+        // Use the first category ID if available, otherwise use a default
+        const categoryId = data.categories && data.categories.length > 0 
+          ? data.categories[0].categoryId 
+          : 1; // Default to category ID 1 if no categories
+          
+        const suggestedResponse = await fetch(`/api/products/suggestions?category=${categoryId}&exclude=${data.id}`);
         if (!suggestedResponse.ok) {
-          const errorData = await suggestedResponse.json();
-          throw new Error(errorData.error || `HTTP error! status: ${suggestedResponse.status}`);
+          console.error('Error fetching suggested products:', await suggestedResponse.text());
+          // Don't throw an error here, just log it and continue
+        } else {
+          const suggestedData = await suggestedResponse.json();
+          setSuggestedProducts(suggestedData);
         }
-        const suggestedData = await suggestedResponse.json();
-        setSuggestedProducts(suggestedData);
       } catch (error) {
         console.error("Error fetching product:", error);
         setError(error instanceof Error ? error.message : "Failed to load product. Please try again later.");
@@ -132,11 +146,34 @@ export default function ProductPage({ params }: { params: { productId: string } 
   const handleConfirmOrder = async () => {
     setSubmitting(true);
     
+    // Find the sizeId corresponding to the selectedSize string
+    let sizeId;
+    if (product?.sizes) {
+      try {
+        // Fetch the size ID from the database
+        const sizeResponse = await fetch(`/api/sizes?value=${encodeURIComponent(selectedSize)}`);
+        if (sizeResponse.ok) {
+          const sizeData = await sizeResponse.json();
+          if (sizeData && sizeData.id) {
+            sizeId = sizeData.id;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching size ID:", error);
+      }
+    }
+    
+    if (!sizeId) {
+      toast.error("Impossible de trouver l'ID de taille. Veuillez réessayer.");
+      setSubmitting(false);
+      return;
+    }
+    
     // Include quantity from the form data
     const orderData = {
       productId: product!.id,
       colorId: selectedColorVariant!.id,
-      size: selectedSize,
+      sizeId: sizeId, // Use sizeId instead of size string
       price: product!.salePrice || product!.price,
       quantity: userDetails.quantity || 1, // Use the quantity from form data
       fullName: userDetails.fullName,
@@ -327,25 +364,37 @@ export default function ProductPage({ params }: { params: { productId: string } 
           </div>
 
           {/* Size Selector */}
-          {product.sizes && product.sizes.length > 0 && (
-            <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700">Size</label>
-              <div className="flex flex-wrap gap-2">
+          {product.sizes && product.sizes.length > 0 ? (
+            <div className="space-y-3 mt-6">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-gray-700">Taille</label>
+                {selectedSize && (
+                  <span className="text-sm text-gray-500">Sélectionné: <span className="font-semibold text-[#D4AF37]">{selectedSize}</span></span>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-3">
                 {product.sizes.map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
                     className={cn(
-                      "px-4 py-2 text-sm rounded-md border-2 transition-colors",
+                      "px-5 py-2.5 text-sm font-medium rounded-md border-2 transition-all",
                       selectedSize === size
-                        ? "border-[#D4AF37] bg-[#D4AF37] text-white"
-                        : "border-gray-200 hover:border-[#D4AF37]/50"
+                        ? "border-[#D4AF37] bg-[#D4AF37] text-white shadow-sm"
+                        : "border-gray-300 hover:border-[#D4AF37] hover:bg-[#D4AF37]/5"
                     )}
                   >
                     {size}
                   </button>
                 ))}
               </div>
+              {!selectedSize && (
+                <p className="text-xs text-amber-600 mt-1">Veuillez sélectionner une taille</p>
+              )}
+            </div>
+          ) : (
+            <div className="mt-4 p-3 bg-gray-50 rounded-md">
+              <p className="text-sm text-gray-500">Aucune taille disponible pour ce produit</p>
             </div>
           )}
 
@@ -390,7 +439,11 @@ export default function ProductPage({ params }: { params: { productId: string } 
             <div className="border-t border-[#D4AF37]/20 pt-6 mt-6">
               <h3 className="text-sm font-medium mb-4 text-[#D4AF37]">Détails</h3>
               <ul className="list-disc list-inside space-y-2 text-sm text-gray-600">
-                <li>Catégorie: {product.category}</li>
+                <li>Catégorie: {
+                  product.categories && product.categories.length > 0 
+                    ? product.categories.map(cat => cat.category?.name || '').filter(Boolean).join(', ')
+                    : 'Non catégorisé'
+                }</li>
                 {product.collaborateur && (
                   <li>Modèle: {product.collaborateur}</li>
                 )}
@@ -403,7 +456,15 @@ export default function ProductPage({ params }: { params: { productId: string } 
       {/* Suggested Products */}
       <div className="mt-16">
         <h2 className="text-2xl font-bold text-gray-900 mb-8">Produits suggérés</h2>
-        <ProductGrid filters={{ category: product.category, collaborator: "all", sort: "featured", product: "" }} />
+        <ProductGrid filters={{
+          category: product.categories && product.categories.length > 0 
+            ? String(product.categories[0].categoryId) 
+            : 'all',
+          collaborator: "all", 
+          sort: "featured", 
+          product: "",
+          group: null
+        }} />
       </div>
 
       {/* Success Dialog */}

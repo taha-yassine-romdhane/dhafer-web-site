@@ -17,10 +17,25 @@ export async function GET(
       )
     }
 
+    // First, find the size ID for the given size value
+    const sizeRecord = await prisma.size.findFirst({
+      where: {
+        value: size
+      }
+    })
+    
+    if (!sizeRecord) {
+      return NextResponse.json(
+        { error: `Size '${size}' not found` },
+        { status: 404 }
+      )
+    }
+    
+    // Then query stocks using the sizeId
     const stocks = await prisma.stock.findMany({
       where: {
         productId: parseInt(params.productId),
-        size,
+        sizeId: sizeRecord.id,
         colorId: parseInt(colorId),
       },
     })

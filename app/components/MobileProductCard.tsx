@@ -5,8 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Product, ColorVariant, ProductImage, Stock } from "@prisma/client";
 import { useCart } from "@/lib/context/cart-context";
-import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type MobileProductCardProps = {

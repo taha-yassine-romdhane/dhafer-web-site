@@ -25,6 +25,7 @@ interface ProductGridProps {
     collaborator: string;
     sort: string;
     product: string;
+    group: string | null;
   };
 }
 
@@ -52,11 +53,13 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
     async function fetchProducts() {
       try {
         const params = new URLSearchParams();
-        if (filters.category !== 'all') params.append('category', filters.category);
+        if (filters.category !== 'all' && filters.category !== 'Tous') params.append('category', filters.category);
+        if (filters.group) params.append('group', filters.group);
         if (filters.collaborator !== 'all') params.append('collaborateur', filters.collaborator);
         if (filters.sort !== 'featured') params.append('sort', filters.sort);
         if (filters.product) params.append('product', filters.product);
 
+        console.log('Fetching products with params:', params.toString());
         const response = await fetch('/api/products?' + params.toString());
         if (!response.ok) {
           throw new Error('Failed to fetch products');

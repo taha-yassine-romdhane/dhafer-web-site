@@ -33,34 +33,8 @@ interface Category {
   url?: string;
 }
 
-const collectionCategories: Category[] = [
-  {
-    label: "Femme",
-    subcategories: [
-      { name: "ABAYA", query: "abaya" },
-      { name: "CAFTAN", query: "caftan" },
-      { name: "ROBE SOIRE", query: "robe-soire" },
-      { name: "JEBBA", query: "jebba" },
-      { name: "TABDILA", query: "tabdila" },
-    ],
-  },
-  {
-    label: "Enfants",
-    subcategories: [
-      { name: "CAFTAN", query: "enfants-caftan" },
-      { name: "ROBE SOIRE", query: "enfants-robe-soire" },
-      { name: "TABDILA", query: "tabdila" },
-    ],
-  },
-  {
-    label: "Accessoires",
-    subcategories: [
-      { name: "CHACHIA", query: "chachia" },
-      { name: "POCHETTE", query: "pochette" },
-      { name: "EVENTAILLE", query: "eventaille" },
-      { name: "FOULARD", query: "foulard" },
-    ],
-  },
+// Static categories that will always be shown
+const staticCategories: Category[] = [
   {
     label: "Promo",
     url: "/promo",
@@ -78,6 +52,8 @@ export default function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const { items } = useCart();
   const router = useRouter();
+  const [categories, setCategories] = useState<Category[]>(staticCategories);
+  const [loading, setLoading] = useState(true);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -88,6 +64,55 @@ export default function Navbar() {
     setOpenCategory(openCategory === category ? null : category);
   };
 
+  // Fetch categories from the API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/categories');
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        
+        const data = await response.json();
+        
+        // Group categories by their group (FEMME, ENFANT, ACCESSOIRE)
+        const categoryGroups: Record<string, any[]> = {};
+        
+        data.categories.forEach((category: any) => {
+          // Extract the group from the category or default to FEMME
+          // Note: In the actual API response, you might need to adjust how you access the group
+          const group = category.group || 'FEMME';
+          
+          if (!categoryGroups[group]) {
+            categoryGroups[group] = [];
+          }
+          
+          categoryGroups[group].push(category);
+        });
+        
+        // Transform grouped categories to match our Category interface
+        const groupedCategories = Object.entries(categoryGroups).map(([groupName, groupCategories]) => ({
+          label: groupName,
+          subcategories: groupCategories.map(category => ({
+            name: category.name,
+            query: category.name.toLowerCase().replace(/\s+/g, '-'),
+          })),
+        }));
+        
+        // Combine grouped categories with static categories
+        setCategories([...groupedCategories, ...staticCategories]);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
+
+  // Handle click outside to close menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -133,7 +158,7 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
             <ul className="flex space-x-8">
-              {collectionCategories.map((category) => (
+              {categories.map((category) => (
                 <li key={category.label} className="relative group">
                   {category.url ? (
                     <Link
@@ -267,7 +292,7 @@ export default function Navbar() {
             </div>
             <div className="px-4 py-2">
               <ul className="space-y-3">
-                {collectionCategories.map((category) => (
+                {categories.map((category) => (
                   <li key={category.label}>
                     {category.url ? (
                       <Link

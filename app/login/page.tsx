@@ -62,32 +62,36 @@ export default function Login() {
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D4AF37]"></div>
     </div>
   }
-
   // Only show login form if not logged in
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-[#F8F5F0] to-[#F0E6D2] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="flex justify-center">
             <Image
               src="/logo.png"
-              alt="Logo"
-              width={150}
-              height={150}
+              alt="Dar-Koftan Logo"
+              width={120}
+              height={120}
               className="mx-auto"
             />
           </div>
-     
+          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+            Connectez-vous à votre compte
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Ou{' '}
+            <Link href="/signup" className="font-medium text-[#D4AF37] hover:text-[#B59851]">
+              créez un nouveau compte
+            </Link>
+          </p>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <div className="bg-white/90 backdrop-blur-sm py-8 px-6 shadow-xl rounded-2xl sm:px-10 border border-white/20">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   Email
                 </label>
                 <div className="mt-1">
@@ -99,16 +103,13 @@ export default function Login() {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#D4AF37] focus:border-[#D4AF37] sm:text-sm"
+                    className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200"
                   />
                 </div>
               </div>
 
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Mot de passe
                 </label>
                 <div className="mt-1">
@@ -120,7 +121,7 @@ export default function Login() {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#D4AF37] focus:border-[#D4AF37] sm:text-sm"
+                    className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200"
                   />
                 </div>
               </div>
@@ -133,10 +134,7 @@ export default function Login() {
                     type="checkbox"
                     className="h-4 w-4 text-[#D4AF37] focus:ring-[#D4AF37] border-gray-300 rounded"
                   />
-                  <label
-                    htmlFor="remember_me"
-                    className="ml-2 block text-sm text-gray-900"
-                  >
+                  <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-700">
                     Se souvenir de moi
                   </label>
                 </div>
@@ -144,7 +142,7 @@ export default function Login() {
                 <div className="text-sm">
                   <Link
                     href="/forgot-password"
-                    className="font-medium text-[#D4AF37] hover:text-[#B59851]"
+                    className="font-medium text-[#D4AF37] hover:text-[#B59851] transition-colors duration-200"
                   >
                     Mot de passe oublié?
                   </Link>
@@ -152,25 +150,25 @@ export default function Login() {
               </div>
 
               {error && (
-                <div className="text-red-600 text-sm">{error}</div>
+                <div className="rounded-md bg-red-50 p-3">
+                  <p className="text-sm font-medium text-red-800">{error}</p>
+                </div>
               )}
 
               <div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37]"
+                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] transition-all duration-200"
                 >
                   {loading ? 'Loading...' : 'Se connecter'}
                 </button>
               </div>
             </form>
-
-
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return null // Return null while redirecting

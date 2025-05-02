@@ -5,7 +5,8 @@ import { Product, ColorVariant, ProductImage, Stock } from "@prisma/client"
 import ProductCard from "./ProductCard"
 import MobileProductCard from "./MobileProductCard"
 import { Loader2 } from "lucide-react"
-import Link from "next/link"
+import { transformProductForMobileCard, isProductValidForMobileCard } from "@/lib/product-utils"
+
 
 type HomeProduct = Product & {
   colorVariants: (ColorVariant & {
@@ -79,13 +80,18 @@ export default function TopProduitsSection() {
         </div>
         
         <div className={isMobile ? "grid grid-cols-2 gap-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"}>
-          {products.map((product) => (
-            isMobile ? (
-              <MobileProductCard key={product.id} product={product} />
+          {products.map((product) => {
+            const transformedProduct = transformProductForMobileCard(product);
+            return isMobile ? (
+              isProductValidForMobileCard(transformedProduct) ? (
+                <MobileProductCard key={product.id} product={transformedProduct} />
+              ) : (
+                <div key={product.id} className="text-red-500">Invalid product data</div>
+              )
             ) : (
               <ProductCard key={product.id} product={product} />
-            )
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

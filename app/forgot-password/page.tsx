@@ -7,56 +7,52 @@ import { apiPost } from '@/lib/api-client'
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setMessage(null)
+    setSuccess(null)
+    setError(null)
 
     try {
       // Call the forgot-password API endpoint
       const response = await apiPost('/api/users/forgot-password', { email })
       
-      setMessage({
-        text: 'If an account exists with this email, you will receive password reset instructions.',
-        type: 'success'
-      })
+      setSuccess('If an account exists with this email, you will receive password reset instructions.')
       
       // Clear the form
       setEmail('')
     } catch (error: any) {
-      setMessage({
-        text: error.message || 'An error occurred. Please try again.',
-        type: 'error'
-      })
+      setError(error.message || 'An error occurred. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#F8F5F0] to-[#F0E6D2] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <Image
             src="/logo.png"
-            alt="Logo"
-            width={150}
-            height={150}
+            alt="Dar-Koftan Logo"
+            width={120}
+            height={120}
             className="mx-auto"
           />
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Mot de passe oublié?
+        <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+          Réinitialiser votre mot de passe
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Saisissez votre adresse e-mail et nous vous enverrons des instructions pour réinitialiser votre mot de passe.
+          Entrez votre email pour recevoir les instructions
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white/90 backdrop-blur-sm py-8 px-6 shadow-xl rounded-2xl sm:px-10 border border-white/20">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -71,14 +67,21 @@ export default function ForgotPassword() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#D4AF37] focus:border-[#D4AF37] sm:text-sm"
+                  className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200"
+                  placeholder="Votre email"
                 />
               </div>
             </div>
 
-            {message && (
-              <div className={`text-sm ${message.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
-                {message.text}
+            {error && (
+              <div className="rounded-md bg-red-50 p-3">
+                <p className="text-sm font-medium text-red-800">{error}</p>
+              </div>
+            )}
+
+            {success && (
+              <div className="rounded-md bg-green-50 p-3">
+                <p className="text-sm font-medium text-green-800">{success}</p>
               </div>
             )}
 
@@ -86,34 +89,23 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37]"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] transition-all duration-200"
               >
-                {isSubmitting ? 'Sending...' : 'Send Reset Instructions'}
+                {isSubmitting ? 'Envoi en cours...' : 'Envoyer les instructions'}
               </button>
             </div>
           </form>
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or</span>
-              </div>
-            </div>
-
-            <div className="mt-6 text-center">
-              <Link
-                href="/login"
-                className="font-medium text-[#D4AF37] hover:text-[#B59851]"
-              >
-                Retour à la connexion
-              </Link>
-            </div>
+          <div className="mt-6 text-center">
+            <Link
+              href="/login"
+              className="font-medium text-[#D4AF37] hover:text-[#B59851] transition-colors duration-200"
+            >
+              Retour à la connexion
+            </Link>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

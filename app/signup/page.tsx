@@ -55,120 +55,118 @@ export default function SignUp() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
+    <div className="min-h-screen bg-gradient-to-br from-[#F8F5F0] to-[#F0E6D2] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="flex justify-center">
           <Image
-            src="/logo.png" // Make sure this exists in your public folder
-            alt="Dar Koftan Logo"
-            width={150}
-            height={150}
+            src="/logo.png"
+            alt="Dar-Koftan Logo"
+            width={120}
+            height={120}
             className="mx-auto"
           />
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Ajouter un compte
-          </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
+        <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+          Créer un nouveau compte
+        </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Déjà un compte?{' '}
+          <Link href="/login" className="font-medium text-[#D4AF37] hover:text-[#B59851] transition-colors duration-200">
+            Connectez-vous
+          </Link>
+        </p>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white/90 backdrop-blur-sm py-8 px-6 shadow-xl rounded-2xl sm:px-10 border border-white/20">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="username" className="sr-only">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
                 Nom d'utilisateur
               </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C6A961] focus:border-[#C6A961]"
-                placeholder="Username"
-                value={formData.username}
-                onChange={handleChange}
-              />
+              <div className="mt-1">
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  required
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200"
+                  placeholder="Nom d'utilisateur"
+                />
+              </div>
             </div>
+
             <div>
-              <label htmlFor="email" className="sr-only">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C6A961] focus:border-[#C6A961]"
-                placeholder="Email address"
-                value={formData.email}
-                onChange={handleChange}
-              />
+              <div className="mt-1">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200"
+                  placeholder="Email"
+                />
+              </div>
             </div>
+
             <div>
-              <label htmlFor="password" className="sr-only">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Mot de passe
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C6A961] focus:border-[#C6A961]"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-              />
+              <div className="mt-1">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200"
+                  placeholder="Mot de passe"
+                />
+              </div>
             </div>
+
             <div>
-              <label htmlFor="confirmPassword" className="sr-only">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                 Confirmer le mot de passe
               </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C6A961] focus:border-[#C6A961]"
-                placeholder="Confirmer le mot de passe"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
+              <div className="mt-1">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200"
+                  placeholder="Confirmer le mot de passe"
+                />
+              </div>
             </div>
-          </div>
 
-          {error && (
-            <div className="text-red-500 text-center text-sm">
-              {error}
+            {error && (
+              <div className="rounded-md bg-red-50 p-3">
+                <p className="text-sm font-medium text-red-800">{error}</p>
+              </div>
+            )}
+
+            <div>
+              <button
+                type="submit"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] transition-all duration-200"
+              >
+                {loading ? 'Chargement...' : 'Créer un compte'}
+              </button>
             </div>
-          )}
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#C6A961] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C6A961] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Creating account...' : 'Ajouter un compte'}
-            </button>
-          </div>
-
-          <div className="text-center text-sm">
-            <span className="text-gray-600">Déjà un compte?</span>{' '}
-            <Link
-              href="/login"
-              className="font-medium text-[#C6A961] hover:text-[#B59851]"
-            >
-              Se connecter
-            </Link>
-          </div>
-        </form>
-
-        <div className="mt-6 text-center text-xs text-gray-500">
-          En vous inscrivant, vous acceptez nos{' '}
-          <Link href="/terms" className="text-[#C6A961] hover:text-[#B59851]">
-            Conditions d'utilisation
-          </Link>{' '}
-          et{' '}
-          <Link href="/privacy" className="text-[#C6A961] hover:text-[#B59851]">
-            Politique de confidentialité
-          </Link>
+          </form>
         </div>
       </div>
     </div>

@@ -27,6 +27,18 @@ export async function POST(req: Request) {
         );
       }
 
+      // First, find the size ID from the size value
+      const size = await prisma.size.findFirst({
+        where: { value: item.size },
+      });
+
+      if (!size) {
+        return NextResponse.json(
+          { error: `Size ${item.size} not found` },
+          { status: 404 }
+        );
+      }
+
       // Verify the product exists and get its color variant ID
       const product = await prisma.product.findFirst({
         where: { id: item.productId },
@@ -37,7 +49,7 @@ export async function POST(req: Request) {
             },
             include: {
               stocks: {
-                where: { size: item.size },
+                where: { sizeId: size.id },
               },
             },
           },
@@ -64,6 +76,17 @@ export async function POST(req: Request) {
       item.colorVariantId = product.colorVariants[0].id;
     }
 
+    // Store sizeIds for each item
+    const itemsWithSizeIds = await Promise.all(items.map(async (item) => {
+      const size = await prisma.size.findFirst({
+        where: { value: item.size },
+      });
+      return {
+        ...item,
+        sizeId: size?.id
+      };
+    }));
+
     // Create the order with validated items
     const order = await prisma.order.create({
       data: {
@@ -74,10 +97,9 @@ export async function POST(req: Request) {
         status: 'PENDING',
         userId: userId ? parseInt(userId.value) : undefined, // Link order to user ID if logged in
         items: {
-          create: items.map((item) => ({
+          create: itemsWithSizeIds.map((item) => ({
             quantity: item.quantity,
-            size: item.size,
-            color: item.color,
+            sizeId: item.sizeId,
             price: item.price,
             productId: item.productId,
             colorVariantId: item.colorVariantId,

@@ -6,22 +6,22 @@ export async function POST(request: Request) {
     const data = await request.json();
 
     // Validate required fields
-    if (!data.fullName || !data.phone || !data.address || !data.productId || !data.colorId || !data.size || !data.quantity || !data.price) {
+    if (!data.fullName || !data.phone || !data.address || !data.productId || !data.colorId || !data.sizeId || !data.quantity || !data.price) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Check if the product and color variant exist
+    // Fetch the product to verify it exists
     const product = await prisma.product.findUnique({
-      where: { id: data.productId },
+      where: { id: Number(data.productId) },
       include: {
         colorVariants: {
-          where: { id: data.colorId },
+          where: { id: Number(data.colorId) },
           include: {
             stocks: {
-              where: { size: data.size },
+              where: { sizeId: Number(data.sizeId) },
             },
           },
         },
@@ -35,32 +35,22 @@ export async function POST(request: Request) {
       );
     }
 
-    if (product.colorVariants.length === 0) {
-      return NextResponse.json(
-        { error: 'Color variant not found' },
-        { status: 404 }
-      );
-    }
-
-
-
     // Create the order
     const order = await prisma.order.create({
       data: {
         customerName: data.fullName,
         phoneNumber: data.phone,
         address: `${data.address}${data.governorate ? `, ${data.governorate}` : ''}`,
-        totalAmount: data.price * data.quantity,
+        totalAmount: Number(data.price) * Number(data.quantity),
         status: 'PENDING',
         items: {
           create: [
             {
-              productId: data.productId,
-              colorVariantId: data.colorId,
-              color: product.colorVariants[0].color,
-              quantity: data.quantity,
-              size: data.size,
-              price: data.price,
+              productId: Number(data.productId),
+              colorVariantId: Number(data.colorId),
+              sizeId: Number(data.sizeId),
+              quantity: Number(data.quantity),
+              price: Number(data.price),
             },
           ],
         },
@@ -72,7 +62,6 @@ export async function POST(request: Request) {
             colorVariant: {
               include: {
                 images: {
-                  where: { isMain: true },
                   take: 1,
                 },
               },
@@ -80,6 +69,18 @@ export async function POST(request: Request) {
           },
         },
       },
+    });
+
+    // Update stock status
+    await prisma.stock.updateMany({
+      where: {
+        productId: Number(data.productId),
+        colorId: Number(data.colorId),
+        sizeId: Number(data.sizeId)
+      },
+      data: {
+        inStockOnline: false
+      }
     });
 
     return NextResponse.json({ success: true, order });

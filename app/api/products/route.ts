@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { CategoryGroup } from "@prisma/client";
 
 export async function POST(request: Request) {
   try {
@@ -45,15 +46,70 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
+    const groupParam = searchParams.get("group");
+    const collaborateur = searchParams.get("collaborateur");
     const sort = searchParams.get("sort");
     const product = searchParams.get("product");
+    
+    // Convert string group to CategoryGroup enum
+    let group: CategoryGroup | undefined;
+    if (groupParam) {
+      if (groupParam.toUpperCase() === 'FEMME') group = CategoryGroup.FEMME;
+      else if (groupParam.toUpperCase() === 'ENFANT') group = CategoryGroup.ENFANT;
+      else if (groupParam.toUpperCase() === 'ACCESSOIRE') group = CategoryGroup.ACCESSOIRE;
+    }
 
+    console.log('API received params:', { category, group, collaborateur, sort, product });
+    
     let where: any = {};
 
     // Category filter
-    if (category && category !== "all") {
-      where.category = {
-        equals: category.toLowerCase(),
+    if (category && category !== "all" && category !== "Tous") {
+      // First, fetch the category by name
+      const categoryFilter = await prisma.category.findFirst({
+        where: {
+          name: {
+            equals: category,
+            mode: 'insensitive'
+          },
+          // If group is specified, filter by group as well
+          ...(group && { group })
+        }
+      });
+
+      if (categoryFilter) {
+        where.categories = {
+          some: {
+            categoryId: categoryFilter.id
+          }
+        };
+      } else {
+        console.log(`Category not found: ${category}`);
+      }
+    } else if (group) {
+      // If only group is specified (no specific category), get all categories in that group
+      const groupCategories = await prisma.category.findMany({
+        where: {
+          group
+        }
+      });
+      
+      if (groupCategories.length > 0) {
+        const categoryIds = groupCategories.map(cat => cat.id);
+        where.categories = {
+          some: {
+            categoryId: {
+              in: categoryIds
+            }
+          }
+        };
+      }
+    }
+    
+    // Collaborateur filter
+    if (collaborateur && collaborateur !== "all") {
+      where.collaborateur = {
+        equals: collaborateur,
         mode: 'insensitive'
       };
     }
@@ -76,6 +132,11 @@ export async function GET(request: Request) {
     const products = await prisma.product.findMany({
       where,
       include: {
+        categories: {
+          include: {
+            category: true
+          }
+        },
         colorVariants: {
           include: {
             images: true
