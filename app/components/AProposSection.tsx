@@ -20,17 +20,7 @@ interface CarouselImage {
 export default function AProposSection() {
  
 
-  const [images, setImages] = useState<string[]>([
-    '/carousel/img7.JPG',
-    '/carousel/img8.JPG',
-    '/carousel/img9.JPG',
-    '/carousel/img10.png',
-    '/carousel/img11.png',
-    '/carousel/img12.png',
-    '/carousel/img13.png',
-    '/carousel/img14.png',
-  ]);
-
+  const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);

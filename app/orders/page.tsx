@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/auth-context';
+import { apiGet } from '@/lib/api-client';
 
 interface ProductImage {
   id: number;
@@ -79,31 +81,61 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { isLoggedIn, isLoading: authLoading, user } = useAuth();
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch('/api/users/orders');
-        if (!response.ok) {
-          throw new Error('Failed to fetch orders');
+        // Wait for auth to be ready
+        if (authLoading) return;
+        
+        // Check if user is logged in
+        if (!isLoggedIn || !user) {
+          setError('Please log in to view your orders');
+          setLoading(false);
+          return;
         }
-        const data = await response.json();
+        
+        // Use the apiGet helper which automatically adds the auth token
+        const data = await apiGet('/api/users/orders');
         setOrders(data);
-      } catch (err) {
-        setError('Error loading orders');
-        console.error('Error:', err);
+      } catch (err: any) {
+        console.error('Error fetching orders:', err);
+        
+        if (err.message?.includes('Authentication required')) {
+          setError('Your session has expired. Please log in again.');
+        } else {
+          setError('Error loading orders. Please try again later.');
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchOrders();
-  }, []);
+  }, [isLoggedIn, authLoading, user]);
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900">Authentication Required</h2>
+          <p className="mt-2 text-gray-600">Please log in to view your orders</p>
+          <Link 
+            href="/login?redirect=/orders"
+            className="mt-4 inline-block rounded-md bg-[#D4AF37] px-4 py-2 text-sm font-medium text-white hover:bg-[#B59851] transition-colors"
+          >
+            Go to Login
+          </Link>
+        </div>
       </div>
     );
   }
@@ -114,6 +146,12 @@ export default function OrdersPage() {
         <div className="text-center">
           <h2 className="text-xl font-semibold text-gray-900">Error</h2>
           <p className="mt-2 text-gray-600">{error}</p>
+          <Link 
+            href="/collections"
+            className="mt-4 inline-block rounded-md bg-[#D4AF37] px-4 py-2 text-sm font-medium text-white hover:bg-[#B59851] transition-colors"
+          >
+            Browse Products
+          </Link>
         </div>
       </div>
     );

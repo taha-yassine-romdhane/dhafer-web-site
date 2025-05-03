@@ -21,8 +21,8 @@ interface CarouselImage {
 
 const TopVentSection: React.FC = () => {
   // Fallback images in case API fails
-  const fallbackImagesTop1 = ['/carousel/img1.JPG', '/carousel/img2.JPG', '/carousel/img3.JPG'];
-  const fallbackImagesBottom = ['/carousel/img4.JPG', '/carousel/img5.JPG', '/carousel/img6.JPG'];
+  const fallbackImagesTop1: string[] = [];
+  const fallbackImagesBottom: string[] = [];
   
   const [imagesTop1, setImagesTop1] = useState<string[]>(fallbackImagesTop1);
   const [imagesBottom, setImagesBottom] = useState<string[]>(fallbackImagesBottom);

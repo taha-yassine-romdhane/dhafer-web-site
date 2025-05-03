@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Loader2, User, Mail, Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/auth-context';
+import { apiGet, apiPut } from '@/lib/api-client';
 
 interface UserProfile {
   id: number;
@@ -15,6 +17,7 @@ interface UserProfile {
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { isLoggedIn, isLoading: authLoading, user: authUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -28,15 +31,19 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    // Only fetch profile if user is logged in and auth is ready
+    if (!authLoading && isLoggedIn) {
+      fetchProfile();
+    } else if (!authLoading && !isLoggedIn) {
+      // Redirect to login if not authenticated
+      router.push('/login?redirect=/profile');
+    }
+  }, [authLoading, isLoggedIn, router]);
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch('/api/users/profile');
-      if (!response.ok) throw new Error('Failed to fetch profile');
-      
-      const data = await response.json();
+      // Use apiGet which automatically adds auth token from localStorage
+      const data = await apiGet('/api/users/profile');
       setProfile(data);
       setFormData(prev => ({
         ...prev,
@@ -44,8 +51,15 @@ export default function ProfilePage() {
         email: data.email,
       }));
     } catch (err) {
-      setError('Error loading profile');
-      console.error('Error:', err);
+      console.error('Error loading profile:', err);
+      setError('Error loading profile. Please try again.');
+      
+      // If authentication error, redirect to login
+      if (err.message?.includes('Authentication')) {
+        setTimeout(() => {
+          router.push('/login?redirect=/profile');
+        }, 2000);
+      }
     } finally {
       setLoading(false);
     }
@@ -65,23 +79,24 @@ export default function ProfilePage() {
     setSuccessMessage('');
 
     try {
-      const response = await fetch('/api/users/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-        }),
+      // Use apiPut which automatically adds auth token from localStorage
+      await apiPut('/api/users/profile', {
+        username: formData.username,
+        email: formData.email,
       });
-
-      if (!response.ok) throw new Error('Failed to update profile');
       
       setSuccessMessage('Profile updated successfully');
       await fetchProfile();
-    } catch (err) {
-      setError('Error updating profile');
+    } catch (err: any) {
+      console.error('Error updating profile:', err);
+      setError(err.message || 'Error updating profile');
+      
+      // If authentication error, redirect to login
+      if (err.message?.includes('Authentication')) {
+        setTimeout(() => {
+          router.push('/login?redirect=/profile');
+        }, 2000);
+      }
     } finally {
       setLoading(false);
     }
@@ -99,18 +114,11 @@ export default function ProfilePage() {
     setSuccessMessage('');
 
     try {
-      const response = await fetch('/api/users/change-password', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          currentPassword: formData.currentPassword,
-          newPassword: formData.newPassword,
-        }),
+      // Use apiPut which automatically adds auth token from localStorage
+      await apiPut('/api/users/change-password', {
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword,
       });
-
-      if (!response.ok) throw new Error('Failed to change password');
 
       setSuccessMessage('Password changed successfully');
       setFormData(prev => ({
@@ -119,17 +127,46 @@ export default function ProfilePage() {
         newPassword: '',
         confirmPassword: '',
       }));
-    } catch (err) {
-      setError('Error changing password');
+    } catch (err: any) {
+      console.error('Error changing password:', err);
+      
+      // Show more specific error messages
+      if (err.message?.includes('current password')) {
+        setError('Current password is incorrect');
+      } else if (err.message?.includes('Authentication')) {
+        setError('Your session has expired. Please log in again.');
+        setTimeout(() => {
+          router.push('/login?redirect=/profile');
+        }, 2000);
+      } else {
+        setError(err.message || 'Error changing password');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading && !profile) {
+  if (authLoading || (loading && !profile)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
+      </div>
+    );
+  }
+  
+  if (!isLoggedIn) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900">Authentication Required</h2>
+          <p className="mt-2 text-gray-600">Please log in to view your profile</p>
+          <button
+            onClick={() => router.push('/login?redirect=/profile')}
+            className="mt-4 inline-flex items-center rounded-md bg-[#D4AF37] px-4 py-2 text-white hover:bg-[#B59851] transition-colors"
+          >
+            Go to Login
+          </button>
+        </div>
       </div>
     );
   }
