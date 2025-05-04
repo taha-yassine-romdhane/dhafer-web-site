@@ -158,13 +158,13 @@ export default function ProfilePage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Authentication Required</h2>
-          <p className="mt-2 text-gray-600">Please log in to view your profile</p>
+          <h2 className="text-2xl font-bold text-gray-900">Authentication Requise</h2>
+          <p className="mt-2 text-gray-600">Veuillez vous connecter pour consulter votre profil</p>
           <button
             onClick={() => router.push('/login?redirect=/profile')}
             className="mt-4 inline-flex items-center rounded-md bg-[#D4AF37] px-4 py-2 text-white hover:bg-[#B59851] transition-colors"
           >
-            Go to Login
+            Se connecter
           </button>
         </div>
       </div>
@@ -177,9 +177,9 @@ export default function ProfilePage() {
         <div className="space-y-8">
           {/* Profile Header */}
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Paramètres du profil</h1>
             <p className="mt-2 text-sm text-gray-600">
-              Manage your account settings and preferences
+              Gérer vos paramètres de compte et vos préférences
             </p>
           </div>
 
@@ -218,11 +218,11 @@ export default function ProfilePage() {
           {/* Account Info */}
           <div className="bg-white shadow rounded-lg overflow-hidden">
             <div className="p-6">
-              <h2 className="text-lg font-medium text-gray-900">Account Information</h2>
+              <h2 className="text-lg font-medium text-gray-900">Informations du compte</h2>
               <form onSubmit={handleProfileUpdate} className="mt-6 space-y-6">
                 <div>
                   <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                    Username
+                    Nom d'utilisateur
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -274,11 +274,11 @@ export default function ProfilePage() {
           {/* Change Password */}
           <div className="bg-white shadow rounded-lg overflow-hidden">
             <div className="p-6">
-              <h2 className="text-lg font-medium text-gray-900">Change Password</h2>
+              <h2 className="text-lg font-medium text-gray-900">Changer le mot de passe</h2>
               <form onSubmit={handlePasswordChange} className="mt-6 space-y-6">
                 <div>
                   <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">
-                    Current Password
+                    Mot de passe actuel
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -297,7 +297,7 @@ export default function ProfilePage() {
 
                 <div>
                   <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
-                    New Password
+                    Nouveau mot de passe
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -316,7 +316,7 @@ export default function ProfilePage() {
 
                 <div>
                   <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                    Confirm New Password
+                    Confirmer le nouveau mot de passe
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -349,16 +349,16 @@ export default function ProfilePage() {
           {/* Account Stats */}
           <div className="bg-white shadow rounded-lg overflow-hidden">
             <div className="p-6">
-              <h2 className="text-lg font-medium text-gray-900">Account Statistics</h2>
+              <h2 className="text-lg font-medium text-gray-900">Statistiques du compte</h2>
               <dl className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div className="bg-[#D4AF37]/5 rounded-lg p-6">
-                  <dt className="text-sm font-medium text-gray-500">Fidelity Points</dt>
+                  <dt className="text-sm font-medium text-gray-500">Points de fidélité</dt>
                   <dd className="mt-1 text-3xl font-semibold text-[#D4AF37]">
                     {profile?.fidelityPoints || 0}
                   </dd>
                 </div>
                 <div className="bg-[#D4AF37]/5 rounded-lg p-6">
-                  <dt className="text-sm font-medium text-gray-500">Member Since</dt>
+                  <dt className="text-sm font-medium text-gray-500">Membre depuis</dt>
                   <dd className="mt-1 text-3xl font-semibold text-[#D4AF37]">
                     {profile?.createdAt ? new Date(profile.createdAt).getFullYear() : '-'}
                   </dd>
