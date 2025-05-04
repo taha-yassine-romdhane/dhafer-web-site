@@ -264,7 +264,7 @@ export default function ProfilePage() {
                     disabled={loading}
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-50"
                   >
-                    {loading ? 'Saving...' : 'Save Changes'}
+                    {loading ? 'Sauvegarde...' : 'Sauvegarder les modifications'}
                   </button>
                 </div>
               </form>
@@ -339,7 +339,7 @@ export default function ProfilePage() {
                     disabled={loading}
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-50"
                   >
-                    {loading ? 'Changing Password...' : 'Change Password'}
+                    {loading ? 'Changement du mot de passe...' : 'Changer le mot de passe'}
                   </button>
                 </div>
               </form>
