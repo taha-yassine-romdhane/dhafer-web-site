@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import ProductGrid from "@/components/product-grid";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -42,6 +44,8 @@ export default function CollectionsPage() {
     sort: searchParams.get("sort") || "featured",
     product: searchParams.get("product") || ""
   });
+  
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -197,8 +201,32 @@ export default function CollectionsPage() {
               </div>
             )}
 
+            {/* Search Bar */}
+            <div className="mt-4 border-t pt-4">
+              <div className="relative w-full max-w-md mb-4">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400" />
+                </div>
+                <Input
+                  type="text"
+                  placeholder="Rechercher des produits..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-10 py-2 border border-gray-200 rounded-md focus:ring-[#D4AF37] focus:border-[#D4AF37] w-full"
+                />
+                {searchQuery && (
+                  <button 
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onClick={() => setSearchQuery("")}
+                  >
+                    <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  </button>
+                )}
+              </div>
+            </div>
+            
             {/* Sort and Clear Filters */}
-            <div className="flex items-center justify-between mt-4 border-t pt-4">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <Select
                   value={filters.sort}
@@ -220,11 +248,14 @@ export default function CollectionsPage() {
                   </SelectContent>
                 </Select>
 
-                {(filters.category !== "Tous") && (
+                {(filters.category !== "Tous" || searchQuery) && (
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleClearFilters}
+                    onClick={() => {
+                      handleClearFilters();
+                      setSearchQuery("");
+                    }}
                     className="border border-gray-200 hover:border-[#D4AF37] hover:bg-[#D4AF37]/10 text-gray-600 hover:text-[#D4AF37] transition-colors"
                   >
                     Effacer les filtres
@@ -240,7 +271,7 @@ export default function CollectionsPage() {
         </div>
 
         {/* Product Grid */}
-        <ProductGrid filters={{...filters, group: activeGroup}} />
+        <ProductGrid filters={{...filters, group: activeGroup, searchQuery: searchQuery}} />
       </div>
     </div>
   );

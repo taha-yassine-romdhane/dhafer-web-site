@@ -4,19 +4,26 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Product, ProductImage, ColorVariant } from "@prisma/client";
-// Removed cart context import as it's no longer needed in this component
-// import { useCart } from "@/lib/context/cart-context";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
-// Dialog components no longer needed
-// import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+
+interface Category {
+  id: number;
+  name: string;
+}
+
+interface ProductCategory {
+  categoryId: number;
+  category?: Category;
+}
 
 interface ProductWithColorVariants extends Product {
   images: ProductImage[];
   colorVariants: (ColorVariant & {
     images: ProductImage[];
   })[];
+  categories?: ProductCategory[];
 }
 
 interface ProductGridProps {
@@ -26,15 +33,16 @@ interface ProductGridProps {
     sort: string;
     product: string;
     group: string | null;
+    searchQuery?: string;
   };
 }
 
 const ProductGrid = ({ filters }: ProductGridProps) => {
   const router = useRouter();
   const [products, setProducts] = useState<ProductWithColorVariants[] | null>(null);
+  const [filteredProducts, setFilteredProducts] = useState<ProductWithColorVariants[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedSizes, setSelectedSizes] = useState<{ [key: string]: string }>({});
   const [selectedColors, setSelectedColors] = useState<{ [key: string]: string }>({});
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<{ [key: string]: string }>({});
@@ -45,6 +53,31 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
   const formatPrice = (price: number) => {
     return price.toFixed(2);
   };
+
+  // Filter products based on search query
+  useEffect(() => {
+    if (!products) return;
+    
+    if (!filters.searchQuery) {
+      setFilteredProducts(products);
+      return;
+    }
+    
+    const query = filters.searchQuery.toLowerCase().trim();
+    const filtered = products.filter(product => {
+      // Get categories from product if available
+      const categories = product.categories?.map((cat: ProductCategory) => cat.category?.name || '').join(' ') || '';
+      
+      return (
+        product.name.toLowerCase().includes(query) ||
+        product.description.toLowerCase().includes(query) ||
+        categories.toLowerCase().includes(query) ||
+        (product.collaborateur || '').toLowerCase().includes(query)
+      );
+    });
+    
+    setFilteredProducts(filtered);
+  }, [products, filters.searchQuery]);
 
   useEffect(() => {
     // Track if the component is still mounted
@@ -131,8 +164,8 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
   return (
     <>
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
             <div key={i} className="animate-pulse">
               <div className="bg-gray-200 aspect-[2/3] rounded-md mb-2"></div>
               <div className="h-3 bg-gray-200 rounded w-3/4 mb-1"></div>
@@ -147,13 +180,16 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
             Try Again
           </Button>
         </div>
-      ) : !products || products.length === 0 ? (
+      ) : !filteredProducts || filteredProducts.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-500 mb-4">No products found</p>
+          <p className="text-gray-500 mb-4">Aucun produit trouvé</p>
+          {filters.searchQuery && (
+            <p className="text-sm text-gray-400">Essayez de modifier votre recherche ou vos filtres</p>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <div
               key={product.id}
               className="group relative"

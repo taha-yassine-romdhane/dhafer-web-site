@@ -50,7 +50,7 @@ export default function ProfilePage() {
         username: data.username,
         email: data.email,
       }));
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error loading profile:', err);
       setError('Error loading profile. Please try again.');
       

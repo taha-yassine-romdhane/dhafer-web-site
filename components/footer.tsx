@@ -119,8 +119,8 @@ export function Footer() {
             </p>
             <div className="space-y-2">
               <Input
-                type="email"
-                placeholder="Enter your email"
+                type="number"
+                placeholder="+216 00 00 00 00"
                 className="border-[#D4AF37]/20 focus:ring-[#D4AF37] focus:border-[#D4AF37]"
               />
               <Button className="w-full bg-[#D4AF37] text-white hover:bg-[#D4AF37]/90">

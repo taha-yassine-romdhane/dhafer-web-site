@@ -59,7 +59,7 @@ export default function RefundPolicyPage() {
               <ol className="list-decimal list-inside text-gray-600">
                 <li>
                   Contactez notre service client à l'adresse{" "}
-                  <strong>support@darkoftan.com</strong> pour initier une demande
+                  <strong>ddarelkoftanalassil@gmail.com</strong> pour initier une demande
                   de remboursement.
                 </li>
                 <li>

@@ -9,13 +9,21 @@ import { Minus, Plus, Trash2, ArrowRight, X } from 'lucide-react';
 import { useCart } from '@/lib/context/cart-context';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/auth-context';
+import { apiPost } from '@/lib/api-client';
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart();
+  const { isLoggedIn } = useAuth();
   const [customerDetails, setCustomerDetails] = useState({
     name: '',
     phone: '',
     address: '',
+  });
+  const [validationErrors, setValidationErrors] = useState({
+    name: false,
+    phone: false,
+    address: false
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -46,41 +54,44 @@ export default function CartPage() {
   }, []);
 
   const handleConfirmOrder = () => {
-    if (!customerDetails.name || !customerDetails.phone || !customerDetails.address) {
-      toast.error('Veuillez remplir tous les détails du client');
+    // Reset validation errors
+    const errors = {
+      name: !customerDetails.name,
+      phone: !customerDetails.phone,
+      address: !customerDetails.address
+    };
+    
+    setValidationErrors(errors);
+    
+    // Check if any validation errors exist
+    if (errors.name || errors.phone || errors.address) {
+      toast.error('Veuillez remplir tous les champs obligatoires');
+      // Scroll to the first form field for better UX
+      document.getElementById('customer-details')?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
+    
     setShowConfirmation(true);
   };
 
   const handleSubmitOrder = async () => {
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          customerName: customerDetails.name,
-          phoneNumber: customerDetails.phone,
-          address: customerDetails.address,
-          totalAmount: total,
-          items: items.map((item) => ({
-            productId: item.id,
-            quantity: item.quantity,
-            size: item.selectedSize,
-            color: item.selectedColor,
-            price: item.price,
-          })),
-        }),
+      // Use apiPost which automatically includes the auth token in headers
+      const order = await apiPost('/api/orders', {
+        customerName: customerDetails.name,
+        phoneNumber: customerDetails.phone,
+        address: customerDetails.address,
+        totalAmount: total,
+        items: items.map((item) => ({
+          productId: item.id,
+          quantity: item.quantity,
+          size: item.selectedSize,
+          color: item.selectedColor,
+          price: item.price,
+        })),
       });
 
-      if (!response.ok) {
-        throw new Error('Échec de la création de la commande');
-      }
-
-      const order = await response.json();
       setShowConfirmation(false);
       toast.success('Commande soumise avec succès! Nous vous contacterons bientôt pour confirmer votre commande.');
 
@@ -181,36 +192,63 @@ export default function CartPage() {
               <h2 className="text-lg font-semibold text-[#D4AF37]">Résumé de la commande</h2>
 
               {/* Customer Details */}
-              <div className="space-y-4">
+              <div id="customer-details" className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Nom complet</Label>
+                  <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                    Nom complet <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="name"
                     value={customerDetails.name}
-                    onChange={(e) => setCustomerDetails((prev) => ({ ...prev, name: e.target.value }))}
-                    placeholder="Entrez votre nom complet"
-                    className="border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37]"
+                    onChange={(e) => {
+                      setCustomerDetails({ ...customerDetails, name: e.target.value });
+                      if (e.target.value) setValidationErrors({...validationErrors, name: false});
+                    }}
+                    className={`mt-1 w-full ${validationErrors.name ? 'border-red-500 ring-red-500' : ''}`}
+                    placeholder="Votre nom complet"
+                    disabled={isSubmitting}
                   />
+                  {validationErrors.name && (
+                    <p className="mt-1 text-sm text-red-500">Le nom est requis</p>
+                  )}
                 </div>
                 <div>
-                  <Label htmlFor="phone">Numéro de téléphone</Label>
+                  <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                    Téléphone <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="phone"
                     value={customerDetails.phone}
-                    onChange={(e) => setCustomerDetails((prev) => ({ ...prev, phone: e.target.value }))}
-                    placeholder="Entrez votre numéro de téléphone"
-                    className="border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37]"
+                    onChange={(e) => {
+                      setCustomerDetails({ ...customerDetails, phone: e.target.value });
+                      if (e.target.value) setValidationErrors({...validationErrors, phone: false});
+                    }}
+                    className={`mt-1 w-full ${validationErrors.phone ? 'border-red-500 ring-red-500' : ''}`}
+                    placeholder="Votre numéro de téléphone"
+                    disabled={isSubmitting}
                   />
+                  {validationErrors.phone && (
+                    <p className="mt-1 text-sm text-red-500">Le numéro de téléphone est requis</p>
+                  )}
                 </div>
                 <div>
-                  <Label htmlFor="address">Adresse de livraison</Label>
+                  <Label htmlFor="address" className="text-sm font-medium text-gray-700">
+                    Adresse <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="address"
                     value={customerDetails.address}
-                    onChange={(e) => setCustomerDetails((prev) => ({ ...prev, address: e.target.value }))}
-                    placeholder="Entrez votre adresse de livraison"
-                    className="border-[#D4AF37]/20 focus:border-[#D4AF37] focus:ring-[#D4AF37]"
+                    onChange={(e) => {
+                      setCustomerDetails({ ...customerDetails, address: e.target.value });
+                      if (e.target.value) setValidationErrors({...validationErrors, address: false});
+                    }}
+                    className={`mt-1 w-full ${validationErrors.address ? 'border-red-500 ring-red-500' : ''}`}
+                    placeholder="Votre adresse complète"
+                    disabled={isSubmitting}
                   />
+                  {validationErrors.address && (
+                    <p className="mt-1 text-sm text-red-500">L'adresse est requise</p>
+                  )}
                 </div>
               </div>
 

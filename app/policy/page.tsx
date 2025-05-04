@@ -129,7 +129,7 @@ export default function PrivacyPolicyPage() {
               veuillez nous contacter à l'adresse suivante :
             </p>
             <p className="text-gray-600 font-medium mt-2">
-              E-mail : <strong>support@darkoftan.com</strong>
+              E-mail : <strong>ddarelkoftanalassil@gmail.com</strong>
             </p>
           </div>
 

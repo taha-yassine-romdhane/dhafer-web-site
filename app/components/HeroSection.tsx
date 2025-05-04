@@ -1,33 +1,97 @@
-'use client'; // Add this if you're using Next.js 13+ with app directory
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
+interface CarouselImage {
+  id: number;
+  url: string;
+  section: string;
+  position: number;
+  isActive: boolean;
+  title: string | null;
+  description: string | null;
+  buttonText: string | null;
+  buttonLink: string | null;
+}
+
+interface SliderImage {
+  url: string;
+  section: string;
+}
+
 export default function HeroSection() {
   const [currentImage, setCurrentImage] = useState(0);
-
-  const images = [
-    {
-      desktop: '/sliders/slider-1.png',
-      mobile: '/sliders/slider-1-v2.png',
-      alt: 'Dar Koftan - Image 1'
-    },
-    {
-      desktop: '/sliders/slider-2.png',
-      mobile: '/sliders/slider-2-v2.png',
-      alt: 'Dar Koftan - Image 2'
-    },
-    {
-      desktop: '/sliders/slider-3.png',
-      mobile: '/sliders/slider-3-v2.png',
-      alt: 'Dar Koftan - Image 3'
-    },
-    {
-      desktop: '/sliders/slider-4.png',
-      mobile: '/sliders/slider-4-v2.png',
-      alt: 'Dar Koftan - Image 4'
+  const [carouselImages, setCarouselImages] = useState<CarouselImage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Fallback images in case API fails
+  const fallbackImages: CarouselImage[] = [];
+  
+  // Fetch carousel images from API
+  useEffect(() => {
+    const fetchCarouselImages = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/carousel-images');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch carousel images');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.carouselImages && data.carouselImages.length > 0) {
+          setCarouselImages(data.carouselImages);
+        } else {
+          // If no images or empty array, use fallback
+          console.warn('No carousel images found, using fallbacks');
+          setError('No carousel images found');
+        }
+      } catch (err) {
+        console.error('Error fetching carousel images:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchCarouselImages();
+  }, []);
+  
+  // Process images by section
+  const processImages = () => {
+    if (carouselImages.length === 0) return [];
+    
+    // Filter desktop images (SliderHome)
+    const desktopImages = carouselImages.filter(img => img.section === 'SliderHome');
+    
+    // Filter mobile images (SliderHomeMobile)
+    const mobileImages = carouselImages.filter(img => img.section === 'SliderHomeMobile');
+    
+    // Create an array of objects with desktop and mobile URLs
+    const result = [];
+    
+    // Use the length of the longer array to determine how many slides to create
+    const maxLength = Math.max(desktopImages.length, mobileImages.length);
+    
+    for (let i = 0; i < maxLength; i++) {
+      // Use modulo to cycle through available images if there are fewer images than positions
+      const desktopImage = desktopImages[i % desktopImages.length];
+      const mobileImage = mobileImages[i % mobileImages.length];
+      
+      result.push({
+        desktop: desktopImage.url,
+        mobile: mobileImage.url,
+        index: i
+      });
     }
-  ];
+    
+    return result;
+  };
+  
+  const images = carouselImages.length > 0 ? processImages() : [];
 
   useEffect(() => {
     // Auto-scroll every 5 seconds (5000ms)
@@ -36,14 +100,23 @@ export default function HeroSection() {
     }, 5000);
 
     return () => clearInterval(interval); // Cleanup on unmount
-  }, []);
+  }, [images.length]);
+
+  // Show loading state or empty state if no images
+  if (loading || images.length === 0) {
+    return (
+      <section className="relative h-[25vh] md:h-[65vh] w-full overflow-hidden bg-gray-50 flex flex-col items-center justify-center">
+        <div className="animate-pulse bg-gray-200 h-full w-full"></div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative h-[25vh] md:h-[65vh] w-full overflow-hidden bg-gray-50 flex flex-col">
       <div className="relative flex-1">
         {/* Background Images */}
         {images.map((image, index) => (
-          <Link href="/collections" key={index}>
+          <Link href={"/collections"} key={index}>
             <div
               className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentImage === index ? 'opacity-100' : 'opacity-0'
                 }`}
@@ -51,7 +124,7 @@ export default function HeroSection() {
               {/* Mobile Image */}
               <Image
                 src={image.mobile}
-                alt={image.alt}
+                alt="Dar Koftan Slider Image"
                 fill
                 className="object-contain md:hidden"
                 priority={index === 0}
@@ -60,20 +133,20 @@ export default function HeroSection() {
               {/* Desktop Image */}
               <Image
                 src={image.desktop}
-                alt={image.alt}
+                alt="Dar Koftan Slider Image"
                 fill
                 className="hidden md:block object-contain"
                 priority={index === 0}
                 sizes="(max-width: 1200px) 50vw, 33vw"
               />
               {/* Overlay for better text readability */}
-              <div className="absolute inset-0 " />
+              <div className="absolute inset-0" />
             </div>
           </Link>
         ))}
 
         {/* Image Navigation Dots */}
-        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2 hidden md:flex">
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2 md:flex">
           {images.map((_, index) => (
             <button
               key={index}

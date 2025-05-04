@@ -12,6 +12,8 @@ import { ProductAvailability } from "@/components/product-availability";
 import { toast } from "sonner";
 import { SuccessDialog } from "@/components/success-dialog";
 import ProductGrid from "@/components/product-grid";
+import { apiPost } from "@/lib/api-client";
+import { useAuth } from "@/contexts/auth-context";
 
 interface ProductWithColorVariants extends Omit<Product, "images"> {
   colorVariants: (ColorVariant & {
@@ -48,6 +50,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
   });
   const [suggestedProducts, setSuggestedProducts] = useState<ProductWithColorVariants[]>([]);
   const { addItem } = useCart();
+  const { isLoggedIn } = useAuth();
 
   const formatPrice = (price: number) => {
     return price.toFixed(2);
@@ -186,20 +189,9 @@ export default function ProductPage({ params }: { params: { productId: string } 
     console.log('Sending order data:', orderData);
 
     try {
-      const response = await fetch("/api/orders/direct", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
-
-      const result = await response.json();
+      // Use apiPost which automatically includes the auth token in headers
+      const result = await apiPost("/api/orders/direct", orderData);
       console.log('Order API response:', result);
-
-      if (!response.ok) {
-        throw new Error(result.error || "Failed to place order");
-      }
 
       toast.success("Commande placée avec succès! Nous vous contacterons bientôt.");
     } catch (error) {

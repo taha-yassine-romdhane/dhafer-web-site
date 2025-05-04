@@ -1,11 +1,24 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers'; // Import cookies
 import { prisma } from '@/lib/prisma';
+import { verifyJwtToken } from '@/lib/auth';
 
 export async function POST(req: Request) {
   try {
-    const cookieStore = cookies();
-    const userId = cookieStore.get('userId'); // Get the user ID from cookies
+    // Extract user ID from JWT token if available
+    let userId = null;
+    const authHeader = req.headers.get('Authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      try {
+        const user = await verifyJwtToken(token);
+        if (user && user.userId) {
+          userId = user.userId;
+        }
+      } catch (error) {
+        console.error('Error verifying token:', error);
+        // Continue without user ID if token verification fails
+      }
+    }
 
     const body = await req.json();
     const { customerName, phoneNumber, address, totalAmount, items } = body;
@@ -95,7 +108,7 @@ export async function POST(req: Request) {
         address,
         totalAmount,
         status: 'PENDING',
-        userId: userId ? parseInt(userId.value) : undefined, // Link order to user ID if logged in
+        userId: userId ? Number(userId) : undefined, // Link order to user ID if logged in
         items: {
           create: itemsWithSizeIds.map((item) => ({
             quantity: item.quantity,

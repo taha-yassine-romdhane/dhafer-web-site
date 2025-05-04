@@ -18,15 +18,32 @@ export async function GET(request: Request) {
         OR: [
           { name: { contains: query, mode: "insensitive" } },
           { description: { contains: query, mode: "insensitive" } },
-          { category: { contains: query, mode: "insensitive" } },
+          { 
+            categories: {
+              some: {
+                category: {
+                  name: { contains: query, mode: "insensitive" }
+                }
+              }
+            }
+          },
         ],
       },
       select: {
         id: true,
         name: true,
-        category: true,
         price: true,
         salePrice: true,
+        categories: {
+          select: {
+            category: {
+              select: {
+                name: true
+              }
+            }
+          },
+          take: 1
+        },
         colorVariants: {
           select: {
             images: {
@@ -50,21 +67,20 @@ export async function GET(request: Request) {
 
     console.log("[SUGGESTIONS_API] Found products:", products);
 
-    // Get unique categories
-    const categories = await prisma.product.findMany({
+    // Get matching categories
+    const categories = await prisma.category.findMany({
       where: {
-        category: {
+        name: {
           contains: query,
           mode: "insensitive",
         },
       },
       select: {
-        category: true,
+        name: true,
       },
-      distinct: ["category"],
       take: 3,
       orderBy: {
-        category: 'asc',
+        name: 'asc',
       },
     });
 
@@ -74,7 +90,7 @@ export async function GET(request: Request) {
     const formattedProducts = products.map(product => ({
       id: product.id,
       name: product.name,
-      category: product.category,
+      category: product.categories[0]?.category.name || 'Uncategorized',
       price: product.price,
       salePrice: product.salePrice,
       imageUrl: product.colorVariants[0]?.images[0]?.url || null,
@@ -82,7 +98,7 @@ export async function GET(request: Request) {
     }));
 
     const formattedCategories = categories.map(cat => ({
-      name: cat.category,
+      name: cat.name,
       type: 'category' as const
     }));
 

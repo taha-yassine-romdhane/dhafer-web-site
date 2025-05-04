@@ -103,9 +103,9 @@ export default function SearchPage() {
 
   const sortOptions = [
     { label: "Relevance", value: "relevance" },
-    { label: "Price: Low to High", value: "price-asc" },
-    { label: "Price: High to Low", value: "price-desc" },
-    { label: "Newest", value: "newest" },
+    { label: "Prix: Faible au Fort", value: "price-asc" },
+    { label: "Prix: Fort au Faible", value: "price-desc" },
+    { label: "Nouveau", value: "newest" },
   ];
 
   return (
@@ -113,10 +113,10 @@ export default function SearchPage() {
       <div className="space-y-4 py-8">
         <div className="flex items-center justify-between">
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-gray-900">Search Results</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Recherche Resultat</h1>
             {searchQuery && (
               <p className="text-sm text-gray-500">
-                Showing results for: <span className="font-medium text-[#D4AF37]">{searchQuery}</span>
+                Recherche pour: <span className="font-medium text-[#D4AF37]">{searchQuery}</span>
               </p>
             )}
           </div>
@@ -126,7 +126,7 @@ export default function SearchPage() {
             className="border-[#D4AF37]/20 hover:border-[#D4AF37] hover:text-[#D4AF37]"
           >
             <SlidersHorizontal className="h-4 w-4 mr-2" />
-            Filters
+            Filtres
           </Button>
         </div>
 
@@ -151,7 +151,7 @@ export default function SearchPage() {
                           : "bg-gray-100 hover:bg-[#D4AF37]/10"
                       )}
                     >
-                      All
+                      Tous
                     </button>
                     {metadata?.categories.map((category) => (
                       <button
@@ -172,7 +172,7 @@ export default function SearchPage() {
 
                 {/* Price Range */}
                 <div className="space-y-2">
-                  <h3 className="font-medium text-sm">Price Range</h3>
+                  <h3 className="font-medium text-sm">Prix Zone</h3>
                   <div className="px-2">
                     <Slider
                       defaultValue={[priceRange[0], priceRange[1]]}
@@ -191,7 +191,7 @@ export default function SearchPage() {
 
                 {/* Sort Options */}
                 <div className="space-y-2">
-                  <h3 className="font-medium text-sm">Sort By</h3>
+                  <h3 className="font-medium text-sm">Filtrage par</h3>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
@@ -210,7 +210,7 @@ export default function SearchPage() {
               <div className="flex flex-wrap gap-2">
                 {selectedCategory !== "all" && (
                   <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-[#D4AF37]/10 text-sm">
-                    <span>Category: {selectedCategory}</span>
+                    <span>Categorie: {selectedCategory}</span>
                     <button
                       onClick={() => setSelectedCategory("all")}
                       className="text-[#D4AF37] hover:text-[#B4941F]"
@@ -221,7 +221,7 @@ export default function SearchPage() {
                 )}
                 {sortBy !== "relevance" && (
                   <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-[#D4AF37]/10 text-sm">
-                    <span>Sort: {sortOptions.find(o => o.value === sortBy)?.label}</span>
+                    <span>Filtrage par: {sortOptions.find(o => o.value === sortBy)?.label}</span>
                     <button
                       onClick={() => setSortBy("relevance")}
                       className="text-[#D4AF37] hover:text-[#B4941F]"
@@ -245,13 +245,13 @@ export default function SearchPage() {
           </div>
         ) : products.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 space-y-3">
-            <p className="text-lg text-gray-500">No products found</p>
-            <p className="text-sm text-gray-400">Try adjusting your filters or search with different keywords</p>
+            <p className="text-lg text-gray-500">Aucun produit trouvé</p>
+            <p className="text-sm text-gray-400">Essayez de ajuster vos filtres ou recherchez avec des mots-clés différents</p>
           </div>
         ) : (
           <>
             <p className="text-sm text-gray-500">
-              Found {metadata?.total} products
+              Trouvé {metadata?.total} produits
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {products.map((product) => (

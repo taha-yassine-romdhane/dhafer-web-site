@@ -19,7 +19,13 @@ export async function GET(request: Request) {
 
     // Add category filter
     if (category && category !== "all") {
-      where.category = category;
+      where.categories = {
+        some: {
+          category: {
+            name: category
+          }
+        }
+      };
     }
 
     // Add price range filter
@@ -59,11 +65,10 @@ export async function GET(request: Request) {
     });
 
     // Get unique categories for filters
-    const categories = await prisma.product.findMany({
+    const categories = await prisma.category.findMany({
       select: {
-        category: true,
+        name: true,
       },
-      distinct: ["category"],
     });
 
     // Get price range for filters
@@ -79,7 +84,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       products,
       metadata: {
-        categories: categories.map(c => c.category),
+        categories: categories.map(c => c.name),
         priceRange: {
           min: priceRange._min.price,
           max: priceRange._max.price,

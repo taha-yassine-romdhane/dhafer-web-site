@@ -1,8 +1,25 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { verifyJwtToken } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
+    // Extract user ID from JWT token if available
+    let userId = null;
+    const authHeader = request.headers.get('Authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      try {
+        const user = await verifyJwtToken(token);
+        if (user && user.userId) {
+          userId = user.userId;
+        }
+      } catch (error) {
+        console.error('Error verifying token:', error);
+        // Continue without user ID if token verification fails
+      }
+    }
+
     const data = await request.json();
 
     // Validate required fields
@@ -43,6 +60,7 @@ export async function POST(request: Request) {
         address: `${data.address}${data.governorate ? `, ${data.governorate}` : ''}`,
         totalAmount: Number(data.price) * Number(data.quantity),
         status: 'PENDING',
+        userId: userId ? Number(userId) : undefined, // Associate with user if logged in
         items: {
           create: [
             {

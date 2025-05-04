@@ -65,7 +65,13 @@ async function handleAuthenticatedRequest(user: any) {
       include: {
         items: {
           include: {
-            product: true
+            product: true,
+            colorVariant: {
+              include: {
+                images: true
+              }
+            },
+            size: true
           }
         }
       },

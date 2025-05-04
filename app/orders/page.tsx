@@ -67,6 +67,11 @@ interface OrderItem {
   quantity: number;
   product: Product;
   colorVariant: ColorVariant;
+  size?: {
+    id: number;
+    value: string;
+  };
+  price: number;
 }
 
 interface Order {
@@ -74,8 +79,29 @@ interface Order {
   createdAt: string;
   status: string;
   totalAmount: number;
+  customerName: string;
+  phoneNumber: string;
+  address: string;
   items: OrderItem[];
 }
+
+// Function to translate order status to French
+const translateOrderStatus = (status: string): string => {
+  switch (status) {
+    case 'PENDING':
+      return 'En attente';
+    case 'CONFIRMED':
+      return 'Confirmée';
+    case 'SHIPPED':
+      return 'Expédiée';
+    case 'DELIVERED':
+      return 'Livrée';
+    case 'CANCELLED':
+      return 'Annulée';
+    default:
+      return status;
+  }
+};
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -103,7 +129,7 @@ export default function OrdersPage() {
         console.error('Error fetching orders:', err);
         
         if (err.message?.includes('Authentication required')) {
-          setError('Your session has expired. Please log in again.');
+          setError('Votre session a expiré. Veuillez vous connecter à nouveau.');
         } else {
           setError('Error loading orders. Please try again later.');
         }
@@ -127,8 +153,8 @@ export default function OrdersPage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900">Authentication Required</h2>
-          <p className="mt-2 text-gray-600">Please log in to view your orders</p>
+          <h2 className="text-xl font-semibold text-gray-900">Authentification requise</h2>
+          <p className="mt-2 text-gray-600">Veuillez vous connecter pour consulter vos commandes</p>
           <Link 
             href="/login?redirect=/orders"
             className="mt-4 inline-block rounded-md bg-[#D4AF37] px-4 py-2 text-sm font-medium text-white hover:bg-[#B59851] transition-colors"
@@ -144,13 +170,13 @@ export default function OrdersPage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900">Error</h2>
+          <h2 className="text-xl font-semibold text-gray-900">Erreur</h2>
           <p className="mt-2 text-gray-600">{error}</p>
           <Link 
             href="/collections"
             className="mt-4 inline-block rounded-md bg-[#D4AF37] px-4 py-2 text-sm font-medium text-white hover:bg-[#B59851] transition-colors"
           >
-            Browse Products
+            Parcourir les produits
           </Link>
         </div>
       </div>
@@ -162,25 +188,25 @@ export default function OrdersPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="space-y-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">My Orders</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Mes commandes</h1>
             <p className="mt-2 text-sm text-gray-600">
-              Manage and track your orders
+              Gestion et suivi de vos commandes
             </p>
           </div>
 
           {orders.length === 0 ? (
             <div className="rounded-lg bg-white p-8 text-center shadow">
               <h3 className="text-lg font-medium text-gray-900">
-                No orders found
+                Aucune commande trouvée
               </h3>
               <p className="mt-2 text-gray-600">
-                You have not placed any orders yet.
+                Vous n'avez pas encore passé de commande.
               </p>
               <Link
                 href="/collections"
                 className="mt-4 inline-block rounded-md bg-[#D4AF37] px-4 py-2 text-sm font-medium text-white hover:bg-[#B59851] transition-colors"
               >
-                Start Shopping
+                Commencer à acheter
               </Link>
             </div>
           ) : (
@@ -194,16 +220,16 @@ export default function OrdersPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">
-                          Order #{order.id}
+                          Commande de référence : {order.id}
                         </h3>
                         <p className="mt-1 text-sm text-gray-600">
-                          Placed on{' '}
+                          Placée le{' '}
                           {format(new Date(order.createdAt), 'PPP')}
                         </p>
                       </div>
                       <div className="flex items-center">
                         <span className="inline-flex items-center rounded-full bg-[#D4AF37]/10 px-3 py-1 text-sm font-medium text-[#D4AF37]">
-                          {order.status}
+                          {translateOrderStatus(order.status)}
                         </span>
                       </div>
                     </div>
@@ -236,10 +262,20 @@ export default function OrdersPage() {
                                   {item.product ? item.product.name : 'Unknown Product'}
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                  Quantity: {item.quantity}
+                                  Quantité: {item.quantity}
                                 </p>
+                                {item.colorVariant && (
+                                  <p className="text-sm text-gray-600">
+                                    Couleur: {item.colorVariant.color}
+                                  </p>
+                                )}
+                                {item.size && (
+                                  <p className="text-sm text-gray-600">
+                                    Taille: {item.size.value}
+                                  </p>
+                                )}
                                 <p className="text-sm text-gray-600">
-                                  Price: TND{item.product ? item.product.price.toFixed(2) : '0.00'}
+                                  Prix: TND{item.price ? item.price.toFixed(2) : (item.product ? item.product.price.toFixed(2) : '0.00')}
                                 </p>
                               </div>
                             </div>

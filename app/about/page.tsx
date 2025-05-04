@@ -94,7 +94,7 @@ const AboutUs = () => {
                     {locations.map((location, index) => (
                         <Card key={index}>
                             <CardContent>
-                                <div className="space-y-4">
+                                <div className="space-y-4 p-4">
                                     <div className="flex items-start">
                                         <MapPin className="mr-2 h-6 w-6 text-[#D4AF37]" />
                                         <div>
