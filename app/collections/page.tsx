@@ -42,10 +42,13 @@ export default function CollectionsPage() {
     category: searchParams.get("category") || "Tous",
     collaborator: searchParams.get("collaborator") || "all",
     sort: searchParams.get("sort") || "featured",
-    product: searchParams.get("product") || ""
+    product: searchParams.get("product") || "",
+    page: parseInt(searchParams.get("page") || "1")
   });
   
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(filters.page);
+  const [totalPages, setTotalPages] = useState(1);
 
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -94,12 +97,15 @@ export default function CollectionsPage() {
 
   // Update filters when URL params change
   useEffect(() => {
+    const page = parseInt(searchParams.get("page") || "1");
     setFilters({
       category: searchParams.get("category") || "Tous",
       collaborator: searchParams.get("collaborator") || "all",
       sort: searchParams.get("sort") || "featured",
-      product: searchParams.get("product") || ""
+      product: searchParams.get("product") || "",
+      page: page
     });
+    setCurrentPage(page);
   }, [searchParams]);
 
   useEffect(() => {
@@ -115,7 +121,13 @@ export default function CollectionsPage() {
   }, [filters.category, categoryGroups]);
 
   const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    // Reset to page 1 when changing filters
+    setFilters(prev => ({ ...prev, [key]: value, page: key === 'page' ? parseInt(value) : 1 }));
+    if (key !== 'page') {
+      setCurrentPage(1);
+    } else {
+      setCurrentPage(parseInt(value));
+    }
   };
 
   const handleClearFilters = () => {
@@ -123,9 +135,23 @@ export default function CollectionsPage() {
       category: "all",
       collaborator: "all",
       sort: "featured",
-      product: ""
+      product: "",
+      page: 1
     });
+    setCurrentPage(1);
     setActiveGroup(null);
+  };
+  
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    handleFilterChange('page', page.toString());
+  };
+  
+  // Update total pages
+  const handleTotalPagesChange = (pages: number) => {
+    console.log('Total pages received:', pages);
+    setTotalPages(pages);
   };
 
   return (
@@ -271,7 +297,89 @@ export default function CollectionsPage() {
         </div>
 
         {/* Product Grid */}
-        <ProductGrid filters={{...filters, group: activeGroup, searchQuery: searchQuery}} />
+        <ProductGrid 
+          filters={{...filters, group: activeGroup, searchQuery: searchQuery}} 
+          onPageChange={handlePageChange}
+          onTotalPagesChange={handleTotalPagesChange}
+        />
+        
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mt-8 flex justify-center items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(1)}
+              disabled={currentPage === 1}
+              className="border-[#D4AF37]/20 hover:bg-[#D4AF37]/5 hover:text-[#D4AF37] hover:border-[#D4AF37]"
+            >
+              «
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="border-[#D4AF37]/20 hover:bg-[#D4AF37]/5 hover:text-[#D4AF37] hover:border-[#D4AF37]"
+            >
+              ‹
+            </Button>
+            
+            {/* Page Numbers */}
+            <div className="flex items-center space-x-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                // Show pages around current page
+                let pageNum;
+                if (totalPages <= 5) {
+                  // If 5 or fewer pages, show all
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  // If near start, show first 5 pages
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  // If near end, show last 5 pages
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  // Otherwise show 2 before and 2 after current page
+                  pageNum = currentPage - 2 + i;
+                }
+                
+                return (
+                  <Button
+                    key={pageNum}
+                    variant={currentPage === pageNum ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handlePageChange(pageNum)}
+                    className={currentPage === pageNum 
+                      ? "bg-[#D4AF37] text-white hover:bg-[#D4AF37]/90" 
+                      : "border-[#D4AF37]/20 hover:bg-[#D4AF37]/5 hover:text-[#D4AF37] hover:border-[#D4AF37]"}
+                  >
+                    {pageNum}
+                  </Button>
+                );
+              })}
+            </div>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="border-[#D4AF37]/20 hover:bg-[#D4AF37]/5 hover:text-[#D4AF37] hover:border-[#D4AF37]"
+            >
+              ›
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(totalPages)}
+              disabled={currentPage === totalPages}
+              className="border-[#D4AF37]/20 hover:bg-[#D4AF37]/5 hover:text-[#D4AF37] hover:border-[#D4AF37]"
+            >
+              »
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

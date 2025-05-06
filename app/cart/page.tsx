@@ -5,14 +5,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Minus, Plus, Trash2, ArrowRight, X } from 'lucide-react';
+import { Minus, Plus, Trash2, ArrowRight, X, CheckCircle2 } from 'lucide-react';
 import { useCart } from '@/lib/context/cart-context';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/auth-context';
 import { apiPost } from '@/lib/api-client';
+import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
+  const router = useRouter();
   const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart();
   const { isLoggedIn } = useAuth();
   const [customerDetails, setCustomerDetails] = useState({
@@ -27,9 +29,10 @@ export default function CartPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
   
-  const total = totalPrice ;
+  const total = totalPrice;
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -92,11 +95,40 @@ export default function CartPage() {
         })),
       });
 
+      // Close the confirmation dialog and show success message
       setShowConfirmation(false);
-      toast.success('Commande soumise avec succès! Nous vous contacterons bientôt pour confirmer votre commande.');
-
+      setShowSuccessMessage(true);
+      
+      // Clear cart and reset customer details
       clearCart();
       setCustomerDetails({ name: '', phone: '', address: '' });
+      
+      // Show toast notification
+      toast.success(
+        'Commande créée avec succès!', 
+        {
+          description: 'Nous vous contacterons bientôt pour confirmer les détails de votre commande.',
+          duration: 8000, // Show for longer
+          icon: '✅',
+          style: {
+            border: '2px solid #D4AF37',
+            borderRadius: '8px',
+            background: '#FFFBEB',
+            padding: '16px',
+            fontSize: '16px',
+          },
+        }
+      );
+      
+      // Show another toast as a backup
+      setTimeout(() => {
+        toast.success('Votre commande a été créée avec succès!', { duration: 5000 });
+      }, 500);
+      
+      // Redirect to home page after a longer delay
+      setTimeout(() => {
+        router.push('/');
+      }, 5000);
     } catch (error) {
       console.error('Error submitting order:', error);
       toast.error('Échec de la soumission de la commande. Veuillez réessayer.');
@@ -358,6 +390,30 @@ export default function CartPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showSuccessMessage && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl border-2 border-[#D4AF37] text-center">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="h-12 w-12 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-[#D4AF37] mb-4">Commande créée avec succès!</h2>
+            <p className="text-gray-600 mb-6">
+              Nous vous contacterons bientôt pour confirmer les détails de votre commande et organiser la livraison.
+            </p>
+            <p className="text-sm text-gray-500 mb-6">
+              Redirection vers la page d'accueil dans quelques secondes...
+            </p>
+            <Button
+              className="w-full bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white py-3"
+              onClick={() => router.push('/')}
+            >
+              Retour à l'accueil
+            </Button>
           </div>
         </div>
       )}

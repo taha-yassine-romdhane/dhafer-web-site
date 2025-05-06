@@ -6,7 +6,7 @@ import { useCart } from "@/lib/context/cart-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2 } from "lucide-react";
 import { DirectPurchaseForm } from "@/components/direct-purchase-form";
 import { ProductAvailability } from "@/components/product-availability";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ import { SuccessDialog } from "@/components/success-dialog";
 import ProductGrid from "@/components/product-grid";
 import { apiPost } from "@/lib/api-client";
 import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
 
 interface ProductWithColorVariants extends Omit<Product, "images"> {
   colorVariants: (ColorVariant & {
@@ -31,6 +32,7 @@ interface ProductWithColorVariants extends Omit<Product, "images"> {
 }
 
 export default function ProductPage({ params }: { params: { productId: string } }) {
+  const router = useRouter();
   const [product, setProduct] = useState<ProductWithColorVariants | null>(null);
   const [selectedColorVariant, setSelectedColorVariant] = useState<ColorVariant & { images: ProductImage[] } | null>(null);
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
@@ -41,6 +43,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const [isProductAvailable, setIsProductAvailable] = useState(false);
   const [stockInfo, setStockInfo] = useState<Array<any>>([]);
+  const [showOrderSuccessModal, setShowOrderSuccessModal] = useState(false);
   const [userDetails, setUserDetails] = useState<{ fullName: string; address: string; governorate: string; phone: string; email: string; quantity?: number }>({
     fullName: "",
     address: "",
@@ -193,13 +196,44 @@ export default function ProductPage({ params }: { params: { productId: string } 
       const result = await apiPost("/api/orders/direct", orderData);
       console.log('Order API response:', result);
 
-      toast.success("Commande placée avec succès! Nous vous contacterons bientôt.");
+      // Close the confirmation dialog
+      setIsSuccessDialogOpen(false);
+      
+      // Show success toast
+      toast.success(
+        'Commande créée avec succès!', 
+        {
+          description: 'Nous vous contacterons bientôt pour confirmer les détails de votre commande.',
+          duration: 8000, // Show for longer
+          icon: '✅',
+          style: {
+            border: '2px solid #D4AF37',
+            borderRadius: '8px',
+            background: '#FFFBEB',
+            padding: '16px',
+            fontSize: '16px',
+          },
+        }
+      );
+      
+      // Show another toast as a backup
+      setTimeout(() => {
+        toast.success('Votre commande a été créée avec succès!', { duration: 5000 });
+      }, 500);
+      
+      // Show success modal
+      setShowOrderSuccessModal(true);
+      
+      // Redirect to home page after a delay
+      setTimeout(() => {
+        router.push('/');
+      }, 5000);
     } catch (error) {
       console.error("Error placing order:", error);
       toast.error("Erreur lors de la commande. Veuillez réessayer.");
+      setIsSuccessDialogOpen(false);
     } finally {
       setSubmitting(false);
-      setIsSuccessDialogOpen(false);
     }
   };
 
@@ -448,15 +482,46 @@ export default function ProductPage({ params }: { params: { productId: string } 
       {/* Suggested Products */}
       <div className="mt-16">
         <h2 className="text-2xl font-bold text-gray-900 mb-8">Produits suggérés</h2>
-        <ProductGrid filters={{
-          category: product.categories && product.categories.length > 0 
-            ? String(product.categories[0].categoryId) 
-            : 'all',
-          collaborator: "all", 
-          sort: "featured", 
-          product: "",
-          group: null
-        }} />
+        {suggestedProducts && suggestedProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {suggestedProducts.map((suggestedProduct) => {
+              const mainImage = suggestedProduct.colorVariants[0]?.images.find(img => img.isMain)?.url || 
+                               suggestedProduct.colorVariants[0]?.images[0]?.url || 
+                               '/placeholder.jpg';
+              
+              return (
+                <div 
+                  key={suggestedProduct.id} 
+                  className="group cursor-pointer" 
+                  onClick={() => router.push(`/product/${suggestedProduct.id}`)}
+                >
+                  <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100 mb-3">
+                    <Image
+                      src={mainImage}
+                      alt={suggestedProduct.name}
+                      fill
+                      className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    />
+                  </div>
+                  <h3 className="text-sm font-semibold text-gray-700">{suggestedProduct.name}</h3>
+                  <div className="mt-1">
+                    {suggestedProduct.salePrice ? (
+                      <>
+                        <p className="text-xs text-gray-500 line-through">{formatPrice(suggestedProduct.price)} TND</p>
+                        <p className="text-xs text-[#D4AF37] font-semibold"><span className="text-red-600 mr-1">Promo :</span> {formatPrice(suggestedProduct.salePrice)} TND</p>
+                      </>
+                    ) : (
+                      <p className="text-xs text-[#D4AF37]">{formatPrice(suggestedProduct.price)} TND</p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-gray-500">Aucun produit similaire trouvé</p>
+        )}
       </div>
 
       {/* Success Dialog */}
@@ -470,6 +535,30 @@ export default function ProductPage({ params }: { params: { productId: string } 
         selectedSize={selectedSize}
         userDetails={userDetails}
       />
+
+      {/* Order Success Modal */}
+      {showOrderSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl border-2 border-[#D4AF37] text-center">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="h-12 w-12 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-[#D4AF37] mb-4">Commande créée avec succès!</h2>
+            <p className="text-gray-600 mb-6">
+              Nous vous contacterons bientôt pour confirmer les détails de votre commande et organiser la livraison.
+            </p>
+            <p className="text-sm text-gray-500 mb-6">
+              Redirection vers la page d'accueil dans quelques secondes...
+            </p>
+            <Button
+              className="w-full bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white py-3"
+              onClick={() => router.push('/')}
+            >
+              Retour à l'accueil
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

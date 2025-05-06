@@ -34,10 +34,13 @@ interface ProductGridProps {
     product: string;
     group: string | null;
     searchQuery?: string;
+    page?: number;
   };
+  onPageChange?: (page: number) => void;
+  onTotalPagesChange?: (totalPages: number) => void;
 }
 
-const ProductGrid = ({ filters }: ProductGridProps) => {
+const ProductGrid = ({ filters, onPageChange, onTotalPagesChange }: ProductGridProps) => {
   const router = useRouter();
   const [products, setProducts] = useState<ProductWithColorVariants[] | null>(null);
   const [filteredProducts, setFilteredProducts] = useState<ProductWithColorVariants[] | null>(null);
@@ -46,6 +49,12 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
   const [selectedColors, setSelectedColors] = useState<{ [key: string]: string }>({});
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<{ [key: string]: string }>({});
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: filters.page || 1,
+    limit: 12,
+    totalPages: 0
+  });
   // No longer need dialog or cart context for quick add
   // const [dialogOpen, setDialogOpen] = useState(false);
   // const { addItem } = useCart();
@@ -85,12 +94,37 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
     
     async function fetchProducts() {
       try {
+        setLoading(true);
         const params = new URLSearchParams();
-        if (filters.category !== 'all' && filters.category !== 'Tous') params.append('category', filters.category);
-        if (filters.group) params.append('group', filters.group);
-        if (filters.collaborator !== 'all') params.append('collaborateur', filters.collaborator);
-        if (filters.sort !== 'featured') params.append('sort', filters.sort);
-        if (filters.product) params.append('product', filters.product);
+        
+        // Handle category parameter
+        if (filters.category && filters.category !== 'all' && filters.category !== 'Tous') {
+          params.append('category', filters.category);
+        }
+        
+        // Handle group parameter
+        if (filters.group) {
+          params.append('group', filters.group);
+        }
+        
+        // Handle collaborator parameter
+        if (filters.collaborator && filters.collaborator !== 'all') {
+          params.append('collaborateur', filters.collaborator);
+        }
+        
+        // Handle sort parameter
+        if (filters.sort && filters.sort !== 'featured') {
+          params.append('sort', filters.sort);
+        }
+        
+        // Handle product parameter
+        if (filters.product) {
+          params.append('product', filters.product);
+        }
+        
+        // Add pagination parameters - always include these
+        params.append('page', String(filters.page || pagination.page));
+        params.append('limit', String(pagination.limit));
 
         console.log('Fetching products with params:', params.toString());
         const response = await fetch('/api/products?' + params.toString());
@@ -98,11 +132,37 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
           throw new Error('Failed to fetch products');
         }
         const data = await response.json();
+        console.log('API response:', data);
         
         // Process in batches to prevent UI freezing
         if (isMounted) {
+          // Check if pagination data exists
+          if (data.pagination) {
+            console.log('Pagination data:', data.pagination);
+            setPagination(data.pagination);
+            
+            // Notify parent component of total pages
+            if (onTotalPagesChange) {
+              console.log('Notifying parent of total pages:', data.pagination.totalPages);
+              onTotalPagesChange(data.pagination.totalPages);
+            }
+          } else {
+            console.error('No pagination data in response');
+            // Set default pagination if missing
+            const defaultPagination = {
+              total: data.products ? data.products.length : 0,
+              page: 1,
+              limit: 12,
+              totalPages: 1
+            };
+            setPagination(defaultPagination);
+            if (onTotalPagesChange) {
+              onTotalPagesChange(1);
+            }
+          }
+          
           // First set the products without images to get the UI ready
-          setProducts(data);
+          setProducts(data.products);
           
           // Then process images in a separate tick
           setTimeout(() => {
@@ -113,15 +173,17 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
               const processProductBatch = (startIndex: number) => {
                 if (!isMounted) return;
                 
-                const endIndex = Math.min(startIndex + 2, data.length);
+                const endIndex = Math.min(startIndex + 2, data.products.length);
                 
                 for (let i = startIndex; i < endIndex; i++) {
-                  const product = data[i];
-                  const firstVariant = product.colorVariants[0];
-                  if (firstVariant) {
-                    const mainImage = firstVariant.images.find((img: ProductImage) => img.isMain)?.url || firstVariant.images[0]?.url;
-                    if (mainImage) {
-                      initialSelectedImages[product.id] = mainImage;
+                  const product = data.products[i];
+                  if (product && product.colorVariants && product.colorVariants.length > 0) {
+                    const firstVariant = product.colorVariants[0];
+                    if (firstVariant && firstVariant.images && firstVariant.images.length > 0) {
+                      const mainImage = firstVariant.images.find((img: ProductImage) => img.isMain)?.url || firstVariant.images[0]?.url;
+                      if (mainImage) {
+                        initialSelectedImages[product.id] = mainImage;
+                      }
                     }
                   }
                 }
@@ -130,7 +192,7 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
                 setSelectedImage(prev => ({ ...prev, ...initialSelectedImages }));
                 
                 // Process next batch if there are more products
-                if (endIndex < data.length && isMounted) {
+                if (endIndex < data.products.length && isMounted) {
                   setTimeout(() => processProductBatch(endIndex), 50);
                 } else if (isMounted) {
                   setLoading(false);
@@ -138,7 +200,11 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
               };
               
               // Start processing from the first product
-              processProductBatch(0);
+              if (data.products && data.products.length > 0) {
+                processProductBatch(0);
+              } else {
+                setLoading(false);
+              }
             }
           }, 100);
         }
@@ -157,7 +223,7 @@ const ProductGrid = ({ filters }: ProductGridProps) => {
     return () => {
       isMounted = false;
     };
-  }, [filters]);
+  }, [filters.category, filters.collaborator, filters.group, filters.product, filters.sort, filters.page, pagination.page, pagination.limit, onTotalPagesChange]);
 
   // Removed handleAddToCart function as we're directing users to the product page instead
 

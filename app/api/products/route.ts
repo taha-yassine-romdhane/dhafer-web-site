@@ -51,6 +51,11 @@ export async function GET(request: Request) {
     const sort = searchParams.get("sort");
     const product = searchParams.get("product");
     
+    // Pagination parameters
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "12");
+    const skip = (page - 1) * limit;
+    
     // Convert string group to CategoryGroup enum
     let group: CategoryGroup | undefined;
     if (groupParam) {
@@ -128,7 +133,14 @@ export async function GET(request: Request) {
       };
     }
 
-    // Get products with their color variants and images
+    // Log the final where clause and pagination params
+    console.log('Final query parameters:', { where, skip, limit, sort });
+    
+    // Get total count of products matching the filters
+    const totalCount = await prisma.product.count({ where });
+    console.log('Total product count:', totalCount);
+    
+    // Get products with their color variants and images with pagination
     const products = await prisma.product.findMany({
       where,
       include: {
@@ -149,10 +161,23 @@ export async function GET(request: Request) {
         ? { price: "desc" }
         : sort === "newest"
         ? { createdAt: "desc" }
-        : { id: "asc" }
+        : { id: "asc" },
+      skip,
+      take: limit
     });
+    
+    console.log(`Returning ${products.length} products, page ${page} of ${Math.ceil(totalCount / limit)}`);
 
-    return NextResponse.json(products);
+    // Return products with pagination metadata
+    return NextResponse.json({
+      products,
+      pagination: {
+        total: totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit)
+      }
+    });
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json(
