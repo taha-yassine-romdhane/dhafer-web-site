@@ -92,6 +92,9 @@ export async function GET(request: Request) {
         };
       } else {
         console.log(`Category not found: ${category}`);
+        // Important: Return no products when the category doesn't exist
+        // Use an impossible condition to ensure no products match
+        where.id = "NON_EXISTENT_ID";
       }
     } else if (group) {
       // If only group is specified (no specific category), get all categories in that group
@@ -110,6 +113,11 @@ export async function GET(request: Request) {
             }
           }
         };
+      } else {
+        console.log(`No categories found for group: ${groupParam}`);
+        // Important: Return no products when no categories exist for this group
+        // Use an impossible condition to ensure no products match
+        where.id = "NON_EXISTENT_ID";
       }
     }
     
