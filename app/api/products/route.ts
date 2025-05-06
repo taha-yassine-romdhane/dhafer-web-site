@@ -53,7 +53,7 @@ export async function GET(request: Request) {
     
     // Pagination parameters
     const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "12");
+    const limit = parseInt(searchParams.get("limit") || "5");
     const skip = (page - 1) * limit;
     
     // Convert string group to CategoryGroup enum

@@ -128,6 +128,7 @@ const ProductGrid = ({ filters, productsPerPage = 12, onPageChange, onTotalPages
         params.append('limit', String(pagination.limit));
 
         console.log('Fetching products with params:', params.toString());
+
         const response = await fetch('/api/products?' + params.toString());
         if (!response.ok) {
           throw new Error('Failed to fetch products');

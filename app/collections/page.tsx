@@ -49,7 +49,7 @@ export default function CollectionsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(filters.page);
   const [totalPages, setTotalPages] = useState(1);
-  const [productsPerPage, setProductsPerPage] = useState(10); // Default products per page
+  const [productsPerPage, setProductsPerPage] = useState(5); // Default products per page
 
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
