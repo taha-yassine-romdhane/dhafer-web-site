@@ -15,6 +15,8 @@ import ProductGrid from "@/components/product-grid";
 import { apiPost } from "@/lib/api-client";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
+import SuggestedProductCard from "@/app/components/SuggestedProductCard";
+import SuggestedMobileProductCard from "@/app/components/SuggestedMobileProductCard";
 
 interface ProductWithColorVariants extends Omit<Product, "images"> {
   colorVariants: (ColorVariant & {
@@ -483,42 +485,21 @@ export default function ProductPage({ params }: { params: { productId: string } 
       <div className="mt-16">
         <h2 className="text-2xl font-bold text-gray-900 mb-8">Produits suggérés</h2>
         {suggestedProducts && suggestedProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {suggestedProducts.map((suggestedProduct) => {
-              const mainImage = suggestedProduct.colorVariants[0]?.images.find(img => img.isMain)?.url || 
-                               suggestedProduct.colorVariants[0]?.images[0]?.url || 
-                               '/placeholder.jpg';
-              
-              return (
-                <div 
-                  key={suggestedProduct.id} 
-                  className="group cursor-pointer" 
-                  onClick={() => router.push(`/product/${suggestedProduct.id}`)}
-                >
-                  <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100 mb-3">
-                    <Image
-                      src={mainImage}
-                      alt={suggestedProduct.name}
-                      fill
-                      className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    />
-                  </div>
-                  <h3 className="text-sm font-semibold text-gray-700">{suggestedProduct.name}</h3>
-                  <div className="mt-1">
-                    {suggestedProduct.salePrice ? (
-                      <>
-                        <p className="text-xs text-gray-500 line-through">{formatPrice(suggestedProduct.price)} TND</p>
-                        <p className="text-xs text-[#D4AF37] font-semibold"><span className="text-red-600 mr-1">Promo :</span> {formatPrice(suggestedProduct.salePrice)} TND</p>
-                      </>
-                    ) : (
-                      <p className="text-xs text-[#D4AF37]">{formatPrice(suggestedProduct.price)} TND</p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <>
+            {/* Desktop view - SuggestedProductCard */}
+            <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {suggestedProducts.map((suggestedProduct) => (
+                <SuggestedProductCard key={suggestedProduct.id} product={suggestedProduct} />
+              ))}
+            </div>
+            
+            {/* Mobile view - SuggestedMobileProductCard */}
+            <div className="grid grid-cols-2 gap-4 md:hidden">
+              {suggestedProducts.map((suggestedProduct) => (
+                <SuggestedMobileProductCard key={suggestedProduct.id} product={suggestedProduct} />
+              ))}
+            </div>
+          </>
         ) : (
           <p className="text-gray-500">Aucun produit similaire trouvé</p>
         )}

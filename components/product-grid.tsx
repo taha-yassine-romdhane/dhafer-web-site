@@ -36,11 +36,12 @@ interface ProductGridProps {
     searchQuery?: string;
     page?: number;
   };
+  productsPerPage?: number;
   onPageChange?: (page: number) => void;
   onTotalPagesChange?: (totalPages: number) => void;
 }
 
-const ProductGrid = ({ filters, onPageChange, onTotalPagesChange }: ProductGridProps) => {
+const ProductGrid = ({ filters, productsPerPage = 12, onPageChange, onTotalPagesChange }: ProductGridProps) => {
   const router = useRouter();
   const [products, setProducts] = useState<ProductWithColorVariants[] | null>(null);
   const [filteredProducts, setFilteredProducts] = useState<ProductWithColorVariants[] | null>(null);
@@ -52,7 +53,7 @@ const ProductGrid = ({ filters, onPageChange, onTotalPagesChange }: ProductGridP
   const [pagination, setPagination] = useState({
     total: 0,
     page: filters.page || 1,
-    limit: 12,
+    limit: productsPerPage,
     totalPages: 0
   });
   // No longer need dialog or cart context for quick add

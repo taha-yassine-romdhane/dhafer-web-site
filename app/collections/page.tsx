@@ -49,6 +49,7 @@ export default function CollectionsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(filters.page);
   const [totalPages, setTotalPages] = useState(1);
+  const [productsPerPage, setProductsPerPage] = useState(10); // Default products per page
 
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -146,6 +147,14 @@ export default function CollectionsPage() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     handleFilterChange('page', page.toString());
+  };
+  
+  // Handle products per page change
+  const handleProductsPerPageChange = (value: number) => {
+    setProductsPerPage(value);
+    // Reset to page 1 when changing products per page
+    setCurrentPage(1);
+    handleFilterChange('page', '1');
   };
   
   // Update total pages
@@ -289,8 +298,20 @@ export default function CollectionsPage() {
                 )}
               </div>
               
-              <div className="text-sm text-gray-500">
-                {/* You can add product count here if available */}
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-500">Produits par page:</span>
+                <Select
+                  value={productsPerPage.toString()}
+                  onValueChange={(value) => handleProductsPerPageChange(parseInt(value))}
+                >
+                  <SelectTrigger className="w-[80px] bg-white border border-gray-200 hover:border-[#D4AF37] transition-colors">
+                    <SelectValue placeholder="10" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -299,6 +320,7 @@ export default function CollectionsPage() {
         {/* Product Grid */}
         <ProductGrid 
           filters={{...filters, group: activeGroup, searchQuery: searchQuery}} 
+          productsPerPage={productsPerPage}
           onPageChange={handlePageChange}
           onTotalPagesChange={handleTotalPagesChange}
         />
