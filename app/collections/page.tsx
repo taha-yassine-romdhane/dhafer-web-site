@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ProductGrid from "@/components/product-grid";
+import ProductGrid from "@/components/product-grid-fixed";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -122,12 +122,13 @@ export default function CollectionsPage() {
   }, [filters.category, categoryGroups]);
 
   const handleFilterChange = (key: string, value: string) => {
-    // Reset to page 1 when changing filters
-    setFilters(prev => ({ ...prev, [key]: value, page: key === 'page' ? parseInt(value) : 1 }));
-    if (key !== 'page') {
-      setCurrentPage(1);
-    } else {
-      setCurrentPage(parseInt(value));
+    // If changing anything other than page, reset to page 1
+    const newPage = key === 'page' ? parseInt(value) : 1;
+    const newFilters = { ...filters, [key]: value, page: newPage };
+    
+    setFilters(newFilters);
+    if (key === 'page' || newPage !== currentPage) {
+      setCurrentPage(newPage);
     }
   };
 
@@ -151,10 +152,11 @@ export default function CollectionsPage() {
   
   // Handle products per page change
   const handleProductsPerPageChange = (value: number) => {
+    console.log('Products per page changed to:', value);
     setProductsPerPage(value);
     // Reset to page 1 when changing products per page
     setCurrentPage(1);
-    handleFilterChange('page', '1');
+    // No need to call handleFilterChange here to avoid double state updates
   };
   
   // Update total pages
@@ -325,8 +327,7 @@ export default function CollectionsPage() {
           onTotalPagesChange={handleTotalPagesChange}
         />
         
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
+        {/* Pagination Controls - Always visible */}
           <div className="mt-8 flex justify-center items-center space-x-2">
             <Button
               variant="outline"
@@ -401,7 +402,6 @@ export default function CollectionsPage() {
               »
             </Button>
           </div>
-        )}
       </div>
     </div>
   );

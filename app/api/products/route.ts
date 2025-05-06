@@ -56,6 +56,8 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get("limit") || "5");
     const skip = (page - 1) * limit;
     
+    console.log(`API pagination: page=${page}, limit=${limit}, skip=${skip}`);
+    
     // Convert string group to CategoryGroup enum
     let group: CategoryGroup | undefined;
     if (groupParam) {

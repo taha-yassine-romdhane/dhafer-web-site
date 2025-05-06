@@ -68,8 +68,11 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
     }));
   }, [productsPerPage]);
 
-  // Fetch products when filters or productsPerPage change
+  // Fetch products when filters or page or productsPerPage change
   useEffect(() => {
+    // Track if the component is mounted to avoid memory leaks
+    let isMounted = true;
+
     const fetchProducts = async () => {
       try {
         setLoading(true);
@@ -109,8 +112,8 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
         }
         
         // Add pagination parameters - always include these
-        params.append('page', String(filters.page || pagination.page));
-        params.append('limit', String(pagination.limit));
+        params.append('page', String(filters.page || 1));
+        params.append('limit', String(productsPerPage));
 
         console.log('Fetching products with params:', params.toString());
         
@@ -120,16 +123,14 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
         }
         
         const data = await response.json();
-        console.log('API response:', data);
+        
+        // Only proceed if the component is still mounted
+        if (!isMounted) return;
         
         // Process pagination data
         if (data.pagination) {
           // Ensure totalPages is at least 1
           const totalPages = Math.max(1, data.pagination.totalPages);
-          setPagination({
-            ...data.pagination,
-            totalPages
-          });
           
           // Notify parent component of total pages
           if (onTotalPagesChange) {
@@ -138,14 +139,7 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
         } else if (data.products) {
           // Calculate pagination if not provided
           const total = data.total || data.products.length;
-          const totalPages = Math.max(1, Math.ceil(total / pagination.limit));
-          
-          setPagination(prev => ({
-            ...prev,
-            total,
-            totalPages,
-            page: filters.page || 1
-          }));
+          const totalPages = Math.max(1, Math.ceil(total / productsPerPage));
           
           // Notify parent component of total pages
           if (onTotalPagesChange) {
@@ -183,19 +177,37 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
         setLoading(false);
       } catch (error) {
         console.error('Error fetching products:', error);
-        setError(error instanceof Error ? error.message : 'Failed to fetch products');
-        setLoading(false);
+        if (isMounted) {
+          setError(error instanceof Error ? error.message : 'Failed to fetch products');
+          setLoading(false);
+        }
       }
     };
     
     fetchProducts();
-  }, [filters, pagination.limit, onTotalPagesChange]);
+    
+    // Cleanup function to avoid memory leaks
+    return () => {
+      isMounted = false;
+    };
+  }, [filters.category, filters.collaborator, filters.group, filters.page, filters.product, filters.searchQuery, filters.sort, productsPerPage, onTotalPagesChange]);
 
   return (
     <>
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#D4AF37]"></div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 py-4">
+          {[...Array(productsPerPage)].map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="aspect-[2/3] mb-2 rounded-md bg-gray-200"></div>
+              <div className="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
+              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              <div className="mt-2 flex space-x-1">
+                <div className="w-4 h-4 rounded-full bg-gray-200"></div>
+                <div className="w-4 h-4 rounded-full bg-gray-200"></div>
+                <div className="w-4 h-4 rounded-full bg-gray-200"></div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : error ? (
         <div className="text-center py-20">
@@ -336,55 +348,7 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
         </div>
       )}
       
-      {/* Pagination Controls - Always show regardless of product count */}
-      <div className="flex justify-center mt-8 space-x-2">
-        {/* First Page */}
-        <button
-          onClick={() => onPageChange?.(1)}
-          disabled={pagination.page <= 1}
-          className={`px-3 py-1 rounded ${pagination.page <= 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-[#D4AF37] hover:text-white'}`}
-        >
-          «
-        </button>
-        
-        {/* Previous Page */}
-        <button
-          onClick={() => onPageChange?.(pagination.page - 1)}
-          disabled={pagination.page <= 1}
-          className={`px-3 py-1 rounded ${pagination.page <= 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-[#D4AF37] hover:text-white'}`}
-        >
-          ‹
-        </button>
-        
-        {/* Page Numbers - Always show at least page 1 */}
-        {Array.from({ length: Math.max(pagination.totalPages, 1) }, (_, i) => i + 1).map(page => (
-          <button
-            key={page}
-            onClick={() => onPageChange?.(page)}
-            className={`px-3 py-1 rounded ${pagination.page === page ? 'bg-[#D4AF37] text-white' : 'bg-white text-gray-700 hover:bg-[#D4AF37] hover:text-white'}`}
-          >
-            {page}
-          </button>
-        ))}
-        
-        {/* Next Page */}
-        <button
-          onClick={() => onPageChange?.(pagination.page + 1)}
-          disabled={pagination.page >= Math.max(pagination.totalPages, 1)}
-          className={`px-3 py-1 rounded ${pagination.page >= Math.max(pagination.totalPages, 1) ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-[#D4AF37] hover:text-white'}`}
-        >
-          ›
-        </button>
-        
-        {/* Last Page */}
-        <button
-          onClick={() => onPageChange?.(Math.max(pagination.totalPages, 1))}
-          disabled={pagination.page >= Math.max(pagination.totalPages, 1)}
-          className={`px-3 py-1 rounded ${pagination.page >= Math.max(pagination.totalPages, 1) ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-[#D4AF37] hover:text-white'}`}
-        >
-          »
-        </button>
-      </div>
+      {/* Removed pagination controls from here - they'll be handled by the collections page */}
     </>
   );
 };
