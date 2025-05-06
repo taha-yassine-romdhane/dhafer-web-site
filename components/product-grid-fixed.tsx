@@ -119,6 +119,16 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
         
         const response = await fetch('/api/products?' + params.toString());
         if (!response.ok) {
+          // Handle 404 differently than 500 errors
+          if (response.status === 404) {
+            // Just set empty products array
+            setProducts([]);
+            if (onTotalPagesChange) {
+              onTotalPagesChange(1); // Ensure we still have 1 page for UI
+            }
+            setLoading(false);
+            return; // Exit early without throwing
+          }
           throw new Error('Failed to fetch products');
         }
         
@@ -178,7 +188,15 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
       } catch (error) {
         console.error('Error fetching products:', error);
         if (isMounted) {
-          setError(error instanceof Error ? error.message : 'Failed to fetch products');
+          // Handle all errors gracefully
+          setProducts([]); // Set empty products array
+          setError("Aucun produit trouvé pour cette catégorie");
+          
+          // Ensure pagination still works properly
+          if (onTotalPagesChange) {
+            onTotalPagesChange(1);
+          }
+          
           setLoading(false);
         }
       }
