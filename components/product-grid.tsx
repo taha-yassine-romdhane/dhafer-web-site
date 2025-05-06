@@ -138,33 +138,37 @@ const ProductGrid = ({ filters, productsPerPage = 12, onPageChange, onTotalPages
         
         // Process in batches to prevent UI freezing
         if (isMounted) {
-          // Check if pagination data exists
+          // Always ensure we have pagination data
+          let totalPages = 1;
+          
           if (data.pagination) {
             console.log('Pagination data:', data.pagination);
-            setPagination(data.pagination);
-            
-            // Notify parent component of total pages
-            if (onTotalPagesChange) {
-              console.log('Notifying parent of total pages:', data.pagination.totalPages);
-              onTotalPagesChange(data.pagination.totalPages);
-            }
-          } else {
-            console.error('No pagination data in response');
-            // Set default pagination if missing
-            const defaultPagination = {
-              total: data.products ? data.products.length : 0,
-              page: 1,
-              limit: 12,
-              totalPages: 1
-            };
-            setPagination(defaultPagination);
-            if (onTotalPagesChange) {
-              onTotalPagesChange(1);
-            }
+            // Ensure totalPages is at least 1
+            totalPages = Math.max(1, data.pagination.totalPages);
+            setPagination({
+              ...data.pagination,
+              totalPages: totalPages
+            });
+          } else if (data && data.products) {
+            // Calculate pagination if not provided
+            totalPages = Math.max(1, Math.ceil(data.total / pagination.limit));
+            setPagination(prev => ({
+              ...prev,
+              total: data.total || data.products.length,
+              totalPages: totalPages,
+              page: filters.page || 1
+            }));
           }
           
-          // First set the products without images to get the UI ready
+          // Always notify parent component of total pages
+          if (onTotalPagesChange) {
+            console.log('Notifying parent of total pages:', totalPages);
+            onTotalPagesChange(totalPages);
+          }
+          
+          // Set the products
           setProducts(data.products);
+          
           
           // Then process images in a separate tick
           setTimeout(() => {
@@ -320,46 +324,6 @@ const ProductGrid = ({ filters, productsPerPage = 12, onPageChange, onTotalPages
                   {product.salePrice && (
                     <p className="text-xs text-[#D4AF37] mt-600 font-semibold"><span className="text-red-600 mr-1">Promo :</span> {formatPrice(product.salePrice)} TND</p>
                   )}
-                </div>
-              </div>
-
-              {/* Color Options - Optimized to show only a few variants */}
-              <div className="mt-1 flex items-center">
-                <div className="flex -space-x-2 mr-2">
-                  {product.colorVariants.slice(0, 3).map((variant, idx) => {
-                    const variantMainImage = variant.images.find(img => img.isMain)?.url || variant.images[0]?.url;
-                    return (
-                      <button
-                        key={variant.id}
-                        onClick={() => {
-                          setSelectedColors({ ...selectedColors, [product.id]: variant.color });
-                          if (variantMainImage) {
-                            setSelectedImage({ ...selectedImage, [product.id]: variantMainImage });
-                          }
-                        }}
-                        className={cn(
-                          "relative w-6 h-6 rounded-full overflow-hidden border-2",
-                          selectedColors[product.id] === variant.color
-                            ? "border-[#D4AF37] z-10"
-                            : "border-white"
-                        )}
-                        style={{ zIndex: 3 - idx }}
-                        aria-label={variant.color}
-                      >
-                        {variantMainImage && (
-                          <Image
-                            src={variantMainImage}
-                            alt={`${product.name} in ${variant.color}`}
-                            fill
-                            className="object-cover"
-                            sizes="24px"
-                            loading="lazy"
-                            quality={30}
-                          />
-                        )}
-                      </button>
-                    );
-                  })}
                   {product.colorVariants.length > 3 && (
                     <div className="w-6 h-6 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center" style={{ zIndex: 0 }}>
                       <span className="text-[10px] text-gray-600 font-medium">+{product.colorVariants.length - 3}</span>
@@ -376,6 +340,56 @@ const ProductGrid = ({ filters, productsPerPage = 12, onPageChange, onTotalPages
           ))}
         </div>
       )}
+      
+      {/* Pagination Controls - Always show regardless of product count */}
+      <div className="flex justify-center mt-8 space-x-2">
+        {/* First Page */}
+        <button
+          onClick={() => onPageChange?.(1)}
+          disabled={pagination.page <= 1}
+          className={`px-3 py-1 rounded ${pagination.page <= 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-[#D4AF37] hover:text-white'}`}
+        >
+          «
+        </button>
+        
+        {/* Previous Page */}
+        <button
+          onClick={() => onPageChange?.(pagination.page - 1)}
+          disabled={pagination.page <= 1}
+          className={`px-3 py-1 rounded ${pagination.page <= 1 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-[#D4AF37] hover:text-white'}`}
+        >
+          ‹
+        </button>
+        
+        {/* Page Numbers - Always show at least page 1 */}
+        {Array.from({ length: Math.max(pagination.totalPages, 1) }, (_, i) => i + 1).map(page => (
+          <button
+            key={page}
+            onClick={() => onPageChange?.(page)}
+            className={`px-3 py-1 rounded ${pagination.page === page ? 'bg-[#D4AF37] text-white' : 'bg-white text-gray-700 hover:bg-[#D4AF37] hover:text-white'}`}
+          >
+            {page}
+          </button>
+        ))}
+        
+        {/* Next Page */}
+        <button
+          onClick={() => onPageChange?.(pagination.page + 1)}
+          disabled={pagination.page >= Math.max(pagination.totalPages, 1)}
+          className={`px-3 py-1 rounded ${pagination.page >= Math.max(pagination.totalPages, 1) ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-[#D4AF37] hover:text-white'}`}
+        >
+          ›
+        </button>
+        
+        {/* Last Page */}
+        <button
+          onClick={() => onPageChange?.(Math.max(pagination.totalPages, 1))}
+          disabled={pagination.page >= Math.max(pagination.totalPages, 1)}
+          className={`px-3 py-1 rounded ${pagination.page >= Math.max(pagination.totalPages, 1) ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-[#D4AF37] hover:text-white'}`}
+        >
+          »
+        </button>
+      </div>
       
       {/* Dialog removed as it's no longer needed */}
     </>
