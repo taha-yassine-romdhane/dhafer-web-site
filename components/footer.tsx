@@ -1,9 +1,64 @@
+"use client"
 import Link from "next/link";
+import { useState } from "react";
 import { BsFacebook, BsInstagram, BsYoutube, BsTiktok } from "react-icons/bs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 
 export function Footer() {
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [subscriptionResult, setSubscriptionResult] = useState<{ success: boolean; message: string } | null>(null);
+  
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!phoneNumber.trim()) {
+      setSubscriptionResult({
+        success: false,
+        message: 'Veuillez entrer un numéro de téléphone'
+      });
+      setDialogOpen(true);
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phoneNumber }),
+      });
+      
+      const data = await response.json();
+      
+      setSubscriptionResult({
+        success: data.success,
+        message: data.message || data.error || 'Une erreur est survenue'
+      });
+      
+      if (data.success) {
+        setPhoneNumber('');
+      }
+      
+      setDialogOpen(true);
+    } catch (error) {
+      console.error('Error subscribing:', error);
+      setSubscriptionResult({
+        success: false,
+        message: 'Une erreur est survenue lors de l\'abonnement'
+      });
+      setDialogOpen(true);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <footer className="bg-white border-t border-[#D4AF37]/20">
       <div className="container mx-auto px-4 py-12">
@@ -117,16 +172,30 @@ export function Footer() {
             <p className="text-sm text-gray-600 mb-4">
               Abonnez-vous à notre newsletter pour rester informé des dernières tendances et des offres exclusives.
             </p>
-            <div className="space-y-2">
+            <form onSubmit={handleSubscribe} className="space-y-2">
               <Input
-                type="number"
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="+216 00 00 00 00"
                 className="border-[#D4AF37]/20 focus:ring-[#D4AF37] focus:border-[#D4AF37]"
+                disabled={loading}
               />
-              <Button className="w-full bg-[#D4AF37] text-white hover:bg-[#D4AF37]/90">
-                S&#39;abonner
+              <Button 
+                type="submit"
+                className="w-full bg-[#D4AF37] text-white hover:bg-[#D4AF37]/90"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Traitement...
+                  </>
+                ) : (
+                  "S'abonner"
+                )}
               </Button>
-            </div>
+            </form>
           </div>
         </div>
 
@@ -144,6 +213,30 @@ export function Footer() {
           </div>
         </div>
       </div>
+      
+      {/* Success/Error Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              {subscriptionResult?.success ? (
+                <>
+                  <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
+                  Abonnement réussi
+                </>
+              ) : (
+                <>
+                  <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
+                  Erreur
+                </>
+              )}
+            </DialogTitle>
+            <DialogDescription className="pt-4 text-center">
+              {subscriptionResult?.message}
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </footer>
   );
 }

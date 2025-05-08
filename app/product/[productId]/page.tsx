@@ -17,6 +17,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import SuggestedProductCard from "@/app/components/SuggestedProductCard";
 import SuggestedMobileProductCard from "@/app/components/SuggestedMobileProductCard";
+import { StockNotificationForm } from "@/components/stock-notification-form";
 
 interface ProductWithColorVariants extends Omit<Product, "images"> {
   colorVariants: (ColorVariant & {
@@ -428,15 +429,27 @@ export default function ProductPage({ params }: { params: { productId: string } 
 
           <div className="mt-4">
             <ProductAvailability
-              productId={Number(params.productId)}
+              productId={product.id}
               selectedSize={selectedSize}
-              selectedColorId={selectedColorVariant?.id || 0}
-              className="mb-4"
-              onAvailabilityChange={(available: boolean, stockData: Array<any>) => {
+              selectedColorId={selectedColorVariant.id}
+              className="mt-4"
+              onAvailabilityChange={(available, stockData) => {
                 setIsProductAvailable(available);
                 setStockInfo(stockData);
               }}
             />
+            
+            {/* Stock Notification Form for out-of-stock products */}
+            {selectedSize && selectedColorVariant && (
+              <StockNotificationForm
+                productId={product.id}
+                productName={product.name}
+                selectedSize={selectedSize}
+                selectedColor={selectedColorVariant.color}
+                isAvailable={isProductAvailable}
+                className="mt-4"
+              />
+            )}
           </div>
 
           <div className="flex flex-col space-y-4">
