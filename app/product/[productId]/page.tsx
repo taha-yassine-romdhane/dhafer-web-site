@@ -11,7 +11,6 @@ import { DirectPurchaseForm } from "@/components/direct-purchase-form";
 import { ProductAvailability } from "@/components/product-availability";
 import { toast } from "sonner";
 import { SuccessDialog } from "@/components/success-dialog";
-import ProductGrid from "@/components/product-grid";
 import { apiPost } from "@/lib/api-client";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
@@ -45,7 +44,6 @@ export default function ProductPage({ params }: { params: { productId: string } 
   const [submitting, setSubmitting] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const [isProductAvailable, setIsProductAvailable] = useState(false);
-  const [stockInfo, setStockInfo] = useState<Array<any>>([]);
   const [showOrderSuccessModal, setShowOrderSuccessModal] = useState(false);
   const [userDetails, setUserDetails] = useState<{ fullName: string; address: string; governorate: string; phone: string; email: string; quantity?: number }>({
     fullName: "",
@@ -427,20 +425,19 @@ export default function ProductPage({ params }: { params: { productId: string } 
             </div>
           )}
 
-          <div className="mt-4">
+          <div>
             <ProductAvailability
               productId={product.id}
               selectedSize={selectedSize}
-              selectedColorId={selectedColorVariant.id}
+              selectedColorId={selectedColorVariant?.id}
               className="mt-4"
-              onAvailabilityChange={(available, stockData) => {
+              onAvailabilityChange={(available) => {
                 setIsProductAvailable(available);
-                setStockInfo(stockData);
               }}
             />
             
             {/* Stock Notification Form for out-of-stock products */}
-            {selectedSize && selectedColorVariant && (
+            {selectedSize && selectedColorVariant && !isProductAvailable && (
               <StockNotificationForm
                 productId={product.id}
                 productName={product.name}

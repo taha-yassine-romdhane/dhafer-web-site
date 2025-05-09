@@ -50,6 +50,7 @@ export async function GET(request: Request) {
     const collaborateur = searchParams.get("collaborateur");
     const sort = searchParams.get("sort");
     const product = searchParams.get("product");
+    const searchQuery = searchParams.get("search");
     
     // Pagination parameters
     const page = parseInt(searchParams.get("page") || "1");
@@ -66,7 +67,7 @@ export async function GET(request: Request) {
       else if (groupParam.toUpperCase() === 'ACCESSOIRE') group = CategoryGroup.ACCESSOIRE;
     }
 
-    console.log('API received params:', { category, group, collaborateur, sort, product });
+    console.log('API received params:', { category, group, collaborateur, sort, product, searchQuery });
     
     let where: any = {};
 
@@ -145,6 +146,28 @@ export async function GET(request: Request) {
         contains: productName,
         mode: 'insensitive'
       };
+    }
+    
+    // Search query filter
+    if (searchQuery && searchQuery.trim() !== "") {
+      // If we already have a name filter, we need to combine them with OR
+      if (where.name) {
+        // Create an OR condition with both filters
+        where.OR = [
+          { name: where.name },  // Keep existing name filter
+          { name: { contains: searchQuery, mode: 'insensitive' } },
+          { description: { contains: searchQuery, mode: 'insensitive' } }
+        ];
+        
+        // Remove the original name filter since it's now in the OR condition
+        delete where.name;
+      } else {
+        // If no existing name filter, create a simple OR condition
+        where.OR = [
+          { name: { contains: searchQuery, mode: 'insensitive' } },
+          { description: { contains: searchQuery, mode: 'insensitive' } }
+        ];
+      }
     }
 
     // Log the final where clause and pagination params

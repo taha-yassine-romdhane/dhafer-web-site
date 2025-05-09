@@ -4,12 +4,27 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get("q") || "";
+    // Get the query parameter - support both 'q' and 'query' for compatibility
+    const query = searchParams.get("query") || searchParams.get("q") || "";
     const category = searchParams.get("category");
     const minPrice = searchParams.get("minPrice");
     const maxPrice = searchParams.get("maxPrice");
     const sortBy = searchParams.get("sortBy") || "relevance";
 
+    // Handle invalid queries
+    if (!query || query.trim() === "") {
+      // For empty query, return empty results
+      return NextResponse.json({
+        products: [],
+        metadata: {
+          categories: [],
+          priceRange: { min: 0, max: 0 },
+          total: 0,
+        }
+      });
+    }
+    
+    // Build search condition
     const where: any = {
       OR: [
         { name: { contains: query, mode: "insensitive" } },

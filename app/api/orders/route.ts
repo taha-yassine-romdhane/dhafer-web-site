@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyJwtToken } from '@/lib/auth';
+import { sendOrderConfirmationSms } from '@/lib/sms-service';
 
 export async function POST(req: Request) {
   try {
@@ -135,6 +136,41 @@ export async function POST(req: Request) {
         },
       },
     });
+
+    // Send SMS confirmation
+    try {
+      // Fetch complete order information including size details
+      const orderWithSizes = await prisma.order.findUnique({
+        where: { id: order.id },
+        include: {
+          items: {
+            include: {
+              product: true,
+              colorVariant: true,
+              size: {
+                select: {
+                  id: true,
+                  value: true
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (orderWithSizes) {
+        const smsResult = await sendOrderConfirmationSms(
+          orderWithSizes,
+          customerName,
+          phoneNumber
+        );
+        
+        console.log('SMS confirmation result:', smsResult);
+      }
+    } catch (smsError) {
+      // Log the error but don't fail the order creation
+      console.error('Failed to send confirmation SMS:', smsError);
+    }
 
     return NextResponse.json(order);
   } catch (error) {

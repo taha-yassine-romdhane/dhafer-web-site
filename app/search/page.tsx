@@ -37,7 +37,8 @@ interface SearchMetadata {
 export default function SearchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("q") || "";
+  // Get query from URL parameters - could be 'query' or 'q'
+  const searchQuery = searchParams.get("query") || "";
   const [products, setProducts] = useState<SearchProduct[]>([]);
   const [metadata, setMetadata] = useState<SearchMetadata | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,6 +52,14 @@ export default function SearchPage() {
 
   const updateSearchParams = (params: Record<string, string | null>) => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
+    
+    // If updating the query parameter, ensure we use 'query' consistently
+    if ('q' in params) {
+      const queryValue = params['q'];
+      delete params['q'];
+      params['query'] = queryValue;
+    }
+    
     Object.entries(params).forEach(([key, value]) => {
       if (value === null) {
         newSearchParams.delete(key);
@@ -58,6 +67,10 @@ export default function SearchPage() {
         newSearchParams.set(key, value);
       }
     });
+    
+    // Also clean up any 'q' parameter if it exists
+    newSearchParams.delete('q');
+    
     router.push(`/search?${newSearchParams.toString()}`);
   };
 
@@ -65,8 +78,15 @@ export default function SearchPage() {
     const fetchSearchResults = async () => {
       try {
         setLoading(true);
+        // Skip API call for empty or invalid queries
+        if (!searchQuery || searchQuery.trim() === "") {
+          setProducts([]);
+          setLoading(false);
+          return;
+        }
+        
         const params = new URLSearchParams({
-          q: searchQuery,
+          query: searchQuery, // Use 'query' parameter consistently
           ...(selectedCategory !== "all" && { category: selectedCategory }),
           ...(sortBy !== "relevance" && { sortBy }),
           minPrice: priceRange[0].toString(),
