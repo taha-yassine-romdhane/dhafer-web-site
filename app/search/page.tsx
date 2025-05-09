@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Container from "@/components/ui/container";
@@ -74,8 +75,29 @@ export default function SearchPage() {
     router.push(`/search?${newSearchParams.toString()}`);
   };
 
+  // Track if the component is mounted to prevent state updates after unmounting
+  const isMounted = React.useRef(true);
+  
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+  
+  // Use a stable reference for the search query to prevent unnecessary re-renders
+  const searchQueryRef = React.useRef(searchQuery);
+  
+  useEffect(() => {
+    searchQueryRef.current = searchQuery;
+  }, [searchQuery]);
+  
+  // Separate effect for fetching search results to better control dependencies
   useEffect(() => {
     const fetchSearchResults = async () => {
+      // Prevent API calls if component is unmounted
+      if (!isMounted.current) return;
+      
       try {
         setLoading(true);
         // Skip API call for empty or invalid queries
@@ -93,21 +115,52 @@ export default function SearchPage() {
           maxPrice: priceRange[1].toString(),
         });
 
-        const response = await fetch(`/api/search?${params.toString()}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch search results");
+        console.log('Fetching search results with params:', params.toString());
+        
+        // Fetch search results with timeout protection
+        const fetchData = async () => {
+          const response = await fetch(`/api/search?${params.toString()}`);
+          
+          // Add timeout to prevent infinite loading
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Search request timed out')), 10000);
+          });
+          
+          // Race between the fetch and the timeout
+          const data = await Promise.race([
+            response.json(),
+            timeoutPromise
+          ]) as any;
+          
+          console.log('Search API response status:', response.status);
+          
+          if (!response.ok) {
+            throw new Error(data.error || `Failed to fetch search results: ${response.status}`);
+          }
+          
+          // Log the number of products returned
+          console.log(`Search returned ${data.products?.length || 0} products`);
+          
+          return data;
+        };
+        
+        // Execute the fetch and get results
+        const result = await fetchData();
+        
+        // Check if we have valid data
+        if (!result || !result.products) {
+          console.error('Invalid search response data:', result);
+          throw new Error('Invalid search response data');
         }
-
-        setProducts(data.products);
-        setMetadata(data.metadata);
+        
+        setProducts(result.products);
+        setMetadata(result.metadata);
 
         // Initialize price range if not set
-        if (data.metadata.priceRange && priceRange[1] === 1000) {
+        if (result.metadata?.priceRange && priceRange[1] === 1000) {
           setPriceRange([
-            data.metadata.priceRange.min,
-            data.metadata.priceRange.max
+            result.metadata.priceRange.min || 0,
+            result.metadata.priceRange.max || 1000
           ]);
         }
       } catch (error) {
@@ -119,7 +172,9 @@ export default function SearchPage() {
     };
 
     fetchSearchResults();
-  }, [searchQuery, selectedCategory, sortBy, priceRange]);
+  // Only re-run when these dependencies actually change
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, selectedCategory, sortBy, priceRange[0], priceRange[1]]);
 
   const sortOptions = [
     { label: "Relevance", value: "relevance" },

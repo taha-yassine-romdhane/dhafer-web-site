@@ -24,13 +24,20 @@ export async function GET(request: Request) {
       });
     }
     
-    // Build search condition
+    // Build search condition with improved case handling
     const where: any = {
       OR: [
-        { name: { contains: query, mode: "insensitive" } },
-        { description: { contains: query, mode: "insensitive" } },
+        // Use both lowercase and exact match for better compatibility
+        { name: { contains: query.toLowerCase() } },
+        { name: { contains: query } },
+        { description: { contains: query.toLowerCase() } },
+        { description: { contains: query } },
       ],
     };
+    
+    // Log the search query for debugging
+    console.log('Search query:', query);
+    console.log('Search where condition:', where);
 
     // Add category filter
     if (category && category !== "all") {
