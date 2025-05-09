@@ -1,10 +1,26 @@
 /**
- * Email utility functions
- * Note: This is a simplified implementation. In a production environment,
- * you would use a real email service like SendGrid, Mailgun, etc.
+ * Email utility functions using Nodemailer
  */
 
-// For now, we'll just log the emails to the console
+import { Order, OrderItem, Product, Size } from '@prisma/client';
+import nodemailer from 'nodemailer';
+
+// Define types for order with items - made more flexible to accommodate different query results
+type OrderWithItems = Order & {
+  items: Array<{
+    product: Product;
+    colorVariant: any;
+    size?: { id: number; value: string } | null;
+    quantity: number;
+    price: number;
+    // Other fields are optional to accommodate different query structures
+    [key: string]: any;
+  }>;
+};
+
+/**
+ * Send an email using Nodemailer
+ */
 export async function sendEmail({
   to,
   subject,
@@ -14,17 +30,48 @@ export async function sendEmail({
   subject: string;
   html: string;
 }): Promise<void> {
-  // In a real implementation, you would use an email service API here
-  console.log('------ EMAIL SENT ------');
+  // Log the email for debugging purposes
+  console.log('------ EMAIL PREPARED ------');
   console.log(`To: ${to}`);
   console.log(`Subject: ${subject}`);
-  console.log(`Content: ${html}`);
   console.log('------------------------');
   
-  // Simulate a delay for sending email
-  await new Promise(resolve => setTimeout(resolve, 500));
+  // Check if we're in development mode or missing configuration
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log('Missing email configuration - email not actually sent');
+    console.log('To send real emails, add the following to your .env file:');
+    console.log('EMAIL_USER=your_email@gmail.com');
+    console.log('EMAIL_PASS=your_app_password');
+    console.log('EMAIL_FROM=Dar Koftan <your_email@gmail.com>');
+    console.log('EMAIL_HOST=smtp.gmail.com (or your SMTP server)');
+    console.log('EMAIL_PORT=587 (or your SMTP port)');
+    return Promise.resolve();
+  }
   
-  return Promise.resolve();
+  try {
+    // Create a transporter using SMTP
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+      port: parseInt(process.env.EMAIL_PORT || '587'),
+      secure: process.env.EMAIL_PORT === '465', // true for 465, false for other ports
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+    
+    // Send mail with defined transport object
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_FROM || '"Dar Koftan" <contact@darkoftan.com>',
+      to,
+      subject,
+      html,
+    });
+    
+    console.log(`Email sent: ${info.messageId}`);
+  } catch (error: any) {
+    console.error('Error sending email:', error);
+  }
 }
 
 /**
@@ -46,6 +93,133 @@ export async function sendPasswordResetEmail(
     <p>This link will expire in 1 hour.</p>
     <p>If you didn't request this, please ignore this email.</p>
   `;
+  
+  return sendEmail({ to: email, subject, html });
+}
+
+/**
+ * Creates an order confirmation email in HTML format
+ */
+function createOrderConfirmationEmail(
+  order: OrderWithItems,
+  customerName: string
+): string {
+  // Format items list
+  const itemsList = order.items.map(item => {
+    const productName = item.product.name;
+    
+    // Handle different order types
+    let color = '';
+    if ('colorVariant' in item && item.colorVariant) {
+      color = item.colorVariant.color || '';
+    }
+    
+    // Extract size value
+    let size = 'N/A';
+    if (item.size) {
+      size = item.size.value;
+    }
+    
+    const quantity = item.quantity;
+    const price = (item.price * quantity).toFixed(2);
+    
+    return `<tr>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${productName}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${color}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${size}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${quantity}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${price} DT</td>
+    </tr>`;
+  }).join('');
+  
+  // Format total amount
+  const totalAmount = order.totalAmount.toFixed(2);
+  
+  // Base URL for assets
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://darkoftan.com';
+  const logoUrl = `${baseUrl}/logo.png`;
+  
+  // Create the HTML email
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Confirmation de Commande - Dar Koftan</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .logo { max-width: 150px; height: auto; }
+        h1 { color: #D4AF37; }
+        .order-details { margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background-color: #f8f8f8; text-align: left; padding: 10px; }
+        .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #777; }
+        .button { display: inline-block; padding: 10px 20px; background-color: #D4AF37; color: white; text-decoration: none; border-radius: 4px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${logoUrl}" alt="Dar Koftan Logo" class="logo">
+          <h1>Confirmation de Commande</h1>
+        </div>
+        
+        <p>Bonjour ${customerName},</p>
+        
+        <p>Merci pour votre commande chez Dar Koftan! Nous avons bien reçu votre commande et nous la traiterons dans les plus brefs délais.</p>
+        
+        <div class="order-details">
+          <h2>Détails de la commande #${order.id}</h2>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Produit</th>
+                <th>Couleur</th>
+                <th>Taille</th>
+                <th>Quantité</th>
+                <th>Prix</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsList}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" style="text-align: right; padding: 10px; font-weight: bold;">Total:</td>
+                <td style="padding: 10px; font-weight: bold;">${totalAmount} DT</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        
+        <p>Nous vous contacterons bientôt pour confirmer les détails de livraison.</p>
+        
+        <p>Pour toute question concernant votre commande, n'hésitez pas à nous contacter.</p>
+        
+        <p>Cordialement,<br>L'équipe Dar Koftan</p>
+        
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} Dar Koftan. Tous droits réservés.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * Sends an order confirmation email
+ */
+export async function sendOrderConfirmationEmail(
+  order: OrderWithItems,
+  customerName: string,
+  email: string
+): Promise<void> {
+  const subject = `Confirmation de commande #${order.id} - Dar Koftan`;
+  const html = createOrderConfirmationEmail(order, customerName);
   
   return sendEmail({ to: email, subject, html });
 }

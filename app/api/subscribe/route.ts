@@ -1,5 +1,24 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getUser } from '@/lib/auth';
+
+// Helper function to get user's name from their ID
+async function getUserName(userId: number): Promise<string> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { username: true }
+    });
+    
+    if (user && user.username) {
+      return user.username;
+    }
+    return 'Non spécifié';
+  } catch (error) {
+    console.error('Error fetching user name:', error);
+    return 'Non spécifié';
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -57,11 +76,15 @@ export async function POST(request: Request) {
       });
     }
     
+    // Try to get the logged-in user
+    const user = await getUser();
+    
     // Create a new subscriber
     await prisma.sMSSubscriber.create({
       data: {
         phoneNumber: formattedPhone,
         source: 'website_footer',
+        name: user ? await getUserName(user.userId) : 'Non spécifié',
         isActive: true
       }
     });

@@ -51,29 +51,7 @@ export default function SearchPage() {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [sortBy, setSortBy] = useState<string>("relevance");
 
-  const updateSearchParams = (params: Record<string, string | null>) => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    
-    // If updating the query parameter, ensure we use 'query' consistently
-    if ('q' in params) {
-      const queryValue = params['q'];
-      delete params['q'];
-      params['query'] = queryValue;
-    }
-    
-    Object.entries(params).forEach(([key, value]) => {
-      if (value === null) {
-        newSearchParams.delete(key);
-      } else {
-        newSearchParams.set(key, value);
-      }
-    });
-    
-    // Also clean up any 'q' parameter if it exists
-    newSearchParams.delete('q');
-    
-    router.push(`/search?${newSearchParams.toString()}`);
-  };
+
 
   // Track if the component is mounted to prevent state updates after unmounting
   const isMounted = React.useRef(true);
@@ -245,24 +223,6 @@ export default function SearchPage() {
                   </div>
                 </div>
 
-                {/* Price Range */}
-                <div className="space-y-2">
-                  <h3 className="font-medium text-sm">Prix Zone</h3>
-                  <div className="px-2">
-                    <Slider
-                      defaultValue={[priceRange[0], priceRange[1]]}
-                      max={metadata?.priceRange.max || 1000}
-                      min={metadata?.priceRange.min || 0}
-                      step={10}
-                      onValueChange={(value) => setPriceRange(value as [number, number])}
-                      className="w-full [&_[role=slider-track]]:bg-[#D4AF37] [&_[role=slider]]:bg-[#D4AF37] [&_[role=slider]]:border-[#D4AF37]"
-                    />
-                    <div className="flex justify-between mt-2 text-sm text-gray-500">
-                      <span>TND {priceRange[0]}</span>
-                      <span>TND {priceRange[1]}</span>
-                    </div>
-                  </div>
-                </div>
 
                 {/* Sort Options */}
                 <div className="space-y-2">

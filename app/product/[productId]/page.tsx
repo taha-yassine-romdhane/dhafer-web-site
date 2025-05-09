@@ -356,7 +356,9 @@ export default function ProductPage({ params }: { params: { productId: string } 
 
           {/* Color Variants */}
           <div className="space-y-3">
-            <label className="text-sm font-medium text-gray-700">Color</label>
+            <label className="text-sm font-medium text-gray-700">
+              Color{selectedColorVariant ? ` : ${selectedColorVariant.color}` : ''}
+            </label>
             <div className="flex flex-wrap gap-2">
               {product.colorVariants.map((variant) => {
                 const variantMainImage = variant.images.find((img: ProductImage) => img.isMain)?.url || variant.images[0]?.url;
