@@ -1,17 +1,24 @@
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getUser } from '@/lib/auth';
+import { verifyJwtToken } from '@/lib/auth';
 
 // Helper function to get user's name from their ID
 async function getUserName(userId: number): Promise<string> {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { username: true }
+      select: { username: true, email: true }
     });
     
-    if (user && user.username) {
-      return user.username;
+    if (user) {
+      // Return username if available, otherwise use email or default
+      if (user.username && user.username.trim() !== '') {
+        return user.username;
+      } else if (user.email) {
+        // Use email as fallback (without the domain part)
+        return user.email.split('@')[0];
+      }
     }
     return 'Non spécifié';
   } catch (error) {
@@ -20,7 +27,34 @@ async function getUserName(userId: number): Promise<string> {
   }
 }
 
-export async function POST(request: Request) {
+// Helper function to get user from Authorization header
+async function getUserFromHeader(request: NextRequest) {
+  try {
+    // Get the Authorization header
+    const authHeader = request.headers.get('Authorization');
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
+    }
+    
+    // Extract the token
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    
+    try {
+      // Verify the token
+      const payload = await verifyJwtToken(token);
+      return payload;
+    } catch (error) {
+      console.error('Error verifying token from header:', error);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error getting user from header:', error);
+    return null;
+  }
+}
+
+export async function POST(request: NextRequest) {
   try {
     const { phoneNumber } = await request.json();
     
@@ -76,15 +110,27 @@ export async function POST(request: Request) {
       });
     }
     
-    // Try to get the logged-in user
-    const user = await getUser();
+    // Try to get the logged-in user from the Authorization header
+    const user = await getUserFromHeader(request);
     
     // Create a new subscriber
+    let subscriberName = 'Non spécifié';
+    
+    if (user) {
+      // Try to get the username first
+      subscriberName = await getUserName(user.userId);
+      
+      // If still default, try using email directly from the token
+      if (subscriberName === 'Non spécifié' && user.email) {
+        subscriberName = user.email.split('@')[0];
+      }
+    }
+    
     await prisma.sMSSubscriber.create({
       data: {
         phoneNumber: formattedPhone,
         source: 'website_footer',
-        name: user ? await getUserName(user.userId) : 'Non spécifié',
+        name: subscriberName,
         isActive: true
       }
     });

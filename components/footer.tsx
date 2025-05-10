@@ -28,11 +28,24 @@ export function Footer() {
     try {
       setLoading(true);
       
+      // Get auth token from localStorage if it exists
+      let headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      // Add authorization token if available
+      if (typeof window !== 'undefined') {
+        // Try both possible token keys
+        const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+        
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
+      
       const response = await fetch('/api/subscribe', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({ phoneNumber }),
       });
       
