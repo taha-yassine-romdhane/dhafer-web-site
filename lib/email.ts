@@ -128,7 +128,7 @@ function createOrderConfirmationEmail(
   const totalAmount = order.totalAmount.toFixed(2);
   
   // Base URL for assets
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://darkoftan.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://daralkoftanalassil.com';
   const logoUrl = `${baseUrl}/logo.png`;
   
   // Create the HTML email
