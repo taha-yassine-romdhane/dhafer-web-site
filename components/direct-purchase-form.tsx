@@ -29,8 +29,8 @@ const formSchema = z.object({
   governorate: z.string({
     required_error: "Veuillez sélectionner un gouvernorat.",
   }),
-  phone: z.string().regex(/^[0-9+\s-]{8,}$/, {
-    message: "Veuillez entrer un numéro de téléphone valide.",
+  phone: z.string().regex(/^[0-9]{8}$/, {
+    message: "Le numéro de téléphone doit contenir exactement 8 chiffres.",
   }),
   email: z.string().email({
     message: "Veuillez entrer une adresse email valide.",
@@ -142,7 +142,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
               <FormItem>
                 <FormControl>
                   <Input
-                    placeholder="Nom et prénom"
+                    placeholder="votre nom complet"
                     {...field}
                     className="rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
                     disabled={!!user}
@@ -160,7 +160,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
               <FormItem>
                 <FormControl>
                   <Input
-                    placeholder="Adresse *"
+                    placeholder="Votre adresse complète"
                     {...field}
                     className="rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
                   />
@@ -198,7 +198,8 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
               <FormItem>
                 <FormControl>
                   <Input
-                    placeholder="Téléphone"
+                    type="number"
+                    placeholder="Votre numéro de télephone"
                     {...field}
                     className="rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
                   />
@@ -277,32 +278,101 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
       </Form>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Aperçu de la commande</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            {productInfo.mainImageUrl && <img src={productInfo.mainImageUrl} alt="Product Main Image" style={{ width: '150px', height: 'auto' }} />}
-            <p><strong>Nom et prénom:</strong> {formData?.fullName}</p>
-            {formData?.email && <p><strong>Email:</strong> {formData?.email}</p>}
-            <p><strong>Adresse:</strong> {formData?.address}</p>
-            <p><strong>Gouvernorat:</strong> {formData?.governorate}</p>
-            <p><strong>Téléphone:</strong> {formData?.phone}</p>
-            <p><strong>Quantité:</strong> {formData?.quantity}</p>
-            <p><strong>Produit:</strong> {productInfo.name}</p>
-            <p><strong>Prix:</strong> {productInfo.price * (formData?.quantity || 1)} TND plus frais de livraison 6 TND</p>
-            <p><strong>Total:</strong> {productInfo.price * (formData?.quantity || 1) + 6} TND</p>
+  <DialogContent className="sm:max-w-[600px] rounded-lg">
+    <DialogHeader>
+      <DialogTitle className="text-2xl font-bold text-gray-800 border-b pb-3">
+        Aperçu de la commande
+      </DialogTitle>
+    </DialogHeader>
+    
+    <div className="grid gap-4 py-4">
+      {/* Product Image with better styling */}
+      {productInfo.mainImageUrl && (
+        <div className="flex justify-center mb-4">
+          <img 
+            src={productInfo.mainImageUrl} 
+            alt="Product Main Image" 
+            className="w-32 h-32 object-contain rounded-lg border shadow-sm" 
+          />
+        </div>
+      )}
+      
+      {/* Customer Information */}
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <h3 className="font-semibold text-lg mb-3 text-gray-700">Informations client</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p className="text-sm text-gray-600"><strong>Nom et prénom:</strong></p>
+            <p className="text-gray-800">{formData?.fullName}</p>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              Modifier
-            </Button>
-            <Button className="bg-[#D4AF37] text-white hover:bg-[#D4AF37]/90" onClick={handleConfirm}>
-              Continuer
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          {formData?.email && (
+            <div>
+              <p className="text-sm text-gray-600"><strong>Email:</strong></p>
+              <p className="text-gray-800">{formData?.email}</p>
+            </div>
+          )}
+          <div>
+            <p className="text-sm text-gray-600"><strong>Adresse:</strong></p>
+            <p className="text-gray-800">{formData?.address}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600"><strong>Gouvernorat:</strong></p>
+            <p className="text-gray-800">{formData?.governorate}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600"><strong>Téléphone:</strong></p>
+            <p className="text-gray-800">{formData?.phone}</p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Order Summary */}
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <h3 className="font-semibold text-lg mb-3 text-gray-700">Détails de la commande</h3>
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Produit:</span>
+            <span className="font-medium">{productInfo.name}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Quantité:</span>
+            <span className="font-medium">{formData?.quantity}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Prix unitaire:</span>
+            <span className="font-medium">{productInfo.price} TND</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Frais de livraison:</span>
+            <span className="font-medium">6 TND</span>
+          </div>
+          <div className="border-t pt-2 mt-2 flex justify-between">
+            <span className="text-gray-600 font-semibold">Total:</span>
+            <span className="text-lg font-bold text-[#D4AF37]">
+              {productInfo.price * (formData?.quantity || 1) + 6} TND
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <DialogFooter className="mt-4 gap-2 sm:gap-0">
+      <Button 
+        variant="outline" 
+        onClick={() => setIsDialogOpen(false)}
+        className="border-gray-300 text-gray-700 hover:bg-gray-100"
+      >
+        Modifier
+      </Button>
+      <Button 
+        className="bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white shadow hover:shadow-md transition-all"
+        onClick={handleConfirm}
+      >
+        Confirmer la commande
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
     </>
   )
 }

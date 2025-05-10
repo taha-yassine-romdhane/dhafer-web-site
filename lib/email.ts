@@ -1,9 +1,9 @@
 /**
- * Email utility functions using Nodemailer
+ * Email utility functions using Resend API
  */
 
 import { Order, OrderItem, Product, Size } from '@prisma/client';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 // Define types for order with items - made more flexible to accommodate different query results
 type OrderWithItems = Order & {
@@ -19,7 +19,7 @@ type OrderWithItems = Order & {
 };
 
 /**
- * Send an email using Nodemailer
+ * Send an email using Resend API
  */
 export async function sendEmail({
   to,
@@ -37,38 +37,30 @@ export async function sendEmail({
   console.log('------------------------');
   
   // Check if we're in development mode or missing configuration
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.log('Missing email configuration - email not actually sent');
-    console.log('To send real emails, add the following to your .env file:');
-    console.log('EMAIL_USER=your_email@gmail.com');
-    console.log('EMAIL_PASS=your_app_password');
-    console.log('EMAIL_FROM=Dar Koftan <your_email@gmail.com>');
-    console.log('EMAIL_HOST=smtp.gmail.com (or your SMTP server)');
-    console.log('EMAIL_PORT=587 (or your SMTP port)');
+  if (!process.env.RESEND_API_KEY) {
+    console.log('Missing Resend API key - email not actually sent');
+    console.log('To send real emails, add RESEND_API_KEY to your .env file');
     return Promise.resolve();
   }
   
   try {
-    // Create a transporter using SMTP
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.EMAIL_PORT || '587'),
-      secure: process.env.EMAIL_PORT === '465', // true for 465, false for other ports
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    // Initialize the Resend client
+    const resend = new Resend(process.env.RESEND_API_KEY);
     
-    // Send mail with defined transport object
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || '"Dar Koftan" <contact@darkoftan.com>',
+    // Send email using Resend
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'Dar Koftan <onboarding@resend.dev>',
       to,
       subject,
       html,
     });
     
-    console.log(`Email sent: ${info.messageId}`);
+    if (error) {
+      console.error('Error sending email:', error);
+      return;
+    }
+    
+    console.log(`Email sent with ID: ${data?.id}`);
   } catch (error: any) {
     console.error('Error sending email:', error);
   }

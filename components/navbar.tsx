@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Menu, X, User, LogOut, ShoppingBag, Settings } from "lucide-react";
+import {  Menu, X, LogOut, ShoppingBag, Settings } from "lucide-react";
 import Container from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/lib/context/cart-context";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import SearchBar from "@/components/search-bar";
@@ -210,9 +209,11 @@ export default function Navbar() {
               aria-label="Cart"
             >
               <ShoppingCart size={20} />
-              <div className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-[#D4AF37] text-white text-xs flex items-center justify-center">
-                {items.length > 0 ? items.length : ''}
-              </div>
+              {items.length > 0 && (
+                <div className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-[#D4AF37] text-white text-xs flex items-center justify-center">
+                  {items.length}
+                </div>
+              )}
             </Link>
 
             {isLoggedIn && user ? (

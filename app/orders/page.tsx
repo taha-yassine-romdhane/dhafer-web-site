@@ -74,10 +74,19 @@ interface OrderItem {
   price: number;
 }
 
+// Define the OrderStatus enum to match the Prisma schema
+enum OrderStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED'
+}
+
 interface Order {
   id: number;
   createdAt: string;
-  status: string;
+  status: OrderStatus | string;
   totalAmount: number;
   customerName: string;
   phoneNumber: string;
@@ -85,18 +94,36 @@ interface Order {
   items: OrderItem[];
 }
 
+// Function to get status color based on order status
+const getStatusColor = (status: string): string => {
+  switch (status) {
+    case OrderStatus.PENDING:
+      return 'bg-yellow-100 text-yellow-800'; // Yellow for pending
+    case OrderStatus.CONFIRMED:
+      return 'bg-blue-100 text-blue-800'; // Blue for confirmed
+    case OrderStatus.SHIPPED:
+      return 'bg-purple-100 text-purple-800'; // Purple for shipped
+    case OrderStatus.DELIVERED:
+      return 'bg-green-100 text-green-800'; // Green for delivered
+    case OrderStatus.CANCELLED:
+      return 'bg-red-100 text-red-800'; // Red for cancelled
+    default:
+      return 'bg-gray-100 text-gray-800'; // Gray for unknown status
+  }
+};
+
 // Function to translate order status to French
 const translateOrderStatus = (status: string): string => {
   switch (status) {
-    case 'PENDING':
+    case OrderStatus.PENDING:
       return 'En attente';
-    case 'CONFIRMED':
+    case OrderStatus.CONFIRMED:
       return 'Confirmée';
-    case 'SHIPPED':
+    case OrderStatus.SHIPPED:
       return 'Expédiée';
-    case 'DELIVERED':
+    case OrderStatus.DELIVERED:
       return 'Livrée';
-    case 'CANCELLED':
+    case OrderStatus.CANCELLED:
       return 'Annulée';
     default:
       return status;
@@ -228,7 +255,7 @@ export default function OrdersPage() {
                         </p>
                       </div>
                       <div className="flex items-center">
-                        <span className="inline-flex items-center rounded-full bg-[#D4AF37]/10 px-3 py-1 text-sm font-medium text-[#D4AF37]">
+                        <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(order.status)}`}>
                           {translateOrderStatus(order.status)}
                         </span>
                       </div>
