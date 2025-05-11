@@ -81,6 +81,7 @@ interface DirectPurchaseFormProps {
 export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = false, isProductAvailable = true, productInfo }: DirectPurchaseFormProps) {
   const { user, isLoggedIn } = useAuth()
   const router = useRouter()
+  const [isConfirming, setIsConfirming] = useState(false)
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -116,15 +117,22 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
   }
 
   const handleConfirm = async () => {
-    if (formData) {
-      // Make sure we're passing the quantity as a number
-      const dataWithQuantity = {
-        ...formData,
-        quantity: Number(formData.quantity) || 1
-      };
-      console.log('Submitting form data:', dataWithQuantity);
-      await onSubmit(dataWithQuantity);
-      setIsDialogOpen(false);
+    if (formData && !isConfirming) {
+      try {
+        setIsConfirming(true);
+        // Make sure we're passing the quantity as a number
+        const dataWithQuantity = {
+          ...formData,
+          quantity: Number(formData.quantity) || 1
+        };
+        console.log('Submitting form data:', dataWithQuantity);
+        await onSubmit(dataWithQuantity);
+        setIsDialogOpen(false);
+      } catch (error) {
+        console.error('Error submitting order:', error);
+      } finally {
+        setIsConfirming(false);
+      }
     }
   }
 
@@ -367,8 +375,16 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
       <Button 
         className="bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white shadow hover:shadow-md transition-all"
         onClick={handleConfirm}
+        disabled={isConfirming}
       >
-        Confirmer la commande
+        {isConfirming ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Traitement...
+          </>
+        ) : (
+          'Confirmer la commande'
+        )}
       </Button>
     </DialogFooter>
   </DialogContent>
