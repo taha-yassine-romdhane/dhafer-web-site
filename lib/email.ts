@@ -13,11 +13,13 @@ type OrderWithItems = Order & {
     size?: { id: number; value: string } | null;
     quantity: number;
     price: number;
+    shippingCost: number;
     // Other fields are optional to accommodate different query structures
     [key: string]: any;
   }>;
 };
 
+const shippingCost = 6;
 /**
  * Send an email using Resend API
  */
@@ -121,15 +123,16 @@ function createOrderConfirmationEmail(
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${size}</td>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${quantity}</td>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${price} DT</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.shippingCost} DT</td>
+      
     </tr>`;
   }).join('');
   
   // Format total amount
-  const totalAmount = order.totalAmount.toFixed(2);
+  const totalAmount = (order.totalAmount + shippingCost).toFixed(2);
   
   // Base URL for assets
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://daralkoftanalassil.com';
-  const logoUrl = `${baseUrl}/`;
+  const logoUrl = 'https://daralkoftanalassil.com/logo.webp';
   
   // Create the HTML email
   return `
@@ -173,6 +176,7 @@ function createOrderConfirmationEmail(
                 <th>Taille</th>
                 <th>Quantité</th>
                 <th>Prix</th>
+                <th>Frais de livraison</th>
               </tr>
             </thead>
             <tbody>
