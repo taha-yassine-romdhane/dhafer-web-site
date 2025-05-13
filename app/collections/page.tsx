@@ -43,7 +43,8 @@ export default function CollectionsPage() {
     collaborator: searchParams.get("collaborator") || "all",
     sort: searchParams.get("sort") || "featured",
     product: searchParams.get("product") || "",
-    page: parseInt(searchParams.get("page") || "1")
+    page: parseInt(searchParams.get("page") || "1"),
+    group: searchParams.get("group") || null
   });
   
   const [searchQuery, setSearchQuery] = useState("");
@@ -99,32 +100,59 @@ export default function CollectionsPage() {
   // Update filters when URL params change
   useEffect(() => {
     const page = parseInt(searchParams.get("page") || "1");
+    // Get the group parameter directly from the URL
+    const groupParam = searchParams.get("group") || null;
+    
     setFilters({
       category: searchParams.get("category") || "Tous",
       collaborator: searchParams.get("collaborator") || "all",
       sort: searchParams.get("sort") || "featured",
       product: searchParams.get("product") || "",
-      page: page
+      page: page,
+      group: groupParam // Include the group parameter from URL
     });
+    
+    // Set active group directly from URL parameter if available
+    if (groupParam) {
+      // Convert group parameter to match label format in categoryGroups (e.g., 'ENFANT' to 'Enfants')
+      if (groupParam === 'FEMME') setActiveGroup('Femme');
+      else if (groupParam === 'ENFANT') setActiveGroup('Enfants');
+      else if (groupParam === 'ACCESSOIRE') setActiveGroup('Accessoires');
+      else setActiveGroup(null);
+    }
+    
     setCurrentPage(page);
   }, [searchParams]);
 
   useEffect(() => {
-    // Set active group based on selected category
-    if (filters.category !== 'Tous') {
+    // Only try to guess group from category if no group parameter is specified
+    if (filters.category !== 'Tous' && !filters.group) {
       const group = categoryGroups.find(group => 
         group.categories.some(cat => cat.name.toLowerCase() === filters.category.toLowerCase())
       );
       setActiveGroup(group?.label || null);
-    } else {
+    } else if (filters.category === 'Tous') {
       setActiveGroup(null);
     }
-  }, [filters.category, categoryGroups]);
+    // When filters.group is present, activeGroup is already set in the previous useEffect
+  }, [filters.category, categoryGroups, filters.group]);
 
   const handleFilterChange = (key: string, value: string) => {
     // If changing anything other than page, reset to page 1
     const newPage = key === 'page' ? parseInt(value) : 1;
-    const newFilters = { ...filters, [key]: value, page: newPage };
+    
+    // When changing category to 'Tous', also reset group to null
+    let newGroup = filters.group;
+    if (key === 'category' && value === 'Tous') {
+      newGroup = null;
+    }
+    
+    const newFilters = { 
+      ...filters, 
+      [key]: value, 
+      page: newPage,
+      group: newGroup
+    };
     
     setFilters(newFilters);
     if (key === 'page' || newPage !== currentPage) {
@@ -138,7 +166,8 @@ export default function CollectionsPage() {
       collaborator: "all",
       sort: "featured",
       product: "",
-      page: 1
+      page: 1,
+      group: null // Add the group property to fix the TypeScript error
     });
     setCurrentPage(1);
     setActiveGroup(null);

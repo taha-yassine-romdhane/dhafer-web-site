@@ -157,33 +157,34 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
-            <ul className="flex space-x-8">
+          <nav className="hidden lg:flex items-center space-x-8 h-full">
+            <ul className="flex space-x-8 h-full">
               {categories.map((category) => (
-                <li key={category.label} className="relative group">
+                <li key={category.label} className="relative group h-16 flex items-center">
                   {category.url ? (
                     <Link
                       href={category.url}
-                      className="text-gray-800 hover:text-[#D4AF37] transition-colors"
+                      className="text-gray-800 hover:text-[#D4AF37] transition-colors py-2 block"
                     >
                       {category.label}
                     </Link>
                   ) : (
                     <div className="relative">
                       <button
-                        className="text-gray-800 hover:text-[#D4AF37] transition-colors"
+                        className="text-gray-800 hover:text-[#D4AF37] transition-colors py-2 flex items-center"
                         onClick={() => toggleCategory(category.label)}
+                        onMouseEnter={() => toggleCategory(category.label)}
                       >
                         {category.label}
                       </button>
                       {category.subcategories && (
-                        <div className="hidden group-hover:block absolute left-0 top-full w-48 bg-white shadow-lg rounded-md border border-[#D4AF37]/20 z-50">
-                          <ul className="py-2">
+                        <div className="hidden group-hover:block absolute left-0 top-full mt-1 w-56 bg-white shadow-lg rounded-md border border-[#D4AF37]/20 z-50 overflow-hidden">
+                          <ul className="py-1">
                             {category.subcategories.map((subcategory) => (
                               <li key={subcategory.name}>
                                 <Link
                                   href={`/collections?category=${subcategory.query}&group=${subcategory.group}`}
-                                  className="block py-2 text-gray-700 hover:text-[#D4AF37] transition-colors"
+                                  className="block px-4 py-2 text-gray-700 hover:text-[#D4AF37] hover:bg-[#D4AF37]/5 transition-colors"
                                 >
                                   {subcategory.name}
                                 </Link>
