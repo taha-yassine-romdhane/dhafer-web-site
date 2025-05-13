@@ -349,11 +349,11 @@ const PromoPage = () => {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {products && products.length > 0 ? products.map((product) => (
                   <ProductCard key={`desktop-${product.id}`} product={product} />
                 )) : (
-                  <div className="col-span-3 text-center py-8">
+                  <div className="col-span-4 text-center py-8">
                     <p className="text-gray-600">Aucun produit trouvé</p>
                   </div>
                 )}
