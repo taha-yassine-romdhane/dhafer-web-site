@@ -51,7 +51,7 @@ export async function sendEmail({
     
     // Send email using Resend
     const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'Dar Koftan <onboarding@resend.dev>',
+      from: process.env.EMAIL_FROM || 'Dar Koftan Al Assil <onboarding@resend.dev>',
       to,
       subject,
       html,
@@ -132,7 +132,7 @@ function createOrderConfirmationEmail(
   const totalAmount = (order.totalAmount + shippingCost).toFixed(2);
   
   // Base URL for assets
-  const logoUrl = 'https://daralkoftanalassil.com/logo-no-bg.webp';
+  const logoUrl = 'https://daralkoftanalassil.com/logo1.png';
   
   // Create the HTML email
   return `
