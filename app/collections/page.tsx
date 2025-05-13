@@ -350,7 +350,15 @@ export default function CollectionsPage() {
 
         {/* Product Grid */}
         <ProductGrid 
-          filters={{...filters, group: activeGroup, searchQuery: searchQuery}} 
+          filters={{
+            ...filters, 
+            // Convert user-friendly group names to API enum values
+            group: activeGroup === 'Femme' ? 'FEMME' : 
+                   activeGroup === 'Enfants' ? 'ENFANT' : 
+                   activeGroup === 'Accessoires' ? 'ACCESSOIRE' : 
+                   filters.group, // keep the original value from URL if activeGroup isn't set
+            searchQuery: searchQuery
+          }} 
           productsPerPage={productsPerPage}
           onPageChange={handlePageChange}
           onTotalPagesChange={handleTotalPagesChange}
