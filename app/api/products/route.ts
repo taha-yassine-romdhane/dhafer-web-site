@@ -74,25 +74,34 @@ export async function GET(request: Request) {
     // Category filter
     if (category && category !== "all" && category !== "Tous") {
       // First, fetch the category by name
-      const categoryFilter = await prisma.category.findFirst({
-        where: {
-          name: {
-            equals: category,
-            mode: 'insensitive'
-          },
-          // If group is specified, filter by group as well
-          ...(group && { group })
+      let categoryWhereClause: any = {
+        name: {
+          equals: category,
+          mode: 'insensitive'
         }
+      };
+      
+      // Add group filter if specified
+      if (group) {
+        categoryWhereClause.group = group;
+      }
+      
+      // Log the category search criteria for debugging
+      console.log('Searching for category with criteria:', JSON.stringify(categoryWhereClause, null, 2));
+      
+      const categoryFilter = await prisma.category.findFirst({
+        where: categoryWhereClause
       });
 
       if (categoryFilter) {
+        console.log(`Found category: ${categoryFilter.name} in group: ${categoryFilter.group} with ID: ${categoryFilter.id}`);
         where.categories = {
           some: {
             categoryId: categoryFilter.id
           }
         };
       } else {
-        console.log(`Category not found: ${category}`);
+        console.log(`Category not found: ${category}${group ? ' in group: ' + group : ''}`);
         // Instead of returning an error, we'll return no products by using a valid Prisma condition
         // that will never match any products
         where.id = {
@@ -124,6 +133,7 @@ export async function GET(request: Request) {
           in: [] // Empty array means no IDs will match
         };
       }
+      console.log(`Using group filter: ${group} - found ${groupCategories.length} categories`);
     }
     
     // Collaborateur filter
