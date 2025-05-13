@@ -123,7 +123,7 @@ function createOrderConfirmationEmail(
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${size}</td>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${quantity}</td>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${price} DT</td>
-      <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.shippingCost} DT</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${shippingCost} DT</td>
       
     </tr>`;
   }).join('');
@@ -132,7 +132,7 @@ function createOrderConfirmationEmail(
   const totalAmount = (order.totalAmount + shippingCost).toFixed(2);
   
   // Base URL for assets
-  const logoUrl = 'https://daralkoftanalassil.com/logo.webp';
+  const logoUrl = 'https://daralkoftanalassil.com/logo-no-bg.webp';
   
   // Create the HTML email
   return `
@@ -140,7 +140,7 @@ function createOrderConfirmationEmail(
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Confirmation de Commande - Dar Koftan</title>
+      <title>Confirmation de Commande - Dar Koftan Al Assil</title>
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -163,7 +163,7 @@ function createOrderConfirmationEmail(
         
         <p>Bonjour ${customerName},</p>
         
-        <p>Merci pour votre commande chez Dar Koftan! Nous avons bien reçu votre commande et nous la traiterons dans les plus brefs délais.</p>
+        <p>Merci pour votre commande chez Dar Koftan al Assil! Nous avons bien reçu votre commande et nous la traiterons dans les plus brefs délais.</p>
         
         <div class="order-details">
           <h2>Détails de la commande #${order.id}</h2>

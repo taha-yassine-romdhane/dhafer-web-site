@@ -6,8 +6,9 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Dar El Koftan Al Assil | دار القفطان الأصيل ',
-  description: 'Le coftan est apprécié par la plupart des femmes pour sa légèreté et sa souplesse, et son style est flexible pour permettre la liberté et la création d\'un style artistique qui correspond aux tendances et aux préférences personnelles.',
+  description: 'Découvrez Dar Al Koftan Al Assil : une collection élégante de vêtements traditionnels et modernes pour femmes et enfants.',
   keywords: 'coftan, vêtements traditionnels, tunisie, jemmel, sousse, tunis, mode traditionnelle, caftan, dar el koftan, al assil',
+  viewport: 'width=device-width, initial-scale=1',
   authors: [{ name: 'Dar El Koftan Al Assil' }],
   creator: 'Dar El Koftan Al Assil',
   publisher: 'Dar El Koftan Al Assil',
