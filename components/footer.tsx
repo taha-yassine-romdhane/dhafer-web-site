@@ -130,13 +130,13 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/collections" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
-                  Femme
+                <Link href="/collections?category=koftan&group=FEMME" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                  koftan Femme
                 </Link>
               </li>
               <li>
-                <Link href="/collections" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
-                  Enfant
+                <Link href="/collections?category=koftan&group=ENFANT" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                  koftan Enfant
                 </Link>
               </li>
               <li>
@@ -146,7 +146,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/top-vente" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
-                  TOP Vente
+                  Top Vente
                 </Link>
               </li>
             </ul>

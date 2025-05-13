@@ -91,15 +91,30 @@ export default function Navbar() {
           categoryGroups[group].push(category);
         });
         
-        // Transform grouped categories to match our Category interface
-        const groupedCategories = Object.entries(categoryGroups).map(([groupName, groupCategories]) => ({
-          label: groupName,
-          subcategories: groupCategories.map(category => ({
-            name: category.name,
-            query: category.name.toLowerCase().replace(/\s+/g, '-'),
-            group: category.group, // Include the group in the subcategory object
-          })),
-        }));
+        // Function to convert technical group names to user-friendly display names
+        const getGroupDisplayName = (technicalName: string): string => {
+          switch (technicalName) {
+            case 'FEMME': return 'Femme';
+            case 'ENFANT': return 'Enfants';
+            case 'ACCESSOIRE': return 'Accessoires';
+            default: return technicalName;
+          }
+        };
+        
+        // Define the order we want to display groups in
+        const groupOrder = ['FEMME', 'ENFANT', 'ACCESSOIRE'];
+        
+        // Transform grouped categories and ensure they're in the correct order
+        const groupedCategories = groupOrder
+          .filter(group => categoryGroups[group] && categoryGroups[group].length > 0) // Only include groups that exist
+          .map(groupName => ({
+            label: getGroupDisplayName(groupName),
+            subcategories: categoryGroups[groupName].map(category => ({
+              name: category.name,
+              query: category.name.toLowerCase().replace(/\s+/g, '-'),
+              group: category.group, // Keep the technical group name for API calls
+            })),
+          }));
         
         // Combine grouped categories with static categories
         setCategories([...groupedCategories, ...staticCategories]);

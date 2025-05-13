@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Recherche | دار القفطان الأصيل ',
+  title: 'Collections | دار القفطان الأصيل ',
   description: 'Le coftan est apprécié par la plupart des femmes pour sa légèreté et sa souplesse, et son style est flexible pour permettre la liberté et la création d\'un style artistique qui correspond aux tendances et aux préférences personnelles.',
   keywords: 'coftan, vêtements traditionnels, tunisie, jemmel, sousse, tunis, mode traditionnelle, caftan, dar el koftan, al assil',
   authors: [{ name: 'Dar El Koftan Al Assil' }],
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'fr_FR',
     url: 'https://daralkoftanalassil.com',
-    title: 'Recherche | دار القفطان الأصيل',
+    title: 'Collections | دار القفطان الأصيل',
     description: 'Découvrez notre collection de vêtements traditionnels tunisiens. Boutiques à Jemmel, Sousse et Tunis.',
     siteName: 'Dar El Koftan Al Assil',
     images: [
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Recherche | دار القفطان الأصيل',
+    title: 'Collections | دار القفطان الأصيل',
     description: 'Découvrez notre collection de vêtements traditionnels tunisiens. Boutiques à Jemmel, Sousse et Tunis.',
     images: ['/logo.webp'],
   },
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   category: 'shopping',
 };
 
-export default function SearchLayout({
+export default function CollectionsLayout({
   children,
 }: {
   children: React.ReactNode;

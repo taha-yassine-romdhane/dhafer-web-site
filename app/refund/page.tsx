@@ -7,7 +7,7 @@ import { Shield, Clock, CheckCircle, XCircle } from "lucide-react";
 export default function RefundPolicyPage() {
   return (
     <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto py-8">
         <h1 className="text-3xl font-bold mb-8 text-[#D4AF37] text-center">
           Politique de Remboursement
         </h1>
