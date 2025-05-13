@@ -272,10 +272,10 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
                   />
                 )}
 
-                {/* Promo Badge */}
-                {product.salePrice && (
+                {/* Promo Badge with Discount Percentage */}
+                {product.salePrice && product.price > 0 && (
                   <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-semibold z-10">
-                    Promo
+                    {Math.round(((product.price - product.salePrice) / product.price) * 100)}%
                   </div>
                 )}
 
@@ -302,12 +302,12 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
                 <h3 className="text-sm font-semibold">{product.name}</h3>
                 <div className="mt-1">
                   {product.salePrice ? (
-                    <p className="text-xs text-gray-500 line-through">{formatPrice(product.price)} TND</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs text-gray-500 line-through">{formatPrice(product.price)} TND</p>
+                      <p className="text-xs text-[#D4AF37] font-semibold">{formatPrice(product.salePrice)} TND</p>
+                    </div>
                   ) : (
                     <p className="text-xs text-[#D4AF37]">{formatPrice(product.price)} TND</p>
-                  )}
-                  {product.salePrice && (
-                    <p className="text-xs text-[#D4AF37] font-semibold"><span className="text-red-600 mr-1">Promo :</span> {formatPrice(product.salePrice)} TND</p>
                   )}
                 </div>
 
@@ -365,8 +365,6 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
           ))}
         </div>
       )}
-      
-      {/* Removed pagination controls from here - they'll be handled by the collections page */}
     </>
   );
 };
