@@ -140,7 +140,7 @@ function createOrderConfirmationEmail(
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Confirmation de Commande - Dar Koftan Al Assil</title>
+      <title>Confirmation de Commande - Dar El Koftan Al Assil</title>
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -163,7 +163,7 @@ function createOrderConfirmationEmail(
         
         <p>Bonjour ${customerName},</p>
         
-        <p>Merci pour votre commande chez Dar Koftan al Assil! Nous avons bien reçu votre commande et nous la traiterons dans les plus brefs délais.</p>
+        <p>Merci pour votre commande chez Dar Al Koftan Al Assil! Nous avons bien reçu votre commande et nous la traiterons dans les plus brefs délais.</p>
         
         <div class="order-details">
           <h2>Détails de la commande #${order.id}</h2>
@@ -195,10 +195,10 @@ function createOrderConfirmationEmail(
         
         <p>Pour toute question concernant votre commande, n'hésitez pas à nous contacter.</p>
         
-        <p>Cordialement,<br>L'équipe Dar Koftan</p>
+        <p>Cordialement,<br>L'équipe Dar Al Koftan Al Assil</p>
         
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Dar Koftan. Tous droits réservés.</p>
+          <p>© ${new Date().getFullYear()} Dar Al Koftan Al Assil. Tous droits réservés.</p>
         </div>
       </div>
     </body>
