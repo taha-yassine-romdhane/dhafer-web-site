@@ -21,11 +21,13 @@ export default function CartPage() {
     name: '',
     phone: '',
     address: '',
+    email: '',
   });
   const [validationErrors, setValidationErrors] = useState({
     name: false,
     phone: false,
-    address: false
+    address: false,
+    email: false // Email is optional so no validation error by default
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -44,6 +46,7 @@ export default function CartPage() {
             name: data.user.username,
             phone: data.user.phone || '',
             address: data.user.address || '',
+            email: data.user.email || '',
           });
         }
       } catch (error) {
@@ -61,7 +64,8 @@ export default function CartPage() {
     const errors = {
       name: !customerDetails.name,
       phone: !customerDetails.phone,
-      address: !customerDetails.address
+      address: !customerDetails.address,
+      email: false // Email is optional, so never show validation error
     };
     
     setValidationErrors(errors);
@@ -85,6 +89,7 @@ export default function CartPage() {
         customerName: customerDetails.name,
         phoneNumber: customerDetails.phone,
         address: customerDetails.address,
+        email: customerDetails.email, // Add email to the API request (optional)
         totalAmount: total,
         items: items.map((item) => ({
           productId: item.id,
@@ -101,7 +106,7 @@ export default function CartPage() {
       
       // Clear cart and reset customer details
       clearCart();
-      setCustomerDetails({ name: '', phone: '', address: '' });
+      setCustomerDetails({ name: '', phone: '', address: '', email: '' });
       
       // Show toast notification
       toast.success(
@@ -225,62 +230,47 @@ export default function CartPage() {
 
               {/* Customer Details */}
               <div id="customer-details" className="space-y-4">
-                <div>
-                  <Label htmlFor="name" className="text-sm font-medium text-gray-700">
-                    Nom complet <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="name"
-                    value={customerDetails.name}
-                    onChange={(e) => {
-                      setCustomerDetails({ ...customerDetails, name: e.target.value });
-                      if (e.target.value) setValidationErrors({...validationErrors, name: false});
-                    }}
-                    className={`mt-1 w-full ${validationErrors.name ? 'border-red-500 ring-red-500' : ''}`}
-                    placeholder="Votre nom complet"
-                    disabled={isSubmitting}
-                  />
-                  {validationErrors.name && (
-                    <p className="mt-1 text-sm text-red-500">Le nom est requis</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
-                    Téléphone <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="phone"
-                    value={customerDetails.phone}
-                    onChange={(e) => {
-                      setCustomerDetails({ ...customerDetails, phone: e.target.value });
-                      if (e.target.value) setValidationErrors({...validationErrors, phone: false});
-                    }}
-                    className={`mt-1 w-full ${validationErrors.phone ? 'border-red-500 ring-red-500' : ''}`}
-                    placeholder="Votre numéro de téléphone"
-                    disabled={isSubmitting}
-                  />
-                  {validationErrors.phone && (
-                    <p className="mt-1 text-sm text-red-500">Le numéro de téléphone est requis</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="address" className="text-sm font-medium text-gray-700">
-                    Adresse <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="address"
-                    value={customerDetails.address}
-                    onChange={(e) => {
-                      setCustomerDetails({ ...customerDetails, address: e.target.value });
-                      if (e.target.value) setValidationErrors({...validationErrors, address: false});
-                    }}
-                    className={`mt-1 w-full ${validationErrors.address ? 'border-red-500 ring-red-500' : ''}`}
-                    placeholder="Votre adresse complète"
-                    disabled={isSubmitting}
-                  />
-                  {validationErrors.address && (
-                    <p className="mt-1 text-sm text-red-500">L'adresse est requise</p>
-                  )}
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="name">Nom et prénom*</Label>
+                    <Input
+                      id="name"
+                      value={customerDetails.name}
+                      onChange={(e) => setCustomerDetails({ ...customerDetails, name: e.target.value })}
+                      className={validationErrors.name ? 'border-red-500' : ''}
+                    />
+                    {validationErrors.name && <p className="text-red-500 text-sm mt-1">Ce champ est obligatoire</p>}
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Numéro de téléphone*</Label>
+                    <Input
+                      id="phone"
+                      value={customerDetails.phone}
+                      onChange={(e) => setCustomerDetails({ ...customerDetails, phone: e.target.value })}
+                      className={validationErrors.phone ? 'border-red-500' : ''}
+                    />
+                    {validationErrors.phone && <p className="text-red-500 text-sm mt-1">Ce champ est obligatoire</p>}
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email (optionnel)</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={customerDetails.email}
+                      onChange={(e) => setCustomerDetails({ ...customerDetails, email: e.target.value })}
+                      placeholder="Recevez une confirmation par email"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="address">Adresse de livraison*</Label>
+                    <Input
+                      id="address"
+                      value={customerDetails.address}
+                      onChange={(e) => setCustomerDetails({ ...customerDetails, address: e.target.value })}
+                      className={validationErrors.address ? 'border-red-500' : ''}
+                    />
+                    {validationErrors.address && <p className="text-red-500 text-sm mt-1">Ce champ est obligatoire</p>}
+                  </div>
                 </div>
               </div>
 

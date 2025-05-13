@@ -36,7 +36,7 @@ export default function ForgotPassword() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <Image
-            src="/logo.png"
+            src="/logo.webp"
             alt="Dar-Koftan Logo"
             width={120}
             height={120}

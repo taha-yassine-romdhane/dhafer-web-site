@@ -94,7 +94,7 @@ export default function ResetPassword({ params }: { params: { token: string } })
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="flex justify-center">
             <Image
-              src="/logo.png"
+              src="/logo.webp"
               alt="Logo"
               width={150}
               height={150}
@@ -125,7 +125,7 @@ export default function ResetPassword({ params }: { params: { token: string } })
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <Image
-            src="/logo.png"
+            src="/logo.webp"
             alt="Logo"
             width={150}
             height={150}

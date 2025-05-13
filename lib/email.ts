@@ -129,7 +129,7 @@ function createOrderConfirmationEmail(
   
   // Base URL for assets
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://daralkoftanalassil.com';
-  const logoUrl = `${baseUrl}/logo.png`;
+  const logoUrl = `${baseUrl}/`;
   
   // Create the HTML email
   return `

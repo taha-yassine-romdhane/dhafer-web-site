@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: 'Dar El Koftan Al Assil',
     images: [
       {
-        url: '/logo.png',
+        url: '/logo.webp',
         width: 1200,
         height: 630,
         alt: 'Dar El Koftan Al Assil',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Dar El Koftan Al Assil | دار القفطان الأصيل',
     description: 'Découvrez notre collection de vêtements traditionnels tunisiens. Boutiques à Jemmel, Sousse et Tunis.',
-    images: ['/logo.png'],
+    images: ['/logo.webp'],
   },
   alternates: {
     canonical: 'https://daralkoftanalassil.com',
@@ -86,7 +86,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "ClothingStore",
               "name": "Dar El Koftan Al Assil",
-              "image": "https://www.daralkoftanalassil.com/logo.png",
+              "image": "https://www.daralkoftanalassil.com/logo.webp",
               "@id": "https://www.daralkoftanalassil.com",
               "url": "https://www.daralkoftanalassil.com",
               "telephone": "+216 56 047 691",

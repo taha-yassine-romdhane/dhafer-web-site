@@ -41,7 +41,7 @@ const AboutUs = () => {
         <motion.div className="max-w-7xl mx-auto p-6">
             <div className="flex justify-center mb-8">
                 <Image
-                    src="/logo.png"
+                    src="/logo.webp"
                     alt="Dar Al Koftan Al Assil Logo"
                     width={200}
                     height={100}

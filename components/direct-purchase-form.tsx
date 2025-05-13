@@ -253,7 +253,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                     </Button>
                     <FormControl>
                       <Input
-                        type="number"
+                        type="positive number"
                         {...field}
                         onChange={(e) => field.onChange(parseInt(e.target.value))}
                         className="text-center w-16 focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"

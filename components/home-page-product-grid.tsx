@@ -9,7 +9,7 @@ import { ShoppingCart, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/lib/context/cart-context"
 
-type ProductWithImages = Product & { images: ProductImage[], colors: string[], sizes: string[] }
+type ProductWithImages = Product & { images: ProductImage[], colors: string[], sizes: string[] , category: string }
 
 // Color mapping for actual CSS colors
 const colorMap: { [key: string]: string } = {

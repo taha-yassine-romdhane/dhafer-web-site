@@ -24,6 +24,7 @@ interface Subcategory {
   name: string;
   query?: string;
   href?: string;
+  group?: string;
 }
 
 interface Category {
@@ -96,6 +97,7 @@ export default function Navbar() {
           subcategories: groupCategories.map(category => ({
             name: category.name,
             query: category.name.toLowerCase().replace(/\s+/g, '-'),
+            group: category.group, // Include the group in the subcategory object
           })),
         }));
         
@@ -145,7 +147,7 @@ export default function Navbar() {
 
             <Link href="/" className="ml-4 lg:ml-0">
               <Image
-                src="/logo.png"
+                src="/logo.webp"
                 alt="Logo"
                 width={70}
                 height={70}
@@ -180,8 +182,8 @@ export default function Navbar() {
                             {category.subcategories.map((subcategory) => (
                               <li key={subcategory.name}>
                                 <Link
-                                  href={`/collections?category=${subcategory.query}`}
-                                  className="block px-4 py-2 hover:bg-gray-100"
+                                  href={`/collections?category=${subcategory.query}&group=${subcategory.group}`}
+                                  className="block py-2 text-gray-700 hover:text-[#D4AF37] transition-colors"
                                 >
                                   {subcategory.name}
                                 </Link>
@@ -321,7 +323,7 @@ export default function Navbar() {
                             {category.subcategories.map((subcategory) => (
                               <li key={subcategory.name}>
                                 <Link
-                                  href={`/collections?category=${subcategory.query}`}
+                                  href={`/collections?category=${subcategory.query}&group=${subcategory.group}`}
                                   onClick={() => setIsOpen(false)}
                                   className="block py-1.5 text-gray-600 hover:text-[#D4AF37] transition-colors"
                                 >
