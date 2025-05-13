@@ -147,6 +147,15 @@ export default function CollectionsPage() {
       newGroup = null;
     }
     
+    // For category changes, preserve the current activeGroup
+    // unless explicitly changing category to 'Tous'
+    if (key === 'category' && value !== 'Tous' && activeGroup && !newGroup) {
+      // Convert activeGroup to API format when setting group
+      if (activeGroup === 'Femme') newGroup = 'FEMME';
+      else if (activeGroup === 'Enfants') newGroup = 'ENFANT';
+      else if (activeGroup === 'Accessoires') newGroup = 'ACCESSOIRE';
+    }
+    
     const newFilters = { 
       ...filters, 
       [key]: value, 
@@ -254,9 +263,30 @@ export default function CollectionsPage() {
                   .map((category) => (
                     <button
                       key={category.id}
-                      onClick={() => handleFilterChange("category", category.name.toLowerCase())}
+                      onClick={() => {
+                        // When selecting a category, explicitly update both category and group
+                        handleFilterChange("category", category.name.toLowerCase());
+                        
+                        // Explicitly set the group when selecting a category
+                        // Convert activeGroup to the API format
+                        const groupValue = 
+                          activeGroup === 'Femme' ? 'FEMME' : 
+                          activeGroup === 'Enfants' ? 'ENFANT' : 
+                          activeGroup === 'Accessoires' ? 'ACCESSOIRE' : null;
+                          
+                        // Update the filters with the correct group
+                        setFilters(prev => ({
+                          ...prev,
+                          category: category.name.toLowerCase(),
+                          group: groupValue
+                        }));
+                      }}
                       className={`px-4 py-1.5 rounded-full transition-all duration-200 ${
-                        filters.category === category.name.toLowerCase()
+                        filters.category === category.name.toLowerCase() &&
+                        // Check for correct group match to highlight the right category
+                        ((activeGroup === 'Femme' && filters.group === 'FEMME') ||
+                         (activeGroup === 'Enfants' && filters.group === 'ENFANT') ||
+                         (activeGroup === 'Accessoires' && filters.group === 'ACCESSOIRE'))
                           ? "bg-[#D4AF37]/20 text-[#D4AF37] border-2 border-[#D4AF37] font-medium shadow-sm"
                           : "bg-white text-gray-600 border border-gray-200 hover:border-[#D4AF37] hover:text-[#D4AF37]"
                       }`}

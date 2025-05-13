@@ -16,7 +16,7 @@ type PromoProduct = Product & {
     images: ProductImage[];
     stocks: Stock[];
   })[];
-  sizes?: string[]; // Make sizes optional to match MobileProductCard requirements
+  sizes?: string[];
 };
 
 // Helper function to transform product for mobile card - local implementation

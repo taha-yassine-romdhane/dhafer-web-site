@@ -16,7 +16,8 @@ import { useRouter } from 'next/navigation';
 export default function CartPage() {
   const router = useRouter();
   const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart();
-  const { isLoggedIn } = useAuth();
+  // Get user data directly from auth context
+  const { isLoggedIn, user } = useAuth();
   const [customerDetails, setCustomerDetails] = useState({
     name: '',
     phone: '',
@@ -33,31 +34,59 @@ export default function CartPage() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
-  
+
   const total = totalPrice;
 
+  // Apply user data from auth context directly to the form
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const response = await fetch('/api/users/profile');
-        if (response.ok) {
-          const data = await response.json();
-          setCustomerDetails({
-            name: data.user.username,
-            phone: data.user.phone || '',
-            address: data.user.address || '',
-            email: data.user.email || '',
-          });
+    setLoadingUser(true);
+    console.log('Auth state changed:', { isLoggedIn, user });
+    
+    if (isLoggedIn && user) {
+      console.log('User is logged in, applying user data to form');
+      setCustomerDetails({
+        name: user.username || '',
+        phone: '', // Auth context doesn't have phone, will need to update if needed
+        address: '', // Auth context doesn't have address, will need to update if needed
+        email: user.email || '',
+      });
+    } else {
+      console.log('User is not logged in or user data is missing');
+    }
+    
+    setLoadingUser(false);
+  }, [isLoggedIn, user]);
+  
+  // Load additional user details if needed
+  useEffect(() => {
+    // Only fetch additional details if user is already logged in and we have base data
+    if (isLoggedIn && user && user.id) {
+      const fetchAdditionalUserDetails = async () => {
+        try {
+          console.log('Fetching additional user details...');
+          const response = await fetch('/api/users/profile');
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.user) {
+              // Update with additional details while preserving what we already have
+              setCustomerDetails(prev => ({
+                name: prev.name || data.user.username || '',
+                phone: data.user.phone || prev.phone || '',
+                address: data.user.address || prev.address || '',
+                email: prev.email || data.user.email || '',
+              }));
+              console.log('Additional user details loaded');
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching additional user details:', error);
         }
-      } catch (error) {
-        console.error('Error fetching user details:', error);
-      } finally {
-        setLoadingUser(false);
-      }
-    };
-
-    fetchUserDetails();
-  }, []);
+      };
+      
+      fetchAdditionalUserDetails();
+    }
+  }, [isLoggedIn, user]);
 
   const handleConfirmOrder = () => {
     // Reset validation errors
@@ -67,9 +96,9 @@ export default function CartPage() {
       address: !customerDetails.address,
       email: false // Email is optional, so never show validation error
     };
-    
+
     setValidationErrors(errors);
-    
+
     // Check if any validation errors exist
     if (errors.name || errors.phone || errors.address) {
       toast.error('Veuillez remplir tous les champs obligatoires');
@@ -77,7 +106,7 @@ export default function CartPage() {
       document.getElementById('customer-details')?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
-    
+
     setShowConfirmation(true);
   };
 
@@ -103,14 +132,14 @@ export default function CartPage() {
       // Close the confirmation dialog and show success message
       setShowConfirmation(false);
       setShowSuccessMessage(true);
-      
+
       // Clear cart and reset customer details
       clearCart();
       setCustomerDetails({ name: '', phone: '', address: '', email: '' });
-      
+
       // Show toast notification
       toast.success(
-        'Commande créée avec succès!', 
+        'Commande créée avec succès!',
         {
           description: 'Nous vous contacterons bientôt pour confirmer les détails de votre commande.',
           duration: 8000, // Show for longer
@@ -124,12 +153,12 @@ export default function CartPage() {
           },
         }
       );
-      
+
       // Show another toast as a backup
       setTimeout(() => {
         toast.success('Votre commande a été créée avec succès!', { duration: 5000 });
       }, 500);
-      
+
       // Redirect to home page after a longer delay
       setTimeout(() => {
         router.push('/');
@@ -230,50 +259,64 @@ export default function CartPage() {
 
               {/* Customer Details */}
               <div id="customer-details" className="space-y-4">
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="name">Nom et prénom*</Label>
-                    <Input
-                      id="name"
-                      value={customerDetails.name}
-                      onChange={(e) => setCustomerDetails({ ...customerDetails, name: e.target.value })}
-                      className={validationErrors.name ? 'border-red-500' : ''}
-                    />
-                    {validationErrors.name && <p className="text-red-500 text-sm mt-1">Ce champ est obligatoire</p>}
+                {loadingUser && isLoggedIn ? (
+                  <div className="flex justify-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D4AF37]"></div>
                   </div>
-                  <div>
-                    <Label htmlFor="phone">Numéro de téléphone*</Label>
-                    <Input
-                      id="phone"
-                      value={customerDetails.phone}
-                      onChange={(e) => setCustomerDetails({ ...customerDetails, phone: e.target.value })}
-                      className={validationErrors.phone ? 'border-red-500' : ''}
-                    />
-                    {validationErrors.phone && <p className="text-red-500 text-sm mt-1">Ce champ est obligatoire</p>}
-                  </div>
-                  <div>
-                    <Label htmlFor="email">Email (optionnel)</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={customerDetails.email}
-                      onChange={(e) => setCustomerDetails({ ...customerDetails, email: e.target.value })}
-                      placeholder="Recevez une confirmation par email"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="address">Adresse de livraison*</Label>
-                    <Input
-                      id="address"
-                      value={customerDetails.address}
-                      onChange={(e) => setCustomerDetails({ ...customerDetails, address: e.target.value })}
-                      className={validationErrors.address ? 'border-red-500' : ''}
-                    />
-                    {validationErrors.address && <p className="text-red-500 text-sm mt-1">Ce champ est obligatoire</p>}
-                  </div>
-                </div>
+                ) : (
+                  <>
+                    <div>
+                      <Label htmlFor="name">Nom et prénom*</Label>
+                      <Input
+                        id="name"
+                        value={customerDetails.name}
+                        onChange={(e) => !isLoggedIn && setCustomerDetails({ ...customerDetails, name: e.target.value })}
+                        className={`${validationErrors.name ? 'border-red-500' : ''} ${isLoggedIn ? 'bg-gray-100' : ''}`}
+                        placeholder="votre nom et prénom"
+                        readOnly={isLoggedIn}
+                      />
+                      {isLoggedIn && <p className="text-xs text-gray-500 mt-1">Information du compte (non modifiable)</p>}
+                      {validationErrors.name && <p className="text-red-500 text-sm mt-1">Ce champ est obligatoire</p>}
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Numéro de téléphone*</Label>
+                      <Input
+                        id="phone"
+                        value={customerDetails.phone}
+                        onChange={(e) => setCustomerDetails({ ...customerDetails, phone: e.target.value })}
+                        className={validationErrors.phone ? 'border-red-500' : ''}
+                        placeholder="votre numéro de téléphone"
+                      />
+                      {validationErrors.phone && <p className="text-red-500 text-sm mt-1">Ce champ est obligatoire</p>}
+                    </div>
+                    <div>
+                      <Label htmlFor="email">Email (optionnel)</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={customerDetails.email}
+                        onChange={(e) => !isLoggedIn && setCustomerDetails({ ...customerDetails, email: e.target.value })}
+                        className={isLoggedIn ? 'bg-gray-100' : ''}
+                        placeholder="Recevez une confirmation par email"
+                        readOnly={isLoggedIn}
+                      />
+                      {isLoggedIn && <p className="text-xs text-gray-500 mt-1">Information du compte (non modifiable)</p>}
+                    </div>
+                    <div>
+                      <Label htmlFor="address">Adresse de livraison*</Label>
+                      <Input
+                        id="address"
+                        value={customerDetails.address}
+                        onChange={(e) => setCustomerDetails({ ...customerDetails, address: e.target.value })}
+                        className={validationErrors.address ? 'border-red-500' : ''}
+                        placeholder="votre adresse de livraison"
+                      />
+                      {validationErrors.address && <p className="text-red-500 text-sm mt-1">Ce champ est obligatoire</p>}
+                    </div>
+                  </>
+                )}
               </div>
-
+              
               {/* Summary */}
               <div className="border-t border-[#D4AF37]/10 pt-4">
                 <div className="flex justify-between mb-2">
@@ -282,26 +325,25 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between mb-4">
                   <span>Frais de livraison</span>
-                  <span className="text-[#D4AF37]"> 6 TND</span>
+                  <span className="text-[#D4AF37]">6 TND</span>
                 </div>
                 <div className="flex justify-between font-semibold">
                   <span>Total</span>
                   <span className="text-[#D4AF37]">{totalPrice + 6} TND</span>
                 </div>
               </div>
-
-              <Button
-                className="w-full bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white"
-                onClick={handleConfirmOrder}
-                disabled={items.length === 0 || isSubmitting}
-              >
-                Commander
-              </Button>
             </div>
+
+            <Button
+              className="w-full bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white"
+              onClick={handleConfirmOrder}
+              disabled={items.length === 0 || isSubmitting}
+            >
+              Commander
+            </Button>
           </div>
         </div>
       </div>
-
       {/* Confirmation Modal */}
       {showConfirmation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">

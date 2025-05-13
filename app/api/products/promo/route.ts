@@ -20,13 +20,20 @@ export async function GET() {
     
     console.log('[API] Querying for promotional products...')
     
-    // Log the query we're about to execute
-    console.log('[API] Query: product.findMany where showInPromo=true')
+    // Log the query we're about to execute - now we look for products with both price and salePrice
+    console.log('[API] Query: product.findMany where salePrice is not null')
     
     const startTime = Date.now()
     const promoProducts = await prisma.product.findMany({
       where: {
-        showInPromo: true, // Only fetch products marked for promotions
+        // Find products that have a sale price (products on sale/promotion)
+        salePrice: {
+          not: null
+        },
+        // Make sure the product has both prices
+        price: {
+          gt: 0
+        }
       },
       orderBy: [
         {
