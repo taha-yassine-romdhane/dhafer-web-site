@@ -71,24 +71,35 @@ export async function GET(request: Request) {
     
     let where: any = {};
 
+    // Debug: List all categories to verify data
+    console.log('Requested category:', category);
+    console.log('Requested group:', group);
+    
+    // Log all categories for debugging
+    const allCategories = await prisma.category.findMany();
+    console.log('Available categories:', allCategories.map(c => ({ id: c.id, name: c.name, group: c.group })));
+    
     // Category filter
     if (category && category !== "all" && category !== "Tous") {
-      // First, fetch the category by name
-      let categoryWhereClause: any = {
-        name: {
-          equals: category,
-          mode: 'insensitive'
-        }
+      // Create a more specific where clause that matches both name and group exactly
+      let categoryWhereClause: any = {};
+      
+      // Always add name filter
+      categoryWhereClause.name = {
+        equals: category,
+        mode: 'insensitive'
       };
       
-      // Add group filter if specified
+      // If group is specified, add it as a strict equality condition
       if (group) {
+        // Explicitly add the group filter
         categoryWhereClause.group = group;
       }
       
       // Log the category search criteria for debugging
       console.log('Searching for category with criteria:', JSON.stringify(categoryWhereClause, null, 2));
       
+      // First try an exact match approach
       const categoryFilter = await prisma.category.findFirst({
         where: categoryWhereClause
       });
