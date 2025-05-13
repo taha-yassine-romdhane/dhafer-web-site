@@ -131,12 +131,12 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/collections?category=koftan&group=FEMME" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
-                  koftan Femme
+                  Koftan Femme
                 </Link>
               </li>
               <li>
-                <Link href="/collections?category=koftan&group=ENFANT" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
-                  koftan Enfant
+                <Link href="/collections?category=robe&group=ENFANT" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                  Robe Enfant
                 </Link>
               </li>
               <li>
