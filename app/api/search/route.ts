@@ -24,14 +24,23 @@ export async function GET(request: Request) {
       });
     }
     
-    // Build search condition with improved case handling
+    // Build search condition with true case-insensitive search
     const where: any = {
       OR: [
-        // Use both lowercase and exact match for better compatibility
-        { name: { contains: query.toLowerCase() } },
-        { name: { contains: query } },
-        { description: { contains: query.toLowerCase() } },
-        { description: { contains: query } },
+        // Search in name with case insensitivity
+        { name: { contains: query, mode: 'insensitive' } },
+        // Search in description with case insensitivity
+        { description: { contains: query, mode: 'insensitive' } },
+        // Also search in category names
+        {
+          categories: {
+            some: {
+              category: {
+                name: { contains: query, mode: 'insensitive' }
+              }
+            }
+          }
+        },
       ],
     };
     

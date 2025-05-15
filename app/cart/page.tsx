@@ -332,15 +332,16 @@ export default function CartPage() {
                   <span className="text-[#D4AF37]">{totalPrice + 6} TND</span>
                 </div>
               </div>
+              
+              {/* Order Button - Moved inside the sticky container */}
+              <Button
+                className="w-full bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white mt-6"
+                onClick={handleConfirmOrder}
+                disabled={items.length === 0 || isSubmitting}
+              >
+                Commander
+              </Button>
             </div>
-
-            <Button
-              className="w-full bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white"
-              onClick={handleConfirmOrder}
-              disabled={items.length === 0 || isSubmitting}
-            >
-              Commander
-            </Button>
           </div>
         </div>
       </div>

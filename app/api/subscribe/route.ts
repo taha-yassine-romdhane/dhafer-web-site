@@ -56,7 +56,7 @@ async function getUserFromHeader(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { phoneNumber } = await request.json();
+    const { phoneNumber, source: requestSource } = await request.json();
     
     // Validate phone number
     if (!phoneNumber) {
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
     await prisma.sMSSubscriber.create({
       data: {
         phoneNumber: formattedPhone,
-        source: 'website_footer',
+        source: requestSource || 'website_footer', // Use the source from request or default to website_footer
         name: subscriberName,
         isActive: true
       }
