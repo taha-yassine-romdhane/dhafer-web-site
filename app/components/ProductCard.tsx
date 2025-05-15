@@ -260,10 +260,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                       )}
                     </div>
                     <div className="p-2 flex items-center bg-gray-50">
-                      <div 
-                        className="w-4 h-4 rounded-full mr-2" 
-                        style={{ backgroundColor: variant.color }}
-                      />
                       <span className="text-sm capitalize">{variant.color}</span>
                     </div>
                   </button>

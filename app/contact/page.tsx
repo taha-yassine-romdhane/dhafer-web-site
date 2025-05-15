@@ -33,7 +33,7 @@ const locations = [
     address: "105 Av. Habib Bourguiba, Jemmel",
     phone: "56 047 691",
     email: "ddarelkoftanalassil@gmail.com",
-    hours: "09:00 - 20:00",
+    hours: "08:30 - 20:00",
     image: "/jemmel-store.jpg",
     mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3243.184097027917!2d10.759540299999998!3d35.6231878!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1302118d3435b8f7%3A0x23da68cbce53bd56!2zREFSIEtPRlRBTiBBTCBBU1NJTCBKRU1NRUwgX9iv2KfYsSDYp9mE2YLZgdi32KfZhiDYp9mE2KPYtdmK2YQg2KzZhdin2YQ!5e0!3m2!1sfr!2stn!4v1746106948690!5m2!1sfr!2stn",
   },
@@ -293,7 +293,7 @@ const ContactPage = () => {
       </div>
       
       {/* Map with all locations - Full width section */}
-      <div className="mt-12 max-w-7xl mx-auto px-4">
+      <div className="mt-12 max-w-7xl mx-auto p-4">
         <h2 className="text-2xl font-bold text-[#D4AF37] mb-4">Nos emplacements</h2>
         
         {/* Location Tabs for Map */}

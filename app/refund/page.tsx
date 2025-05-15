@@ -19,7 +19,7 @@ export default function RefundPolicyPage() {
               Notre Engagement envers Vous
             </h2>
             <p className="text-gray-600">
-              Chez Dar Koftan, nous nous engageons à vous offrir une expérience
+              Chez Dar Al Koftan Al Assil, nous nous engageons à vous offrir une expérience
               d'achat exceptionnelle. Si vous n'êtes pas entièrement satisfait de
               votre achat, nous sommes là pour vous aider.
             </p>
@@ -39,7 +39,7 @@ export default function RefundPolicyPage() {
                 </li>
                 <li>
                   La demande de remboursement doit être effectuée dans un délai
-                  de <strong>14 jours</strong> à partir de la date de réception.
+                  de <strong>3 jours</strong> à partir de la date de réception.
                 </li>
                 <li>
                   Les articles soldés ou en promotion ne sont pas éligibles au
@@ -54,20 +54,16 @@ export default function RefundPolicyPage() {
             <Clock className="h-8 w-8 text-[#D4AF37] mt-1" />
             <div>
               <h2 className="text-xl font-semibold text-[#D4AF37]">
-                Processus de Remboursement
+                Processus d'échange
               </h2>
               <ol className="list-decimal list-inside text-gray-600">
                 <li>
                   Contactez notre service client à l'adresse{" "}
-                  <strong>ddarelkoftanalassil@gmail.com</strong> pour initier une demande
-                  de remboursement.
+                  <strong>contact@daralkoftanalassil.com</strong> ou navigatez sur la page de contact pour initier une demande
+                  d'échange.
                 </li>
                 <li>
-                  Retournez l'article à l'adresse fournie par notre équipe.
-                </li>
-                <li>
-                  Une fois l'article reçu et inspecté, nous procéderons au
-                  remboursement dans un délai de <strong>5 jours ouvrables</strong>.
+                  Une fois l'article reçu et inspecté, nous procéderons à l'échange dans un délai de <strong>5 jours ouvrables</strong>.
                 </li>
               </ol>
             </div>
@@ -82,24 +78,21 @@ export default function RefundPolicyPage() {
               </h2>
               <ul className="list-disc list-inside text-gray-600">
                 <li>Articles soldés ou en promotion.</li>
-                <li>Articles personnalisés ou sur mesure.</li>
+                <li>Articles sur commande.</li>
                 <li>Articles endommagés par le client.</li>
               </ul>
             </div>
           </div>
 
-          {/* Refund Methods */}
+          {/* Exchange Methods */}
           <div className="flex items-start gap-4 mb-8">
             <CheckCircle className="h-8 w-8 text-[#D4AF37] mt-1" />
             <div>
               <h2 className="text-xl font-semibold text-[#D4AF37]">
-                Méthodes de Remboursement
+                Méthodes d'échange
               </h2>
               <p className="text-gray-600">
-                Les remboursements sont effectués via le même mode de paiement
-                utilisé lors de l'achat. Si le paiement a été effectué par carte
-                bancaire, le remboursement sera crédité sur votre compte dans un
-                délai de <strong>5 à 10 jours ouvrables</strong>.
+                Les échanges sont effectués par la poste tunisienne 
               </p>
             </div>
           </div>

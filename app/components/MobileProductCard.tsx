@@ -13,7 +13,6 @@ type MobileProductCardProps = {
       images: ProductImage[];
       stocks: Stock[];
     })[];
-    sizes: string[];
   };
 };
 
@@ -30,6 +29,11 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
   const formatPrice = (price: number) => {
     return price.toFixed(2) + " TND";
   };
+
+  // Calculate discount percentage if there's a sale price
+  const discountPercentage = product.salePrice && product.price
+    ? Math.round(((product.price - product.salePrice) / product.price) * 100)
+    : 0;
   return (
     <div className="flex flex-col w-full">
       {/* Image and Promo Tag */}
@@ -49,7 +53,7 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
           />
           {product.salePrice && (
             <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded">
-              Promo
+              -{discountPercentage}%
             </div>
           )}
 
@@ -60,7 +64,7 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
       {/* Product Info */}
       <div className="flex flex-col gap-1">
         {/* Product Name */}
-        <Link href={`/products/${product.id}`}>
+        <Link href={`/product/${product.id}`}>
           <h3 className="text-sm font-medium line-clamp-1">{product.name}</h3>
         </Link>
         
@@ -71,8 +75,8 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
               <span className="text-xs text-gray-500 line-through">
                 {formatPrice(product.price)}
               </span>
-              <span className="text-sm font-semibold text-red-500">
-                Promo: {formatPrice(product.salePrice)}
+              <span className="text-sm font-semibold text-[#D4AF37]">
+                {formatPrice(product.salePrice)}
               </span>
             </>
           ) : (
@@ -83,41 +87,67 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
         </div>
 
         {/* Color Variant Images */}
-        <div className="flex gap-1 mt-1">
-          {product.colorVariants.map((variant) => {
-            const variantImage = variant.images.find(img => img.isMain) || variant.images[0];
-            if (!variantImage) return null;
-            
-            return (
-              <button
-                key={variant.id}
-                onClick={() => setSelectedVariant(variant)}
-                className={cn(
-                  "relative w-6 h-6 rounded-full overflow-hidden border transition-all duration-200",
-                  selectedVariant?.id === variant.id 
-                    ? "border-[#D4AF37] scale-110" 
-                    : "border-gray-200 hover:border-gray-300"
-                )}
-              >
-                <Image
-                  src={variantImage.url}
-                  alt={variant.color}
-                  fill
-                  className="object-cover"
-                  sizes="24px"
-                />
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Size Options */}
-        <div className="flex gap-2 mt-1">
-          {product.sizes.map((size) => (
-            <span key={size} className="text-xs text-gray-600 uppercase">
-              {size}
-            </span>
-          ))}
+        <div className="flex gap-1 mt-1 flex-wrap justify-center max-w-full overflow-hidden">
+          {product.colorVariants.length > 6 ? (
+            // If there are more than 6 colors, show first 5 and a +X more indicator
+            <>
+              {product.colorVariants.slice(0, 5).map((variant) => {
+                const variantImage = variant.images.find(img => img.isMain) || variant.images[0];
+                if (!variantImage) return null;
+                
+                return (
+                  <button
+                    key={variant.id}
+                    onClick={() => setSelectedVariant(variant)}
+                    className={cn(
+                      "relative w-6 h-6 rounded-full overflow-hidden border transition-all duration-200 shadow-sm",
+                      selectedVariant?.id === variant.id 
+                        ? "border-2 border-[#D4AF37] scale-105" 
+                        : "border border-gray-200 hover:border-gray-300"
+                    )}
+                  >
+                    <Image
+                      src={variantImage.url}
+                      alt={variant.color}
+                      fill
+                      className="object-cover"
+                      sizes="1.5rem"
+                    />
+                  </button>
+                );
+              })}
+              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-xs font-medium text-gray-600">
+                +{product.colorVariants.length - 5}
+              </div>
+            </>
+          ) : (
+            // If 6 or fewer colors, show all of them
+            product.colorVariants.map((variant) => {
+              const variantImage = variant.images.find(img => img.isMain) || variant.images[0];
+              if (!variantImage) return null;
+              
+              return (
+                <button
+                  key={variant.id}
+                  onClick={() => setSelectedVariant(variant)}
+                  className={cn(
+                    "relative w-7 h-7 rounded-full overflow-hidden border transition-all duration-200 shadow-sm",
+                    selectedVariant?.id === variant.id 
+                      ? "border-2 border-[#D4AF37] scale-105" 
+                      : "border border-gray-200 hover:border-gray-300"
+                  )}
+                >
+                  <Image
+                    src={variantImage.url}
+                    alt={variant.color}
+                    fill
+                    className="object-cover"
+                    sizes="1.75rem"
+                  />
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

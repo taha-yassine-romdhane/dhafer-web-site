@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
               Introduction
             </h2>
             <p className="text-gray-600">
-              Chez Dar Koftan, nous accordons une grande importance à la
+              Chez Dar Al Koftan Al Assil, nous accordons une grande importance à la
               protection de vos données personnelles. Cette politique de
               confidentialité explique comment nous collectons, utilisons et
               protégeons vos informations lorsque vous utilisez notre site web.
@@ -40,7 +40,6 @@ export default function PrivacyPolicyPage() {
               <ul className="list-disc list-inside text-gray-600">
                 <li>Nom, prénom et coordonnées (e-mail, téléphone).</li>
                 <li>Adresse de livraison et de facturation.</li>
-                <li>Informations de paiement (sécurisées).</li>
                 <li>Historique des commandes et préférences.</li>
               </ul>
             </div>
@@ -75,8 +74,7 @@ export default function PrivacyPolicyPage() {
               <p className="text-gray-600">
                 Nous mettons en œuvre des mesures de sécurité strictes pour
                 protéger vos données contre tout accès non autorisé, modification
-                ou divulgation. Vos informations de paiement sont cryptées et
-                stockées de manière sécurisée.
+                ou divulgation.
               </p>
             </div>
           </div>
@@ -129,7 +127,7 @@ export default function PrivacyPolicyPage() {
               veuillez nous contacter à l'adresse suivante :
             </p>
             <p className="text-gray-600 font-medium mt-2">
-              E-mail : <strong>ddarelkoftanalassil@gmail.com</strong>
+              E-mail : <strong>contact@daralkoftanalassil.com</strong>
             </p>
           </div>
 
