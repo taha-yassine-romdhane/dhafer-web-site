@@ -79,14 +79,14 @@ export default function TopProduitsSection() {
         <div className="flex justify-between items-center mb-8">
         </div>
         <div className="text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900 p-4">
             <span className="block">Découvrez notre</span>
             <span className="block">Nouvelle Collection</span>
           </h1>
           {isMobile && (
             <a
               href="/collections"
-              className="inline-block mt-4 px-6 py-2 rounded-full bg-[#D4AF37] text-white font-semibold text-base shadow-md transition hover:bg-[#bfa134] focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:ring-offset-2"
+              className="inline-block mt-4 px-6 p-4 rounded-full bg-[#D4AF37] text-white font-semibold text-base shadow-md transition hover:bg-[#bfa134] focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:ring-offset-2"
             >
               Découvrir la collection
             </a>
