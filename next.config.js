@@ -3,8 +3,17 @@ const nextConfig = {
   output: 'standalone',
   experimental: {
     serverComponentsExternalPackages: [],
+    // Improve memory usage
+    optimizeCss: true,
+    // Improve code splitting
+    optimizePackageImports: ['@radix-ui/react-*', 'lucide-react']
   },
   webpack: (config) => {
+    // Optimize bundle size
+    config.optimization = {
+      ...config.optimization,
+      moduleIds: 'deterministic',
+    };
     return config;
   },
   // Configure hostname and port to listen on all interfaces

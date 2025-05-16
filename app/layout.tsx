@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/auth-context";
 import Navbar from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { CartDropdown } from "@/components/cart-dropdown";
+import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -67,14 +68,46 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={inter.className}>
+        {/* Safari Error Handler */}
+        <Script id="safari-error-handler" strategy="beforeInteractive">
+          {`
+            window.onerror = function(message, source, lineno, colno, error) {
+              console.error('Global error caught:', { message, source, lineno, colno, error });
+              return false;
+            };
+            
+            // Safari-specific polyfill for any missing features
+            if (typeof window !== 'undefined') {
+              // Prevent Safari from crashing on certain operations
+              window.requestIdleCallback = window.requestIdleCallback || function(cb) {
+                return setTimeout(function() {
+                  var start = Date.now();
+                  cb({
+                    didTimeout: false,
+                    timeRemaining: function() { return Math.max(0, 50 - (Date.now() - start)); }
+                  });
+                }, 1);
+              };
+              
+              window.cancelIdleCallback = window.cancelIdleCallback || function(id) {
+                clearTimeout(id);
+              };
+            }
+          `}
+        </Script>
+        
         <AuthProvider>
           <CartProvider>
-            <Navbar />
-            <CartDropdown />
-            <main className="min-h-screen">
-              {children}
-            </main>
-            <Footer />
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Chargement...</div>}>
+              <Navbar />
+              <CartDropdown />
+              <main className="min-h-screen">
+                <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Chargement du contenu...</div>}>
+                  {children}
+                </Suspense>
+              </main>
+              <Footer />
+            </Suspense>
           </CartProvider>
         </AuthProvider>
         
