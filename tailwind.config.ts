@@ -1,5 +1,13 @@
 import type { Config } from 'tailwindcss';
+import plugin from 'tailwindcss/plugin';
 
+const safariFixPlugin = plugin(({ addBase }) => {
+  addBase({
+    'html': {
+      '-webkit-text-size-adjust': 'none',
+    },
+  });
+});
 const config: Config = {
   darkMode: ['class'],
   content: [
@@ -85,6 +93,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), safariFixPlugin],
 };
 export default config;
