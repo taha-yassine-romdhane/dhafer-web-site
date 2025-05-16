@@ -61,12 +61,12 @@ const nextConfig = {
   // Configure image domains
   images: {
     domains: ['ik.imagekit.io', 'images.daralkoftanalassil.com'],
-    // Enable image optimization for better iOS compatibility
-    unoptimized: false,
-    // Add reasonable image sizes to improve performance
+    // Disable image optimization since sharp is not available in the Docker container
+    // This will use the original images without optimization
+    unoptimized: true,
+    // These settings are only used when optimization is enabled
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
-    // Increase quality slightly but keep reasonable for performance
     minimumCacheTTL: 60,
   },
 };
