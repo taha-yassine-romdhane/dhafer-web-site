@@ -22,8 +22,14 @@ const nextConfig = {
   },
   // Configure image domains
   images: {
-    domains: ['ik.imagekit.io'],
-    unoptimized: true,
+    domains: ['ik.imagekit.io', 'images.daralkoftanalassil.com'],
+    // Enable image optimization for better iOS compatibility
+    unoptimized: false,
+    // Add reasonable image sizes to improve performance
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    // Increase quality slightly but keep reasonable for performance
+    minimumCacheTTL: 60,
   },
 };
 
