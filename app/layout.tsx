@@ -1,13 +1,12 @@
 import './globals.css';
 
-import { Inter } from 'next/font/google';
 import { CartProvider } from "@/lib/context/cart-context";
 import { AuthProvider } from "@/contexts/auth-context";
 import Navbar from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { CartDropdown } from "@/components/cart-dropdown";
 
-const inter = Inter({ subsets: ['latin'] });
+
 
 export default function RootLayout({
   children,
@@ -75,7 +74,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}>
+      <body>
         <AuthProvider>
           <CartProvider>
             <Navbar />
