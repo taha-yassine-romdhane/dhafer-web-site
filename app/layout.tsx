@@ -1,6 +1,5 @@
 import './globals.css';
 
-// Import Safari polyfills
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import { CartProvider } from "@/lib/context/cart-context";
@@ -9,6 +8,10 @@ import Navbar from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { CartDropdown } from "@/components/cart-dropdown";
 import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
+
+// Import Safari polyfills dynamically to avoid SSR issues
+const SafariPolyfills = dynamic(() => import('@/lib/safari-polyfills'), { ssr: false });
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -23,58 +26,6 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0" />
         <meta name="theme-color" content="#D4AF37" />
-        
-        {/* Safari Compatibility Polyfills */}
-        <Script id="safari-polyfills" strategy="beforeInteractive">
-          {`
-            // Safari compatibility polyfills
-            if (typeof window !== 'undefined') {
-              // Polyfill for requestIdleCallback (not supported in Safari)
-              window.requestIdleCallback = window.requestIdleCallback || function(cb) {
-                return setTimeout(function() {
-                  var start = Date.now();
-                  cb({
-                    didTimeout: false,
-                    timeRemaining: function() { return Math.max(0, 50 - (Date.now() - start)); }
-                  });
-                }, 1);
-              };
-              
-              window.cancelIdleCallback = window.cancelIdleCallback || function(id) {
-                clearTimeout(id);
-              };
-
-              // Memory management for Safari
-              if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-                // Clear memory periodically to prevent Safari memory issues
-                setInterval(function() {
-                  if (window.gc) window.gc();
-                  console.log('Safari memory cleanup');
-                }, 30000);
-              }
-              
-              // Handle chunk loading errors
-              window.addEventListener('error', function(event) {
-                // Check if this is a chunk loading error
-                if (event && event.message && event.message.includes('ChunkLoadError')) {
-                  console.error('Chunk loading error detected. Attempting to recover...');
-                  
-                  // Clear cache and reload the page
-                  if ('caches' in window) {
-                    caches.keys().then(function(names) {
-                      for (let name of names) caches.delete(name);
-                    });
-                  }
-                  
-                  // Reload the page after a short delay
-                  setTimeout(() => {
-                    window.location.reload();
-                  }, 1000);
-                }
-              });
-            }
-          `}
-        </Script>
         
         {/* Structured data for business - using Next.js Script component */}
         <Script
@@ -121,33 +72,8 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={inter.className}>
-        {/* Safari Error Handler */}
-        <Script id="safari-error-handler" strategy="beforeInteractive">
-          {`
-            window.onerror = function(message, source, lineno, colno, error) {
-              console.error('Global error caught:', { message, source, lineno, colno, error });
-              return false;
-            };
-            
-            // Safari-specific polyfill for any missing features
-            if (typeof window !== 'undefined') {
-              // Prevent Safari from crashing on certain operations
-              window.requestIdleCallback = window.requestIdleCallback || function(cb) {
-                return setTimeout(function() {
-                  var start = Date.now();
-                  cb({
-                    didTimeout: false,
-                    timeRemaining: function() { return Math.max(0, 50 - (Date.now() - start)); }
-                  });
-                }, 1);
-              };
-              
-              window.cancelIdleCallback = window.cancelIdleCallback || function(id) {
-                clearTimeout(id);
-              };
-            }
-          `}
-        </Script>
+        {/* Load Safari polyfills */}
+        <SafariPolyfills />
         
         <AuthProvider>
           <CartProvider>
