@@ -1,12 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  // Disable static optimization for routes that require database access
+  // This prevents build-time database connection errors
+  unstable_allowDynamic: [
+    '**/node_modules/@prisma/client/**',
+  ],
   experimental: {
     serverComponentsExternalPackages: [],
     // Improve memory usage
     optimizeCss: true,
-    // Improve code splitting
-    optimizePackageImports: ['@radix-ui/react-*', 'lucide-react']
   },
   webpack: (config) => {
     // Optimize bundle size
