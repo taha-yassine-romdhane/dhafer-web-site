@@ -6,7 +6,7 @@ const nextConfig = {
     // Improve memory usage
     optimizeCss: true,
   },
-  // Improve chunk loading reliability
+  // Simplified chunk loading configuration
   onDemandEntries: {
     // Keep generated pages in memory for 60 seconds
     maxInactiveAge: 60 * 1000,
@@ -16,28 +16,21 @@ const nextConfig = {
   webpack: (config, { isServer }) => {
     // Only apply these optimizations for client-side bundles
     if (!isServer) {
-      // Optimize bundle size
+      // Use Next.js defaults for splitChunks with minimal customization
       config.optimization = {
         ...config.optimization,
         moduleIds: 'deterministic',
-        // Improve chunk loading reliability
+        // Simplified chunk splitting to improve reliability
         splitChunks: {
           chunks: 'all',
           cacheGroups: {
-            default: false,
-            vendors: false,
-            // Create a commons chunk for shared code
-            commons: {
-              name: 'commons',
-              chunks: 'all',
-              minChunks: 2,
-              reuseExistingChunk: true,
-            },
-            // Create a larger vendor chunk to avoid frequent changes
+            // Only create a single vendor chunk for all node_modules
             vendor: {
               test: /[\\/]node_modules[\\/]/,
-              name: 'vendor',
+              name: 'vendors',
+              priority: 10,
               chunks: 'all',
+              reuseExistingChunk: true,
             },
           },
         },
@@ -64,10 +57,6 @@ const nextConfig = {
     // Disable image optimization since sharp is not available in the Docker container
     // This will use the original images without optimization
     unoptimized: true,
-    // These settings are only used when optimization is enabled
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256],
-    minimumCacheTTL: 60,
   },
 };
 
