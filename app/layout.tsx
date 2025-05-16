@@ -27,6 +27,54 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0" />
         <meta name="theme-color" content="#D4AF37" />
         
+        {/* Preload critical JavaScript chunks to prevent loading errors */}
+        <link rel="preload" href="/_next/static/chunks/framework.js" as="script" />
+        <link rel="preload" href="/_next/static/chunks/main.js" as="script" />
+        <link rel="preload" href="/_next/static/chunks/pages/_app.js" as="script" />
+        <link rel="preload" href="/_next/static/chunks/webpack.js" as="script" />
+        
+        {/* Global error handler to catch and recover from JS errors */}
+        <Script id="error-recovery" strategy="beforeInteractive">
+          {`
+            window.onerror = function(message, source, lineno, colno, error) {
+              console.error('Global error caught:', { message, source, lineno, colno });
+              
+              // Check if this is a chunk loading error
+              if (message && (message.includes('ChunkLoadError') || message.includes('Loading chunk') || source && source.includes('vendors-'))) {
+                console.error('Chunk loading error detected. Attempting to recover...');
+                
+                // Clear cache and reload the page
+                if ('caches' in window) {
+                  caches.keys().then(function(names) {
+                    for (let name of names) caches.delete(name);
+                  });
+                }
+                
+                // Clear localStorage cache for Next.js
+                try {
+                  const keys = Object.keys(localStorage);
+                  for (let key of keys) {
+                    if (key.startsWith('next-')) {
+                      localStorage.removeItem(key);
+                    }
+                  }
+                } catch (e) {
+                  console.error('Failed to clear localStorage:', e);
+                }
+                
+                // Reload the page after a short delay
+                setTimeout(() => {
+                  window.location.reload();
+                }, 1000);
+                
+                return true; // Prevent default error handling
+              }
+              
+              return false; // Allow default error handling for other errors
+            };
+          `}
+        </Script>
+        
         {/* Structured data for business - using Next.js Script component */}
         <Script
           id="schema-structured-data"
