@@ -163,7 +163,7 @@ export default function HeroSection() {
           <div className="mt-auto pb-10"> {/* Pushes the button to the bottom */}
             <Link
               href="/collections"
-              className="hidden md:block rounded-full bg-white px-5 md:px-8 py-2 md:py-3 text-sm md:text-lg font-semibold text-black transition-all hover:bg-gray-100 hover:scale-105 active:scale-95"
+              className="block rounded-full bg-white px-2 lg:px-5 md:px-3 py-2 md:py-3 text-xs lg:text-lg md:text-lg font-semibold text-black transition-all hover:bg-gray-100 hover:scale-105 active:scale-95"
             >
               Voir la Collection
             </Link>
