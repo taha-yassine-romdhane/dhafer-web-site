@@ -1,5 +1,8 @@
+"use client";
+
 import { Metadata, ResolvingMetadata } from 'next';
 import { prisma } from "@/lib/prisma";
+import ChunkErrorBoundary from "@/app/components/ChunkErrorBoundary";
 
 // Generate dynamic metadata for the product page
 export async function generateMetadata(
@@ -71,5 +74,16 @@ export default function ProductLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <ChunkErrorBoundary
+      fallback={
+        <div className="flex flex-col items-center justify-center min-h-[50vh] p-8">
+          <div className="text-xl font-medium mb-4">Chargement du produit...</div>
+          <div className="w-16 h-16 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      }
+    >
+      {children}
+    </ChunkErrorBoundary>
+  );
 }
