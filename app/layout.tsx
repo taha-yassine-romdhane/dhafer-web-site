@@ -10,8 +10,13 @@ import { CartDropdown } from "@/components/cart-dropdown";
 import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 
-// Import Safari polyfills dynamically to avoid SSR issues
+// Import polyfills and preventative measures dynamically to avoid SSR issues
 const SafariPolyfills = dynamic(() => import('@/lib/safari-polyfills'), { ssr: false });
+const ChunkPrevention = dynamic(() => import('@/lib/chunk-prevention').then(mod => {
+  // Initialize chunk prevention when the module loads
+  mod.initChunkPrevention();
+  return { default: () => null };
+}), { ssr: false });
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -120,8 +125,9 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={inter.className}>
-        {/* Load Safari polyfills */}
+        {/* Load Safari polyfills and chunk prevention */}
         <SafariPolyfills />
+        <ChunkPrevention />
         
         <AuthProvider>
           <CartProvider>
