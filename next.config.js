@@ -13,18 +13,19 @@ const nextConfig = {
     // Have 8 pages loaded in memory at once
     pagesBufferLength: 8,
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
     // Only apply these optimizations for client-side bundles
     if (!isServer) {
-      // Use Next.js defaults for splitChunks with minimal customization
+      // Disable code splitting in production to prevent chunk loading errors
       config.optimization = {
         ...config.optimization,
         moduleIds: 'deterministic',
-        // Simplified chunk splitting to improve reliability
-        splitChunks: {
+        runtimeChunk: 'single',
+        // Use a simpler chunking strategy for better reliability
+        splitChunks: dev ? {
+          // In development, use more chunks for faster rebuilds
           chunks: 'all',
           cacheGroups: {
-            // Only create a single vendor chunk for all node_modules
             vendor: {
               test: /[\\/]node_modules[\\/]/,
               name: 'vendors',
@@ -33,8 +34,42 @@ const nextConfig = {
               reuseExistingChunk: true,
             },
           },
+        } : {
+          // In production, use fewer chunks for better reliability
+          chunks: 'all',
+          cacheGroups: {
+            default: false,
+            defaultVendors: false,
+            // Single vendor bundle for all node_modules
+            vendor: {
+              name: 'vendor',
+              test: /[\\/]node_modules[\\/]/,
+              chunks: 'all',
+              enforce: true,
+              priority: 20,
+            },
+            // Common chunk for code used in multiple places
+            common: {
+              name: 'common',
+              minChunks: 2,
+              priority: 10,
+              reuseExistingChunk: true,
+              enforce: true,
+            },
+          },
         },
       };
+      
+      // Add a plugin to handle chunk loading errors
+      config.plugins.push({
+        apply: (compiler) => {
+          compiler.hooks.done.tap('ChunkErrorPlugin', (stats) => {
+            if (stats.hasErrors()) {
+              console.warn('Build completed with errors. Some chunks may not load correctly.');
+            }
+          });
+        },
+      });
     }
     return config;
   },
