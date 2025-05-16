@@ -11,11 +11,39 @@ const nextConfig = {
     // Improve memory usage
     optimizeCss: true,
   },
+  // Improve chunk loading reliability
+  onDemandEntries: {
+    // Keep generated pages in memory for 60 seconds
+    maxInactiveAge: 60 * 1000,
+    // Have 8 pages loaded in memory at once
+    pagesBufferLength: 8,
+  },
   webpack: (config) => {
     // Optimize bundle size
     config.optimization = {
       ...config.optimization,
       moduleIds: 'deterministic',
+      // Improve chunk loading reliability
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          // Create a commons chunk for shared code
+          commons: {
+            name: 'commons',
+            chunks: 'all',
+            minChunks: 2,
+            reuseExistingChunk: true,
+          },
+          // Create a larger vendor chunk to avoid frequent changes
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendor',
+            chunks: 'all',
+          },
+        },
+      },
     };
     return config;
   },

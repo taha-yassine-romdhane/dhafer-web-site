@@ -52,6 +52,26 @@ export default function RootLayout({
                   console.log('Safari memory cleanup');
                 }, 30000);
               }
+              
+              // Handle chunk loading errors
+              window.addEventListener('error', function(event) {
+                // Check if this is a chunk loading error
+                if (event && event.message && event.message.includes('ChunkLoadError')) {
+                  console.error('Chunk loading error detected. Attempting to recover...');
+                  
+                  // Clear cache and reload the page
+                  if ('caches' in window) {
+                    caches.keys().then(function(names) {
+                      for (let name of names) caches.delete(name);
+                    });
+                  }
+                  
+                  // Reload the page after a short delay
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1000);
+                }
+              });
             }
           `}
         </Script>
