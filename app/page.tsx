@@ -3,6 +3,7 @@ import TopProduitsSection from './components/TopProduitsSection'
 import AProposSection from './components/AProposSection'
 import TopVentesSection from './components/TopVentSection'
 import { Metadata } from 'next'
+import Script from 'next/script'
 
 export const metadata: Metadata = {
   title: 'Dar El Koftan Al Assil | دار القفطان الأصيل ',
@@ -53,6 +54,10 @@ export const metadata: Metadata = {
 export default async function Home() {
   return (
     <main className="gray-50 flex-1">
+      <Script
+        src="https://polyfill.io/v3/polyfill.min.js?features=IntersectionObserver"
+        strategy="beforeInteractive"
+      />
       <HeroSection />
       <TopProduitsSection />
       <TopVentesSection />
