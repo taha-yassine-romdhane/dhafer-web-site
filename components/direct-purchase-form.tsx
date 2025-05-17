@@ -287,14 +287,14 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
       </Form>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-  <DialogContent className="sm:max-w-[600px] rounded-lg">
+  <DialogContent className="sm:max-w-[600px] rounded-lg max-h-[90vh] overflow-y-auto">
     <DialogHeader>
       <DialogTitle className="text-2xl font-bold text-gray-800 border-b pb-3">
         Aperçu de la commande
       </DialogTitle>
     </DialogHeader>
     
-    <div className="grid gap-4 py-4">
+    <div className="grid gap-4 py-4 overflow-y-auto">
       {/* Product Image with better styling */}
       {productInfo.mainImageUrl && (
         <div className="flex justify-center mb-4">
