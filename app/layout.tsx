@@ -1,11 +1,12 @@
-import './globals.css';
+import './globals.css'
+import './ios-optimizations.css';
 
 import { CartProvider } from "@/lib/context/cart-context";
 import { AuthProvider } from "@/contexts/auth-context";
+import { IOSOptimizations } from "@/components/ios-optimizations";
 import Navbar from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { CartDropdown } from "@/components/cart-dropdown";
-
 
 
 export default function RootLayout({
@@ -78,6 +79,8 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <CartProvider>
+            {/* iOS optimizations component */}
+            <IOSOptimizations />
             <Navbar />
             <CartDropdown />
             <main className="min-h-screen">
