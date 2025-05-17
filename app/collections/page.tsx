@@ -59,9 +59,17 @@ export default function CollectionsPage() {
 
   // Fetch categories from the database
   useEffect(() => {
+    // Use a ref to track if the request has been sent
+    let requestSent = false;
+    
     const fetchCategories = async () => {
+      // Skip if we've already sent a request in this render cycle
+      if (requestSent) return;
+      requestSent = true;
+      
       try {
         setLoading(true);
+        console.log('Fetching categories...');
         const response = await fetch('/api/categories');
         if (!response.ok) throw new Error('Failed to fetch categories');
         
@@ -95,6 +103,8 @@ export default function CollectionsPage() {
     };
     
     fetchCategories();
+    
+    // No dependencies needed as we want this to run only once on mount
   }, []);
 
   // Update filters when URL params change
@@ -170,16 +180,28 @@ export default function CollectionsPage() {
   };
 
   const handleClearFilters = () => {
+    // Reset to default filters with 'Tous' as the category
     setFilters({
-      category: "all",
+      category: "Tous",
       collaborator: "all",
       sort: "featured",
       product: "",
       page: 1,
-      group: null // Add the group property to fix the TypeScript error
+      group: null
     });
+    
+    // Reset UI state
     setCurrentPage(1);
     setActiveGroup(null);
+    
+    // Update URL to reflect cleared filters
+    const url = new URL(window.location.href);
+    url.searchParams.delete('category');
+    url.searchParams.delete('group');
+    url.searchParams.delete('product');
+    url.searchParams.delete('page');
+    url.searchParams.set('sort', 'featured');
+    window.history.pushState({}, '', url);
   };
   
   // Handle page change
@@ -211,8 +233,8 @@ export default function CollectionsPage() {
           <h1 className="text-4xl font-bold text-gray-900">
             {filters.product 
               ? filters.product.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
-              : filters.category !== "Tous" 
-                ? categories.find(c => c.name.toLowerCase() === filters.category.toLowerCase())?.name.toUpperCase()
+              : filters.category !== "Tous" && filters.category !== "all"
+                ? categories.find(c => c.name.toLowerCase() === filters.category.toLowerCase())?.name?.toUpperCase() || "Toutes les Collections"
                 : "Toutes les Collections"
             }
           </h1>
@@ -321,14 +343,14 @@ export default function CollectionsPage() {
               </div>
             </div>
             
-            {/* Sort and Clear Filters */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+            {/* Sort Dropdown and Products Per Page */}
+            <div className="flex items-center justify-between relative">
+              <div className="flex items-center gap-2">
                 <Select
                   value={filters.sort}
                   onValueChange={(value) => handleFilterChange("sort", value)}
                 >
-                  <SelectTrigger className="w-[200px] bg-white border border-gray-200 hover:border-[#D4AF37] transition-colors">
+                  <SelectTrigger className="w-[180px] md:w-[200px] bg-white border border-gray-200 hover:border-[#D4AF37] transition-colors">
                     <SelectValue placeholder="Trier par" />
                   </SelectTrigger>
                   <SelectContent>
@@ -343,19 +365,38 @@ export default function CollectionsPage() {
                     ))}
                   </SelectContent>
                 </Select>
-
+                
+                {/* Clear Filters Button - Only shown when filters are active */}
                 {(filters.category !== "Tous" || searchQuery) && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      handleClearFilters();
-                      setSearchQuery("");
-                    }}
-                    className="border border-gray-200 hover:border-[#D4AF37] hover:bg-[#D4AF37]/10 text-gray-600 hover:text-[#D4AF37] transition-colors"
-                  >
-                    Effacer les filtres
-                  </Button>
+                  <>
+                    {/* Desktop version with pill-shaped button and text */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        handleClearFilters();
+                        setSearchQuery("");
+                      }}
+                      className="hidden sm:flex items-center gap-1 rounded-full border border-gray-200 hover:border-[#D4AF37] hover:bg-[#D4AF37]/10 text-gray-600 hover:text-[#D4AF37] transition-colors"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                      <span>Filtres</span>
+                    </Button>
+                    
+                    {/* Mobile version with small circular button */}
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        handleClearFilters();
+                        setSearchQuery("");
+                      }}
+                      className="sm:hidden h-8 w-8 rounded-full border border-gray-200 hover:border-[#D4AF37] hover:bg-[#D4AF37]/10 text-gray-600 hover:text-[#D4AF37] transition-colors"
+                      title="Effacer les filtres"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  </>
                 )}
               </div>
               

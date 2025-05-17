@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -20,21 +20,33 @@ interface CarouselImage {
 }
 
 const TopVentSection: React.FC = () => {
-  // Fallback images in case API fails
-  const fallbackImagesTop1: string[] = [];
-  const fallbackImagesBottom: string[] = [];
+  // Fallback images for when no images are found in the database or during loading
+  // Using the same images from the about section for consistency
+  const fallbackImages = [
+    '/images/about/fallback1.jpg',
+    '/images/about/fallback2.jpg',
+    '/images/about/fallback3.jpg'
+  ];
   
-  const [imagesTop1, setImagesTop1] = useState<string[]>(fallbackImagesTop1);
-  const [imagesBottom, setImagesBottom] = useState<string[]>(fallbackImagesBottom);
+  // State for carousel images
+  const [imagesTop1, setImagesTop1] = useState<string[]>(fallbackImages);
+  const [imagesBottom, setImagesBottom] = useState<string[]>(fallbackImages);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
   const [currentIndexTop, setCurrentIndexTop] = useState(0);
   const [currentIndexBottom, setCurrentIndexBottom] = useState(0);
 
-  // Fetch carousel images from the API
+  // Function to handle button clicks
+  const handleButtonClick = () => {
+    // Analytics or other click handling logic could go here
+  };
+  
+  // Single useEffect for initialization and cleanup
   useEffect(() => {
-    const fetchCarouselImages = async () => {
+    let isMounted = true;
+    
+    // Fetch carousel images
+    async function fetchImages() {
       try {
         setLoading(true);
         const response = await fetch('/api/carousel-images');
@@ -45,72 +57,73 @@ const TopVentSection: React.FC = () => {
         
         const data = await response.json();
         
-        if (data.success && Array.isArray(data.carouselImages)) {
+        if (data.success && Array.isArray(data.carouselImages) && isMounted) {
           // Filter images by section
           const topVente1Images = data.carouselImages
-            .filter((img: CarouselImage) => img.section === 'topvente1' && img.isActive)
+            .filter((img: CarouselImage) => img.section === 'topvente1' && img.isActive);
+          
+          const topVente2Images = data.carouselImages
+            .filter((img: CarouselImage) => img.section === 'topvente2' && img.isActive);
+          
+          // Sort and map to URLs
+          const topVente1Urls = topVente1Images
             .sort((a: CarouselImage, b: CarouselImage) => a.position - b.position)
             .map((img: CarouselImage) => img.url);
             
-          const topVente2Images = data.carouselImages
-            .filter((img: CarouselImage) => img.section === 'topvente2' && img.isActive)
+          const topVente2Urls = topVente2Images
             .sort((a: CarouselImage, b: CarouselImage) => a.position - b.position)
             .map((img: CarouselImage) => img.url);
           
           // Only update if we have images
-          if (topVente1Images.length > 0) {
-            setImagesTop1(topVente1Images);
+          if (topVente1Urls.length > 0) {
+            setImagesTop1(topVente1Urls);
           }
           
-          if (topVente2Images.length > 0) {
-            setImagesBottom(topVente2Images);
+          if (topVente2Urls.length > 0) {
+            setImagesBottom(topVente2Urls);
           }
         }
       } catch (err) {
         console.error('Error fetching carousel images:', err);
-        setError('Failed to load carousel images');
-        // Keep using fallback images
+        if (isMounted) {
+          setError('Failed to load carousel images');
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-    };
+    }
     
-    fetchCarouselImages();
-  }, []);
-  
-  // Preload images
-  useEffect(() => {
-    const preloadImages = (images: string[]) => {
-      images.forEach((src) => {
-        const img = new window.Image(); // Use window.Image instead of Image
-        img.src = src;
-      });
+    // Set up intervals for auto-sliding
+    fetchImages();
+    
+    // Auto-slide functionality
+    let intervalTop: NodeJS.Timeout | null = null;
+    let intervalBottom: NodeJS.Timeout | null = null;
+    
+    if (imagesTop1.length > 0) {
+      intervalTop = setInterval(() => {
+        if (isMounted) {
+          setCurrentIndexTop((prevIndex) => (prevIndex + 1) % imagesTop1.length);
+        }
+      }, 5000);
+    }
+    
+    if (imagesBottom.length > 0) {
+      intervalBottom = setInterval(() => {
+        if (isMounted) {
+          setCurrentIndexBottom((prevIndex) => (prevIndex + 1) % imagesBottom.length);
+        }
+      }, 7000);
+    }
+    
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      if (intervalTop) clearInterval(intervalTop);
+      if (intervalBottom) clearInterval(intervalBottom);
     };
-
-    preloadImages(imagesTop1);
-    preloadImages(imagesBottom);
-  }, [imagesTop1, imagesBottom]);
-
-  // Auto-slide functionality for the first carousel (slides up)
-  useEffect(() => {
-    const intervalTop = setInterval(() => {
-      setCurrentIndexTop((prevIndex) => (prevIndex + 1) % imagesTop1.length);
-    }, 5000); // Change slide every 3 seconds
-
-    return () => clearInterval(intervalTop); // Cleanup interval on unmount
-  }, [imagesTop1.length]);
-
-  // Auto-slide functionality for the second carousel (slides down)
-  useEffect(() => {
-    const intervalBottom = setInterval(() => {
-      setCurrentIndexBottom((prevIndex) => (prevIndex + 1) % imagesBottom.length);
-    }, 7000); // Change slide every 4 seconds
-
-    return () => clearInterval(intervalBottom); // Cleanup interval on unmount
-  }, [imagesBottom.length]);
-
-  const handleButtonClick = useCallback(() => {
-    // Handle button click
   }, []);
 
   return (

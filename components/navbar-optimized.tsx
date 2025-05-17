@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {  Menu, X, LogOut, ShoppingBag, Settings } from "lucide-react";
+import { Menu, X, LogOut, ShoppingBag, Settings } from "lucide-react";
 import Container from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/auth-context";
+import { isIOS } from "@/lib/device-detection";
 
 interface Subcategory {
   name: string;
@@ -54,36 +55,38 @@ export default function Navbar() {
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>(staticCategories);
   const [loading, setLoading] = useState(true);
+  const [isIosDevice, setIsIosDevice] = useState(false);
+  
+  // Track if component is mounted for memory safety
+  const isMountedRef = useRef(true);
 
+  // Detect iOS device for optimizations
+  useEffect(() => {
+    setIsIosDevice(isIOS());
+    
+    // Set mounted flag
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // Optimize toggle menu for performance
   const toggleMenu = () => {
     // Prevent body scroll when menu is open
     if (!isOpen) {
-      // Save current scroll position
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
     } else {
-      // Restore scroll position
-      const scrollY = document.body.style.top;
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
       document.body.style.overflow = '';
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);
     }
     
     setIsOpen(!isOpen);
     setOpenCategory(null);
   };
 
+  // Optimize category toggle with debounce for mobile
   const toggleCategory = (category: string) => {
     setOpenCategory(openCategory === category ? null : category);
   };
-
-  // Track if component is mounted for memory safety
-  const isMountedRef = useRef(true);
 
   // Fetch categories from the API
   useEffect(() => {
@@ -102,7 +105,6 @@ export default function Navbar() {
         
         data.categories.forEach((category: any) => {
           // Extract the group from the category or default to FEMME
-          // Note: In the actual API response, you might need to adjust how you access the group
           const group = category.group || 'FEMME';
           
           if (!categoryGroups[group]) {
@@ -137,36 +139,34 @@ export default function Navbar() {
             })),
           }));
         
-        // Combine grouped categories with static categories
-        setCategories([...groupedCategories, ...staticCategories]);
+        // Only update state if component is still mounted
+        if (isMountedRef.current) {
+          // Combine grouped categories with static categories
+          setCategories([...groupedCategories, ...staticCategories]);
+        }
       } catch (error) {
         console.error('Error fetching categories:', error);
       } finally {
-        setLoading(false);
+        if (isMountedRef.current) {
+          setLoading(false);
+        }
       }
     };
     
     fetchCategories();
   }, []);
 
-  // Handle click outside to close menu
+  // Handle click outside to close menu - optimized with passive event listener
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node) && isOpen) {
-        // Restore scroll position when closing via outside click
-        const scrollY = document.body.style.top;
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.overflow = '';
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-        
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
         setOpenCategory(null);
+        document.body.style.overflow = '';
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside, { passive: true });
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
@@ -196,6 +196,7 @@ export default function Navbar() {
                 width={70}
                 height={70}
                 className="object-contain"
+                priority
               />
             </Link>
           </div>
@@ -222,10 +223,7 @@ export default function Navbar() {
                         {category.label}
                       </button>
                       {category.subcategories && (
-                        <div className="hidden group-hover:block absolute left-0 top-full mt-1 w-56 bg-white shadow-lg rounded-md border border-[#D4AF37]/20 z-50 overflow-y-auto max-h-[70vh]">
-                          <div className="sticky top-0 bg-white border-b border-[#D4AF37]/10 py-2 px-4 font-medium text-[#D4AF37]">
-                            {category.label}
-                          </div>
+                        <div className="hidden group-hover:block absolute left-0 top-full mt-1 w-56 bg-white shadow-lg rounded-md border border-[#D4AF37]/20 z-50 overflow-hidden">
                           <ul className="py-1">
                             {category.subcategories.map((subcategory) => (
                               <li key={subcategory.name}>
@@ -332,82 +330,78 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div
-            ref={menuRef}
-            className="lg:hidden fixed top-[64px] left-0 right-0 bottom-0 bg-white overflow-y-auto z-50 border-t border-[#D4AF37]/20"
-          >
-            {/* Sticky search bar at the top of mobile menu */}
-            <div className="sticky top-0 p-4 bg-white shadow-md z-10">
-              <SearchBar />
-            </div>
-            <div className="px-4 py-2">
-              <ul className="space-y-3">
-                {categories.map((category) => (
-                  <li key={category.label}>
-                    {category.url ? (
-                      <Link
-                        href={category.url}
-                        className="block w-full py-2 text-gray-800 hover:text-[#D4AF37] transition-colors"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {category.label}
-                      </Link>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => toggleCategory(category.label)}
-                          className="flex items-center justify-between w-full py-2 text-gray-800 hover:text-[#D4AF37] transition-colors"
-                        >
-                          <span>{category.label}</span>
-                          {openCategory === category.label ? (
-                            <X size={18} />
-                          ) : (
-                            <Menu size={18} />
-                          )}
-                        </button>
-                        {category.subcategories && openCategory === category.label && (
-                          <div className="ml-4 mt-1 border-l-2 border-[#D4AF37]/20 pl-4 relative">
-                            <div className="sticky top-[60px] bg-white py-2 z-10 font-medium text-[#D4AF37] border-b border-[#D4AF37]/10 mb-2">
-                              {category.label}
-                            </div>
-                            <ul className="space-y-2">
-                              {/* Only render the first 10 subcategories for performance */}
-                              {category.subcategories.slice(0, 10).map((subcategory) => (
-                                <li key={subcategory.name}>
-                                  <Link
-                                    href={`/collections?category=${subcategory.query}&group=${subcategory.group}`}
-                                    onClick={() => setIsOpen(false)}
-                                    className="block py-1.5 text-gray-600 hover:text-[#D4AF37] transition-colors"
-                                  >
-                                    {subcategory.name}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                            {/* Show "See More" if there are more than 10 subcategories */}
-                            {category.subcategories.length > 10 && (
-                              <div className="mt-2">
-                                <Link
-                                  href={`/collections?group=${category.subcategories[0]?.group}`}
-                                  onClick={() => setIsOpen(false)}
-                                  className="block py-1.5 text-[#D4AF37] font-medium hover:underline"
-                                >
-                                  Voir plus ({category.subcategories.length - 10})
-                                </Link>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
+        {/* Mobile Menu - Optimized for performance */}
+        <div
+          ref={menuRef}
+          className={`lg:hidden fixed top-[64px] left-0 right-0 bottom-0 bg-white overflow-y-auto z-50 border-t border-[#D4AF37]/20 transform transition-transform duration-300 ease-in-out ${
+            isOpen ? 'translate-x-0' : '-translate-x-full'
+          } ${isIosDevice ? 'ios-optimized' : ''}`}
+          aria-hidden={!isOpen}
+        >
+          <div className="sticky top-0 p-4 bg-white shadow-sm">
+            <SearchBar />
           </div>
-        )}
+          <div className="px-4 py-2">
+            <ul className="space-y-3">
+              {categories.map((category) => (
+                <li key={category.label}>
+                  {category.url ? (
+                    <Link
+                      href={category.url}
+                      className="block w-full py-2 text-gray-800 hover:text-[#D4AF37] transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {category.label}
+                    </Link>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => toggleCategory(category.label)}
+                        className="flex items-center justify-between w-full py-2 text-gray-800 hover:text-[#D4AF37] transition-colors"
+                      >
+                        <span>{category.label}</span>
+                        {openCategory === category.label ? (
+                          <X size={18} />
+                        ) : (
+                          <Menu size={18} />
+                        )}
+                      </button>
+                      {/* Lazy load subcategories only when category is open */}
+                      {category.subcategories && openCategory === category.label && (
+                        <ul className="ml-4 mt-1 space-y-2 border-l-2 border-[#D4AF37]/20 pl-4">
+                          {/* Only render the first 10 subcategories for performance */}
+                          {category.subcategories.slice(0, 10).map((subcategory) => (
+                            <li key={subcategory.name}>
+                              <Link
+                                href={`/collections?category=${subcategory.query}&group=${subcategory.group}`}
+                                onClick={() => setIsOpen(false)}
+                                className="block py-1.5 text-gray-600 hover:text-[#D4AF37] transition-colors"
+                              >
+                                {subcategory.name}
+                              </Link>
+                            </li>
+                          ))}
+                          {/* Show "See More" if there are more than 10 subcategories */}
+                          {category.subcategories.length > 10 && (
+                            <li>
+                              <Link
+                                href={`/collections?group=${category.subcategories[0]?.group}`}
+                                onClick={() => setIsOpen(false)}
+                                className="block py-1.5 text-[#D4AF37] font-medium hover:underline"
+                              >
+                                Voir plus ({category.subcategories.length - 10})
+                              </Link>
+                            </li>
+                          )}
+                        </ul>
+                      )}
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </Container>
     </div>
   );

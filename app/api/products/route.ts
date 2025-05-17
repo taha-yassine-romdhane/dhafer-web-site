@@ -2,45 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { CategoryGroup } from "@prisma/client";
 
-export async function POST(request: Request) {
-  try {
-    const data = await request.json();
-    console.log('Received product data:', JSON.stringify(data, null, 2));
-    
-    // Create the product
-    const productData = {
-      name: data.name,
-      description: data.description,
-      price: parseFloat(data.price),
-      category: data.category.toLowerCase(),
-      colors: data.colors,
-      sizes: data.sizes,
-      collaborateur: data.collaborateur,
-      images: {
-        create: data.images.map((imageUrl: string, index: number) => ({
-          url: imageUrl,
-          isMain: index === 0
-        }))
-      }
-    };
-
-    console.log('Processed product data:', JSON.stringify(productData, null, 2));
-
-    const product = await prisma.product.create({
-      data: productData,
-
-    });
-
-    console.log('Created product:', JSON.stringify(product, null, 2));
-    return NextResponse.json(product);
-  } catch (error) {
-    console.error("Error creating product:", error);
-    return NextResponse.json(
-      { error: "Failed to create product" },
-      { status: 500 }
-    );
-  }
-}
 
 export async function GET(request: Request) {
   try {
@@ -57,8 +18,6 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get("limit") || "5");
     const skip = (page - 1) * limit;
     
-    console.log(`API pagination: page=${page}, limit=${limit}, skip=${skip}`);
-    
     // Convert string group to CategoryGroup enum
     let group: CategoryGroup | undefined;
     if (groupParam) {
@@ -66,18 +25,7 @@ export async function GET(request: Request) {
       else if (groupParam.toUpperCase() === 'ENFANT') group = CategoryGroup.ENFANT;
       else if (groupParam.toUpperCase() === 'ACCESSOIRE') group = CategoryGroup.ACCESSOIRE;
     }
-
-    console.log('API received params:', { category, group, collaborateur, sort, product, searchQuery });
-    
     let where: any = {};
-
-    // Debug: List all categories to verify data
-    console.log('Requested category:', category);
-    console.log('Requested group:', group);
-    
-    // Log all categories for debugging
-    const allCategories = await prisma.category.findMany();
-    console.log('Available categories:', allCategories.map(c => ({ id: c.id, name: c.name, group: c.group })));
     
     // Category filter
     if (category && category !== "all" && category !== "Tous") {
@@ -96,8 +44,7 @@ export async function GET(request: Request) {
         categoryWhereClause.group = group;
       }
       
-      // Log the category search criteria for debugging
-      console.log('Searching for category with criteria:', JSON.stringify(categoryWhereClause, null, 2));
+      
       
       // First try an exact match approach
       const categoryFilter = await prisma.category.findFirst({
@@ -105,16 +52,12 @@ export async function GET(request: Request) {
       });
 
       if (categoryFilter) {
-        console.log(`Found category: ${categoryFilter.name} in group: ${categoryFilter.group} with ID: ${categoryFilter.id}`);
         where.categories = {
           some: {
             categoryId: categoryFilter.id
           }
         };
       } else {
-        console.log(`Category not found: ${category}${group ? ' in group: ' + group : ''}`);
-        // Instead of returning an error, we'll return no products by using a valid Prisma condition
-        // that will never match any products
         where.id = {
           in: [] // Empty array means no IDs will match
         };
@@ -137,14 +80,10 @@ export async function GET(request: Request) {
           }
         };
       } else {
-        console.log(`No categories found for group: ${groupParam}`);
-        // Return no products by using a valid Prisma condition
-        // that will never match any products
         where.id = {
           in: [] // Empty array means no IDs will match
         };
       }
-      console.log(`Using group filter: ${group} - found ${groupCategories.length} categories`);
     }
     
     // Collaborateur filter
@@ -190,13 +129,9 @@ export async function GET(request: Request) {
         ];
       }
     }
-
-    // Log the final where clause and pagination params
-    console.log('Final query parameters:', { where, skip, limit, sort });
     
     // Get total count of products matching the filters
     const totalCount = await prisma.product.count({ where });
-    console.log('Total product count:', totalCount);
     
     // Get products with their color variants and images with pagination
     const products = await prisma.product.findMany({
@@ -223,9 +158,6 @@ export async function GET(request: Request) {
       skip,
       take: limit
     });
-    
-    console.log(`Returning ${products.length} products, page ${page} of ${Math.ceil(totalCount / limit)}`);
-
     // Return products with pagination metadata
     return NextResponse.json({
       products,

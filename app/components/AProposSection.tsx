@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface CarouselImage {
@@ -18,16 +18,25 @@ interface CarouselImage {
 }
 
 export default function AProposSection() {
- 
-
-  const [images, setImages] = useState<string[]>([]);
+  // Fallback images for when no images are found in the database or during loading
+  const fallbackImages = [
+    '/images/about/fallback1.jpg',
+    '/images/about/fallback2.jpg',
+    '/images/about/fallback3.jpg'
+  ];
+  
+  // Simplified state management
+  const [images, setImages] = useState<string[]>(fallbackImages);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   
-  // Fetch carousel images from the API
+  // Single useEffect for all initialization and cleanup
   useEffect(() => {
-    const fetchCarouselImages = async () => {
+    let isMounted = true;
+    
+    // Fetch carousel images
+    async function fetchImages() {
       try {
         setLoading(true);
         const response = await fetch('/api/carousel-images');
@@ -36,45 +45,57 @@ export default function AProposSection() {
         
         const data = await response.json();
         
-        if (data.success && Array.isArray(data.carouselImages)) {
-          const aboutImages = data.carouselImages
-            .filter((img: CarouselImage) => img.section === 'about' && img.isActive)
+        if (data.success && Array.isArray(data.carouselImages) && isMounted) {
+          // Filter images by section
+          const aboutImagesFiltered = data.carouselImages
+            .filter((img: CarouselImage) => img.section === 'about' && img.isActive);
+          
+          // Sort and map to URLs
+          const aboutImages = aboutImagesFiltered
             .sort((a: CarouselImage, b: CarouselImage) => a.position - b.position)
             .map((img: CarouselImage) => img.url);
           
-          if (aboutImages.length > 0) setImages(aboutImages);
+          if (aboutImages.length > 0) {
+            setImages(aboutImages);
+          }
         }
       } catch (err) {
         console.error('Using fallback images:', err);
-        setError('Failed to load carousel images - using defaults');
-        // Keep existing fallback images
+        if (isMounted) {
+          setError('Failed to load carousel images - using defaults');
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-    };
+    }
     
-    fetchCarouselImages();
-  }, []);
-
-  // Auto-play functionality
-  useEffect(() => {
-    // Skip if no images to prevent errors
-    if (images.length === 0) return;
+    // Initialize
+    fetchImages();
     
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 5000); // Change slide every 5 seconds
-
+    // Set up auto-play
+    let interval: NodeJS.Timeout | null = null;
+    
+    if (images.length > 0) {
+      interval = setInterval(() => {
+        if (isMounted) {
+          setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+        }
+      }, 5000);
+    }
+    
+    // Cleanup
     return () => {
-      // Ensure interval is properly cleared
+      isMounted = false;
       if (interval) clearInterval(interval);
     };
   }, [images.length]);
-
-  // Handle manual navigation
-  const goToSlide = useCallback((index: number) => {
+  
+  // Function to handle manual navigation
+  function goToSlide(index: number) {
     setCurrentIndex(index);
-  }, []);
+  }
 
   return (
     <section className="gray-50 py-16">

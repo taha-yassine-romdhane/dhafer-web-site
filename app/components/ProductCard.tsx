@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { Product, ColorVariant, ProductImage } from "@prisma/client"
 import Image from "next/image"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Palette } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 
 interface ProductCardProps {
@@ -68,11 +68,6 @@ export default function ProductCard({ product }: ProductCardProps) {
     setCurrentImageIndex(mainImageIndex !== -1 ? mainImageIndex : 0)
   }
 
-  const toggleColorSelector = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setShowColorSelector(!showColorSelector)
-  }
 
   return (
     <div 
@@ -133,23 +128,6 @@ export default function ProductCard({ product }: ProductCardProps) {
               ))}
             </div>
           )}
-
-          {/* Color Selector Toggle */}
-          <button
-            onClick={toggleColorSelector}
-            className="absolute bottom-3 right-3 bg-white/90 rounded-full p-1.5 z-10 shadow-md hover:bg-white transition-all"
-            aria-label="Voir options de couleur"
-          >
-            <div className="relative w-5 h-5 flex items-center justify-center">
-              <Palette className="w-4 h-4 text-gray-700" />
-              {product.colorVariants.length > 1 && (
-                <span className="absolute -top-1 -right-1 bg-[#D4AF37] text-white text-[10px] rounded-full w-3.5 h-3.5 flex items-center justify-center font-bold">
-                  {product.colorVariants.length}
-                </span>
-              )}
-            </div>
-          </button>
-
           {/* Sale Badge */}
           {product.salePrice && (
             <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-0.5 rounded-md text-xs font-bold z-10">
@@ -208,6 +186,15 @@ export default function ProductCard({ product }: ProductCardProps) {
               )}
             </div>
             <span className="text-xs text-gray-600 capitalize">{currentColorVariant?.color}</span>
+          </div>
+          
+          {/* See More Details Button */}
+          <div className="mt-3">
+            <Link href={`/product/${product.id}`} className="block">
+              <button className="w-full py-2 px-4 bg-[#D4AF37] hover:bg-[#c9a633] text-white rounded-md transition-colors duration-200 text-sm font-medium shadow-sm hover:shadow">
+                Voir plus de détails
+              </button>
+            </Link>
           </div>
         </div>
       </Link>

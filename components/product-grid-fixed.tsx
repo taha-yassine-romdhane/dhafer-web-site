@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Product, ProductImage, ColorVariant } from "@prisma/client";
@@ -60,13 +60,10 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
     return price.toFixed(2);
   };
 
-  // Update pagination when productsPerPage changes
-  useEffect(() => {
-    setPagination(prev => ({
-      ...prev,
-      limit: productsPerPage
-    }));
-  }, [productsPerPage]);
+  // Use a ref to track if a request is in progress
+  const requestInProgressRef = useRef(false);
+  // Use a ref to store the last request parameters
+  const lastRequestParamsRef = useRef("");
 
   // Fetch products when filters or page or productsPerPage change
   useEffect(() => {
@@ -74,50 +71,67 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
     let isMounted = true;
 
     const fetchProducts = async () => {
+      // Build query parameters
+      const params = new URLSearchParams();
+
+      // Handle category parameter
+      if (filters.category && filters.category !== 'all' && filters.category !== 'Tous') {
+        params.append('category', filters.category);
+      }
+
+      // Handle group parameter
+      if (filters.group) {
+        params.append('group', filters.group);
+      }
+
+      // Handle collaborator parameter
+      if (filters.collaborator && filters.collaborator !== 'all') {
+        params.append('collaborateur', filters.collaborator);
+      }
+
+      // Handle sort parameter
+      if (filters.sort && filters.sort !== 'featured') {
+        params.append('sort', filters.sort);
+      }
+
+      // Handle product parameter
+      if (filters.product) {
+        params.append('product', filters.product);
+      }
+
+      // Handle search query
+      if (filters.searchQuery) {
+        params.append('search', filters.searchQuery);
+      }
+
+      // Add pagination parameters - always include these
+      params.append('page', String(filters.page || 1));
+      params.append('limit', String(productsPerPage));
+
+      const paramsString = params.toString();
+
+      // Skip if this is a duplicate request with the same parameters
+      if (paramsString === lastRequestParamsRef.current && products !== null) {
+        return;
+      }
+
+      // Skip if a request is already in progress
+      if (requestInProgressRef.current) {
+        return;
+      }
+
+      // Mark that a request is in progress
+      requestInProgressRef.current = true;
+      // Store the current request parameters
+      lastRequestParamsRef.current = paramsString;
+
       try {
         setLoading(true);
         setError(null);
-        
-        // Build query parameters
-        const params = new URLSearchParams();
-        
-        // Handle category parameter
-        if (filters.category && filters.category !== 'all' && filters.category !== 'Tous') {
-          params.append('category', filters.category);
-        }
-        
-        // Handle group parameter
-        if (filters.group) {
-          params.append('group', filters.group);
-        }
-        
-        // Handle collaborator parameter
-        if (filters.collaborator && filters.collaborator !== 'all') {
-          params.append('collaborateur', filters.collaborator);
-        }
-        
-        // Handle sort parameter
-        if (filters.sort && filters.sort !== 'featured') {
-          params.append('sort', filters.sort);
-        }
-        
-        // Handle product parameter
-        if (filters.product) {
-          params.append('product', filters.product);
-        }
-        
-        // Handle search query
-        if (filters.searchQuery) {
-          params.append('search', filters.searchQuery);
-        }
-        
-        // Add pagination parameters - always include these
-        params.append('page', String(filters.page || 1));
-        params.append('limit', String(productsPerPage));
 
-        console.log('Fetching products with params:', params.toString());
-        
-        const response = await fetch('/api/products?' + params.toString());
+        console.log('Fetching products with params:', paramsString);
+
+        const response = await fetch('/api/products?' + paramsString);
         if (!response.ok) {
           // Handle 404 differently than 500 errors
           if (response.status === 404) {
@@ -127,6 +141,7 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
               onTotalPagesChange(1); // Ensure we still have 1 page for UI
             }
             setLoading(false);
+            requestInProgressRef.current = false;
             return; // Exit early without throwing
           }
           throw new Error('Failed to fetch products');
@@ -135,7 +150,10 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
         const data = await response.json();
         
         // Only proceed if the component is still mounted
-        if (!isMounted) return;
+        if (!isMounted) {
+          requestInProgressRef.current = false;
+          return;
+        }
         
         // Process pagination data
         if (data.pagination) {
@@ -185,6 +203,7 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
         }
         
         setLoading(false);
+        requestInProgressRef.current = false;
       } catch (error) {
         console.error('Error fetching products:', error);
         if (isMounted) {
@@ -198,23 +217,25 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
           }
           
           setLoading(false);
+          requestInProgressRef.current = false;
         }
       }
     };
     
     fetchProducts();
-    
-    // Cleanup function to avoid memory leaks
+
+    // Cleanup function
     return () => {
       isMounted = false;
+      requestInProgressRef.current = false;
     };
-  }, [filters.category, filters.collaborator, filters.group, filters.page, filters.product, filters.searchQuery, filters.sort, productsPerPage, onTotalPagesChange]);
+  }, [filters.category, filters.group, filters.collaborator, filters.sort, filters.product, filters.searchQuery, filters.page, productsPerPage, products]);
 
   return (
     <>
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 py-4">
-          {[...Array(productsPerPage)].map((_, i) => (
+          {Array.from({ length: productsPerPage }).map((_, i) => (
             <div key={i} className="animate-pulse">
               <div className="aspect-[2/3] mb-2 rounded-md bg-gray-200"></div>
               <div className="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>

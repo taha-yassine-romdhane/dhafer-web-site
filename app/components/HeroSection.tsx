@@ -26,8 +26,42 @@ export default function HeroSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Fallback images in case API fails
-  const fallbackImages: CarouselImage[] = [];
+  // Fallback images in case API fails or during loading
+  const fallbackImages: CarouselImage[] = [
+    {
+      id: 1,
+      url: '/images/about/fallback1.jpg',
+      section: 'SliderHome',
+      position: 1,
+      isActive: true,
+      title: null,
+      description: null,
+      buttonText: null,
+      buttonLink: null
+    },
+    {
+      id: 2,
+      url: '/images/about/fallback2.jpg',
+      section: 'SliderHome',
+      position: 2,
+      isActive: true,
+      title: null,
+      description: null,
+      buttonText: null,
+      buttonLink: null
+    },
+    {
+      id: 3,
+      url: '/images/about/fallback3.jpg',
+      section: 'SliderHomeMobile',
+      position: 1,
+      isActive: true,
+      title: null,
+      description: null,
+      buttonText: null,
+      buttonLink: null
+    }
+  ];
   
   // Fetch carousel images from API
   useEffect(() => {
@@ -48,10 +82,12 @@ export default function HeroSection() {
           // If no images or empty array, use fallback
           console.warn('No carousel images found, using fallbacks');
           setError('No carousel images found');
+          setCarouselImages(fallbackImages);
         }
       } catch (err) {
         console.error('Error fetching carousel images:', err);
         setError(err instanceof Error ? err.message : 'Unknown error');
+        setCarouselImages(fallbackImages);
       } finally {
         setLoading(false);
       }
@@ -93,6 +129,7 @@ export default function HeroSection() {
   
   const images = carouselImages.length > 0 ? processImages() : [];
 
+  // Simplified auto-scroll effect
   useEffect(() => {
     // Skip auto-scroll if no images
     if (images.length === 0) return;
@@ -102,17 +139,41 @@ export default function HeroSection() {
       setCurrentImage((prev) => (prev + 1) % images.length);
     }, 5000);
 
-    return () => {
-      // Ensure interval is properly cleared
-      if (interval) clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, [images.length]);
 
-  // Show loading state or empty state if no images
+  // Show fallback images during loading or if no images
   if (loading || images.length === 0) {
+    const fallbackImage = {
+      desktop: '/images/about/fallback1.jpg',
+      mobile: '/images/about/fallback3.jpg',
+      index: 0
+    };
+    
     return (
-      <section className="relative h-[25vh] md:h-[65vh] w-full overflow-hidden bg-gray-50 flex flex-col items-center justify-center">
-        <div className="animate-pulse bg-gray-200 h-full w-full"></div>
+      <section className="relative h-[25vh] md:h-[65vh] w-full overflow-hidden bg-gray-50 flex flex-col">
+        <div className="relative flex-1">
+          <div className="absolute inset-0 transition-opacity duration-1000 ease-in-out">
+            {/* Mobile Image */}
+            <Image
+              src={fallbackImage.mobile}
+              alt="Dar Koftan Slider Image"
+              fill
+              className="object-contain md:hidden"
+              priority={true}
+              sizes="100vw"
+            />
+            {/* Desktop Image */}
+            <Image
+              src={fallbackImage.desktop}
+              alt="Dar Koftan Slider Image"
+              fill
+              className="hidden md:block object-contain"
+              priority={true}
+              sizes="(max-width: 1200px) 50vw, 33vw"
+            />
+          </div>
+        </div>
       </section>
     );
   }
@@ -120,36 +181,34 @@ export default function HeroSection() {
   return (
     <section className="relative h-[25vh] md:h-[65vh] w-full overflow-hidden bg-gray-50 flex flex-col">
       <div className="relative flex-1">
-        {/* Background Images */}
-        {images.map((image, index) => (
-          <Link href={"/collections"} key={index}>
-            <div
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentImage === index ? 'opacity-100' : 'opacity-0'
-                }`}
-            >
+        {/* Background Images - Simplified rendering */}
+        {images.length > 0 && (
+          <Link href={"/collections"}>
+            <div className="absolute inset-0 transition-opacity duration-1000 ease-in-out">
               {/* Mobile Image */}
               <Image
-                src={image.mobile}
+                src={images[currentImage].mobile}
                 alt="Dar Koftan Slider Image"
                 fill
                 className="object-contain md:hidden"
-                priority={index === 0}
+                priority={true}
                 sizes="100vw"
               />
               {/* Desktop Image */}
               <Image
-                src={image.desktop}
+                src={images[currentImage].desktop}
                 alt="Dar Koftan Slider Image"
                 fill
                 className="hidden md:block object-contain"
-                priority={index === 0}
+                priority={true}
                 sizes="(max-width: 1200px) 50vw, 33vw"
               />
               {/* Overlay for better text readability */}
               <div className="absolute inset-0" />
             </div>
           </Link>
-        ))}
+        )}
+
 
         {/* Image Navigation Dots */}
         <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2 md:flex">

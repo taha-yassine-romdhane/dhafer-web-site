@@ -7,6 +7,7 @@ import { IOSOptimizations } from "@/components/ios-optimizations";
 import Navbar from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { CartDropdown } from "@/components/cart-dropdown";
+import Script from 'next/script';
 
 
 export default function RootLayout({
@@ -89,6 +90,7 @@ export default function RootLayout({
             <Footer />
           </CartProvider>
         </AuthProvider>
+        {/* Performance monitoring removed to fix stability issues */}
       </body>
     </html>
   );
