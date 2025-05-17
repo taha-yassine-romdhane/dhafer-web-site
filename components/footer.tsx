@@ -79,9 +79,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-[#D4AF37]">DAR KOFTAN EL ASIL</h3>
+            <h3 className="text-lg font-bold text-[#D4AF37]">DAR AL KOFTAN AL ASIL</h3>
             <p className="text-sm text-gray-600">
-              Dar Koftan est votre destination de choix pour des caftans traditionnels de haute qualité.
+              Dar Al Koftan Al Assil est votre destination de choix pour des caftans traditionnels de haute qualité.
             </p>
             {/* Social Links */}
             <div className="flex space-x-6">
