@@ -30,6 +30,7 @@ export default function RootLayout({
         />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <meta name="theme-color" content="#D4AF37" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         
         {/* Structured data for business */}
         <script 
