@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image, { ImageProps } from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -25,26 +25,25 @@ export function OptimizedImage({
 }: OptimizedImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState(false);
-  const [isIntersecting, setIsIntersecting] = useState(false);
+  const [isIntersecting, setIsIntersecting] = useState(priority); // Start as true if priority
+  const imageRef = useRef<HTMLDivElement>(null);
   
   // Determine loading strategy
   const loading = propLoading || (priority ? "eager" : "lazy");
 
   useEffect(() => {
-    // Only set up intersection observer if not priority
+    // Skip observer if priority is true
     if (priority) {
-      setIsIntersecting(true);
       return;
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsIntersecting(true);
-            observer.disconnect();
-          }
-        });
+        // Check if the image element is intersecting
+        if (entries[0]?.isIntersecting) {
+          setIsIntersecting(true);
+          observer.disconnect();
+        }
       },
       {
         rootMargin: "200px", // Start loading when image is 200px from viewport
@@ -52,11 +51,9 @@ export function OptimizedImage({
       }
     );
 
-    const currentId = `image-${Math.random().toString(36).substring(2, 9)}`;
-    const element = document.getElementById(currentId);
-    
-    if (element) {
-      observer.observe(element);
+    // Observe the current element if it exists
+    if (imageRef.current) {
+      observer.observe(imageRef.current);
     }
 
     return () => {
@@ -71,12 +68,14 @@ export function OptimizedImage({
 
   // Handle image load error
   const handleError = () => {
+    console.error(`Error loading image: ${src}`);
     setError(true);
   };
 
+  // Always render the Image component to avoid hydration issues
   return (
     <div 
-      id={`image-${Math.random().toString(36).substring(2, 9)}`}
+      ref={imageRef}
       className={cn(
         "relative overflow-hidden",
         className
@@ -87,23 +86,22 @@ export function OptimizedImage({
         <div className="absolute inset-0 bg-gray-200 animate-pulse" />
       )}
       
-      {/* Main image */}
-      {(isIntersecting || priority) && (
-        <Image
-          src={error ? fallbackSrc : src}
-          alt={alt}
-          className={cn(
-            fadeIn && "transition-opacity duration-300",
-            isLoaded ? "opacity-100" : "opacity-0",
-            props.fill ? "object-cover" : ""
-          )}
-          onLoadingComplete={handleLoad}
-          onError={handleError}
-          loading={loading}
-          priority={priority}
-          {...props}
-        />
-      )}
+      {/* Always render the image but with conditional visibility */}
+      <Image
+        src={error ? fallbackSrc : src}
+        alt={alt}
+        className={cn(
+          fadeIn && "transition-opacity duration-300",
+          isLoaded ? "opacity-100" : "opacity-0",
+          !isIntersecting && !priority ? "invisible" : "", // Hide but keep in DOM
+          props.fill ? "object-cover" : ""
+        )}
+        onLoadingComplete={handleLoad}
+        onError={handleError}
+        loading={loading}
+        priority={priority}
+        {...props}
+      />
     </div>
   );
 }
