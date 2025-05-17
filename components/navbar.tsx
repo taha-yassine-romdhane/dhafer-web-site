@@ -55,23 +55,31 @@ export default function Navbar() {
   const [categories, setCategories] = useState<Category[]>(staticCategories);
   const [loading, setLoading] = useState(true);
 
+  // Function to disable body scroll
+  const disableBodyScroll = () => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+  };
+
+  // Function to enable body scroll
+  const enableBodyScroll = () => {
+    const scrollY = document.body.style.top;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  };
+
   const toggleMenu = () => {
     // Prevent body scroll when menu is open
     if (!isOpen) {
-      // Save current scroll position
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-      document.body.style.overflow = 'hidden';
+      disableBodyScroll();
     } else {
-      // Restore scroll position
-      const scrollY = document.body.style.top;
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflow = '';
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      enableBodyScroll();
     }
     
     setIsOpen(!isOpen);
@@ -84,6 +92,21 @@ export default function Navbar() {
 
   // Track if component is mounted for memory safety
   const isMountedRef = useRef(true);
+
+  // Effect to reset body styles when navigating away or unmounting
+  useEffect(() => {
+    return () => {
+      // Reset body styles when component unmounts or before navigation
+      if (document.body.style.position === 'fixed') {
+        const scrollY = document.body.style.top;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
+    };
+  }, []);
 
   // Fetch categories from the API
   useEffect(() => {
@@ -378,7 +401,10 @@ export default function Navbar() {
                                 <li key={subcategory.name}>
                                   <Link
                                     href={`/collections?category=${subcategory.query}&group=${subcategory.group}`}
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={() => {
+                                      setIsOpen(false);
+                                      enableBodyScroll(); // Enable scrolling when navigating
+                                    }}
                                     className="block py-1.5 text-gray-600 hover:text-[#D4AF37] transition-colors"
                                   >
                                     {subcategory.name}
@@ -391,7 +417,10 @@ export default function Navbar() {
                               <div className="mt-2">
                                 <Link
                                   href={`/collections?group=${category.subcategories[0]?.group}`}
-                                  onClick={() => setIsOpen(false)}
+                                  onClick={() => {
+                                    setIsOpen(false);
+                                    enableBodyScroll(); // Enable scrolling when navigating
+                                  }}
                                   className="block py-1.5 text-[#D4AF37] font-medium hover:underline"
                                 >
                                   Voir plus ({category.subcategories.length - 10})
