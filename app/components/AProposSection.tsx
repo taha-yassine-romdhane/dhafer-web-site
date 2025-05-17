@@ -58,11 +58,17 @@ export default function AProposSection() {
 
   // Auto-play functionality
   useEffect(() => {
+    // Skip if no images to prevent errors
+    if (images.length === 0) return;
+    
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 5000); // Change slide every 3 seconds
+    }, 5000); // Change slide every 5 seconds
 
-    return () => clearInterval(interval); // Cleanup interval on unmount
+    return () => {
+      // Ensure interval is properly cleared
+      if (interval) clearInterval(interval);
+    };
   }, [images.length]);
 
   // Handle manual navigation

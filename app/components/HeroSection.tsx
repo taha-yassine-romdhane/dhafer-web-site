@@ -94,12 +94,18 @@ export default function HeroSection() {
   const images = carouselImages.length > 0 ? processImages() : [];
 
   useEffect(() => {
+    // Skip auto-scroll if no images
+    if (images.length === 0) return;
+    
     // Auto-scroll every 5 seconds (5000ms)
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % images.length);
     }, 5000);
 
-    return () => clearInterval(interval); // Cleanup on unmount
+    return () => {
+      // Ensure interval is properly cleared
+      if (interval) clearInterval(interval);
+    };
   }, [images.length]);
 
   // Show loading state or empty state if no images

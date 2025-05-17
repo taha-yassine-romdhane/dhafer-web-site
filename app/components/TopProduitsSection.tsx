@@ -22,6 +22,8 @@ export default function TopProduitsSection() {
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchHomeProducts = async () => {
       try {
         setLoading(true)
@@ -33,24 +35,41 @@ export default function TopProduitsSection() {
         }
 
         const data = await response.json()
-        setProducts(data)
+        // Only update state if component is still mounted
+        if (isMounted) {
+          setProducts(data)
+        }
       } catch (error) {
         console.error('Error fetching home products:', error)
-        setError('Failed to load home products')
+        if (isMounted) {
+          setError('Failed to load home products')
+        }
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
 
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
+      if (isMounted) {
+        setIsMobile(window.innerWidth < 768)
+      }
     }
 
-    fetchHomeProducts()
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
+    // Use a try-catch block to handle any potential errors during initialization
+    try {
+      fetchHomeProducts()
+      checkMobile()
+      window.addEventListener('resize', checkMobile)
+    } catch (err) {
+      console.error('Error during component initialization:', err)
+    }
 
-    return () => window.removeEventListener('resize', checkMobile)
+    return () => {
+      isMounted = false;
+      window.removeEventListener('resize', checkMobile)
+    }
   }, [])
 
   if (loading) {

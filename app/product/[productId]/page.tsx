@@ -328,7 +328,6 @@ export default function ProductPage({ params }: { params: { productId: string } 
               priority
               quality={90}
               sizes="(max-width: 720px) 100vw, 50vw"
-              fadeIn={false}
             />
           </div>
         </div>
