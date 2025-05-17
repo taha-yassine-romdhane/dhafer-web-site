@@ -106,7 +106,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("cart");
   };
 
-  const totalPrice = Array.isArray(items) ? items.reduce((total, item) => total + item.price * item.quantity, 0) : 0;
+  const totalPrice = Array.isArray(items) ? items.reduce((total, item) => {
+    // Use salePrice if available, otherwise use regular price
+    const effectivePrice = item.salePrice !== null && item.salePrice !== undefined ? item.salePrice : item.price;
+    return total + effectivePrice * item.quantity;
+  }, 0) : 0;
   const totalItems = Array.isArray(items) ? items.reduce((total, item) => total + item.quantity, 0) : 0;
 
   return (

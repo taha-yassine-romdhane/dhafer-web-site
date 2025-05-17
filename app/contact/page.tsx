@@ -8,7 +8,6 @@ import { MapPin, Mail, Phone, Send, Clock, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useAuth } from "@/contexts/auth-context";
-import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -32,7 +31,7 @@ const locations = [
     city: "Jemmel",
     address: "105 Av. Habib Bourguiba, Jemmel",
     phone: "56 047 691",
-    email: "ddarelkoftanalassil@gmail.com",
+    email: "contact@daralkoftanalassil.com",
     hours: "08:30 - 20:00",
     image: "/jemmel-store.jpg",
     mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3243.184097027917!2d10.759540299999998!3d35.6231878!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1302118d3435b8f7%3A0x23da68cbce53bd56!2zREFSIEtPRlRBTiBBTCBBU1NJTCBKRU1NRUwgX9iv2KfYsSDYp9mE2YLZgdi32KfZhiDYp9mE2KPYtdmK2YQg2KzZhdin2YQ!5e0!3m2!1sfr!2stn!4v1746106948690!5m2!1sfr!2stn",
@@ -41,7 +40,7 @@ const locations = [
     city: "Sousse",
     address: "Avenue Khezama, Sousse",
     phone: "56 095 021",
-    email: "ddarelkoftanalassil@gmail.com",
+    email: "contact@daralkoftanalassil.com",
     hours: "09:00 - 20:00",
     image: "/sousse-store.jpg",
     mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3235.6789543261087!2d10.583948776268583!3d35.82642167271041!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x130212b6b0a9d0a1%3A0x1b1c0a0b0b0b0b0b!2sAvenue%20Khezama%2C%20Sousse!5e0!3m2!1sen!2stn!4v1706799661646!5m2!1sen!2stn",
@@ -50,7 +49,7 @@ const locations = [
     city: "Tunis",
     address: "40 Av. Fattouma Bourguiba, Tunis",
     phone: "56 048 365",
-    email: "ddarelkoftanalassil@gmail.com",
+    email: "contact@daralkoftanalassil.com",
     hours: "09:00 - 20:00",
     image: "/tunis-store.jpg",
     mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3235.6789543261087!2d10.583948776268583!3d35.82642167271041!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x130212b6b0a9d0a1%3A0x1b1c0a0b0b0b0b0b!2s40%20Avenue%20Fattouma%20Bourguiba%2C%20Tunis!5e0!3m2!1sen!2stn!4v1706799661646!5m2!1sen!2stn",

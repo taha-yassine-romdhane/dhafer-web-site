@@ -211,7 +211,7 @@ export default function CartPage() {
                           </p>
                         </div>
                         <p className="text-base font-medium text-[#D4AF37]">
-                          {Number(item.price * item.quantity).toFixed(2)} TND
+                          {Number((item.salePrice !== null && item.salePrice !== undefined ? item.salePrice : item.price) * item.quantity).toFixed(2)} TND
                         </p>
                       </div>
                       <div className="flex items-center justify-between mt-auto">
@@ -377,12 +377,12 @@ export default function CartPage() {
                     <div>
                       <span className="font-medium">{item.name}</span>
                       <div className="text-sm text-gray-600">
-                        {item.quantity}x @ {item.price.toFixed(2)} TND
+                        {item.quantity}x @ {(item.salePrice !== null && item.salePrice !== undefined ? item.salePrice : item.price).toFixed(2)} TND
                         {item.selectedSize && ` - Taille: ${item.selectedSize}`}
                         {item.selectedColor && ` - Couleur: ${item.selectedColor}`}
                       </div>
                     </div>
-                    <span className="text-[#D4AF37]">{(item.quantity * item.price).toFixed(2)} TND</span>
+                    <span className="text-[#D4AF37]">{(item.quantity * (item.salePrice !== null && item.salePrice !== undefined ? item.salePrice : item.price)).toFixed(2)} TND</span>
                   </div>
                 ))}
               </div>
