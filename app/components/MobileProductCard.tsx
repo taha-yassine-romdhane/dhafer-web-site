@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Product, ColorVariant, ProductImage, Stock } from "@prisma/client";
 import { useCart } from "@/lib/context/cart-context";
 import { cn } from "@/lib/utils";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 type MobileProductCardProps = {
   product: Product & {
@@ -43,13 +43,13 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
         onMouseLeave={() => setIsHovered(false)}
       >
         <Link href={`/product/${product.id}`}>
-          <Image
+          <OptimizedImage
             src={imageUrl}
             alt={product.name}
             fill
             className="object-cover rounded-lg"
             sizes="(max-width: 768px) 50vw"
-            priority={false}
+            fadeIn={true}
           />
           {product.salePrice && (
             <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded">
@@ -106,12 +106,13 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
                         : "border border-gray-200 hover:border-gray-300"
                     )}
                   >
-                    <Image
+                    <OptimizedImage
                       src={variantImage.url}
                       alt={variant.color}
                       fill
                       className="object-cover"
                       sizes="1.5rem"
+                      lowQualityPlaceholder={false}
                     />
                   </button>
                 );
@@ -137,12 +138,13 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
                       : "border border-gray-200 hover:border-gray-300"
                   )}
                 >
-                  <Image
+                  <OptimizedImage
                     src={variantImage.url}
                     alt={variant.color}
                     fill
                     className="object-cover"
                     sizes="1.75rem"
+                    lowQualityPlaceholder={false}
                   />
                 </button>
               );

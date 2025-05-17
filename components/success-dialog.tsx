@@ -7,7 +7,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import Image from "next/image";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import { Product, ProductImage, ColorVariant } from "@prisma/client";
 
 interface SuccessDialogProps {
@@ -49,11 +49,13 @@ export function SuccessDialog({
             <p>{message}</p>
             <div className="flex items-center gap-4 mt-4">
               <div className="relative w-24 h-24">
-                <Image
+                <OptimizedImage
                   src={mainImage}
                   alt={`${product.name} - ${selectedColorVariant.color}`}
                   fill
                   className="object-cover rounded-lg"
+                  priority={true}
+                  fadeIn={false}
                 />
               </div>
               <div className="flex-1">

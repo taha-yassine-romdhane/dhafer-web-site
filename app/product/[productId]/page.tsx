@@ -5,8 +5,8 @@ import { Product, ProductImage, ColorVariant } from "@prisma/client";
 import { useCart } from "@/lib/context/cart-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { Loader2, CheckCircle2 } from "lucide-react";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import { DirectPurchaseForm } from "@/components/direct-purchase-form";
 import { ProductAvailability } from "@/components/product-availability";
 import { toast } from "sonner";
@@ -303,12 +303,13 @@ export default function ProductPage({ params }: { params: { productId: string } 
                   selectedImageUrl === image.url && "ring-2 ring-[#D4AF37]"
                 )}
               >
-                <Image
+                <OptimizedImage
                   src={image.url}
                   alt={`${product.name} - ${image.position}`}
                   fill
                   className="object-cover"
                   sizes="80px"
+                  lowQualityPlaceholder={false}
                 />
               </button>
             ))}
@@ -320,7 +321,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
-            <Image
+            <OptimizedImage
               src={selectedImageUrl}
               alt={product.name}
               fill
@@ -328,6 +329,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
               priority
               quality={90}
               sizes="(max-width: 720px) 100vw, 50vw"
+              fadeIn={false}
             />
           </div>
         </div>
@@ -378,12 +380,13 @@ export default function ProductPage({ params }: { params: { productId: string } 
                     aria-label={variant.color}
                   >
                     <div className="absolute inset-[-50%] w-[200%] h-[200%]">
-                      <Image
+                      <OptimizedImage
                         src={variantMainImage}
                         alt={`${product.name} in ${variant.color}`}
                         fill
                         className="object-cover transition-transform duration-200 scale-110 group-hover:scale-125"
                         sizes="40px"
+                        lowQualityPlaceholder={false}
                       />
                     </div>
                   </button>
