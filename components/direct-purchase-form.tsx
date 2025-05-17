@@ -73,6 +73,7 @@ interface DirectPurchaseFormProps {
   productInfo: {
     name: string
     price: number
+    salePrice?: number | null
     mainImageUrl: string | null
     email?: string
   }
@@ -348,7 +349,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Prix unitaire:</span>
-            <span className="font-medium">{productInfo.price} TND</span>
+            <span className="font-medium">{productInfo.salePrice !== null && productInfo.salePrice !== undefined ? productInfo.salePrice : productInfo.price} TND</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Frais de livraison:</span>
@@ -357,7 +358,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
           <div className="border-t pt-2 mt-2 flex justify-between">
             <span className="text-gray-600 font-semibold">Total:</span>
             <span className="text-lg font-bold text-[#D4AF37]">
-              {productInfo.price * (formData?.quantity || 1) + 6} TND
+              {(productInfo.salePrice !== null && productInfo.salePrice !== undefined ? productInfo.salePrice : productInfo.price) * (formData?.quantity || 1) + 6} TND
             </span>
           </div>
         </div>

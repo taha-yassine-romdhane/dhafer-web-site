@@ -78,7 +78,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Fetch the product to verify it exists
+    // Fetch the product to verify it exists and get the correct price
     const product = await prisma.product.findUnique({
       where: { id: Number(data.productId) },
       include: {
@@ -100,13 +100,16 @@ export async function POST(request: Request) {
       );
     }
 
+    // Determine the correct price to use (sale price or regular price)
+    const effectivePrice = product?.salePrice !== null && product?.salePrice !== undefined ? product.salePrice : product?.price;
+    
     // Create the order
     const order = await prisma.order.create({
       data: {
         customerName: data.fullName,
         phoneNumber: data.phone,
         address: `${data.address}${data.governorate ? `, ${data.governorate}` : ''}`,
-        totalAmount: Number(data.price) * Number(data.quantity),
+        totalAmount: effectivePrice * Number(data.quantity),
         status: 'PENDING',
         userId: userId ? Number(userId) : undefined, // Associate with user if logged in
         items: {
@@ -116,7 +119,7 @@ export async function POST(request: Request) {
               colorVariantId: Number(data.colorId),
               sizeId: Number(data.sizeId),
               quantity: Number(data.quantity),
-              price: Number(data.price),
+              price: effectivePrice, // Use the effective price (sale price or regular price)
             },
           ],
         },

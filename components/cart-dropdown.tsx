@@ -47,7 +47,10 @@ export function CartDropdown() {
     return price.toFixed(2);
   };
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = items.reduce((sum, item) => {
+    const effectivePrice = item.salePrice !== null && item.salePrice !== undefined ? item.salePrice : item.price;
+    return sum + effectivePrice * item.quantity;
+  }, 0);
 
   return (
     <div className="fixed top-20 right-4 z-50 w-96 bg-white rounded-lg shadow-xl border border-[#D4AF37]/20">
@@ -119,7 +122,7 @@ export function CartDropdown() {
 
               <div className="text-right">
                 <p className="font-medium text-[#D4AF37]">
-                  TND{formatPrice(item.price * item.quantity)}
+                  TND{formatPrice((item.salePrice !== null && item.salePrice !== undefined ? item.salePrice : item.price) * item.quantity)}
                 </p>
                 <button
                   onClick={() =>
