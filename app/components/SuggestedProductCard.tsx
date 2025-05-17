@@ -2,9 +2,9 @@
 
 import { useState } from "react"
 import { Product, ColorVariant, ProductImage } from "@prisma/client"
+import Image from "next/image"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { OptimizedImage } from "@/components/ui/optimized-image"
 
 interface SuggestedProductCardProps {
   product: Product & {
@@ -45,7 +45,7 @@ export default function SuggestedProductCard({ product }: SuggestedProductCardPr
       <Link href={`/product/${product.id}`} className="block">
         {/* Main Image Container */}
         <div className="relative aspect-[3/4] overflow-hidden">
-          <OptimizedImage
+          <Image
             src={mainImage}
             alt={`${product.name} - ${currentColorVariant?.color}`}
             fill
@@ -107,7 +107,7 @@ export default function SuggestedProductCard({ product }: SuggestedProductCardPr
                   }}
                 >
                   {variant.mainImage && (
-                    <OptimizedImage
+                    <Image
                       src={variant.mainImage.url}
                       alt={variant.color}
                       fill

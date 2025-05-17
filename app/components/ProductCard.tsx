@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Product, ColorVariant, ProductImage } from "@prisma/client"
+import Image from "next/image"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, Palette } from "lucide-react"
-import { OptimizedImage } from "@/components/ui/optimized-image"
+
 
 interface ProductCardProps {
   product: Product & {
@@ -82,7 +83,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <Link href={`/product/${product.id}`} className="block">
         {/* Main Image Container */}
         <div className="relative aspect-[3/4] overflow-hidden">
-          <OptimizedImage
+          <Image
             src={currentImage}
             alt={`${product.name} - ${currentColorVariant?.color}`}
             fill
@@ -90,7 +91,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={currentImageIndex === 0} // Only prioritize the first image
             loading={currentImageIndex === 0 ? "eager" : "lazy"}
-            fadeIn={true}
           />
 
           {/* Mobile Navigation Controls */}
@@ -190,14 +190,13 @@ export default function ProductCard({ product }: ProductCardProps) {
                   style={{ zIndex: 3 - idx }}
                 >
                   {variant.mainImage && (
-                    <OptimizedImage
+                    <Image
                       src={variant.mainImage.url}
                       alt={variant.color}
                       fill
                       className="object-cover"
                       sizes="24px"
                       quality={30}
-                      lowQualityPlaceholder={false}
                     />
                   )}
                 </div>
@@ -251,13 +250,12 @@ export default function ProductCard({ product }: ProductCardProps) {
                   >
                     <div className="relative aspect-square">
                       {variant.mainImage && (
-                        <OptimizedImage
+                        <Image
                           src={variant.mainImage.url}
                           alt={variant.color}
                           fill
                           className="object-cover"
                           sizes="(max-width: 768px) 50vw, 200px"
-                          lowQualityPlaceholder={true}
                         />
                       )}
                     </div>

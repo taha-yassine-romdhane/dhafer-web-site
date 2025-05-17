@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { Product, ColorVariant, ProductImage } from "@prisma/client"
+import Image from "next/image"
 import Link from "next/link"
-import { OptimizedImage } from "@/components/ui/optimized-image"
 
 interface SuggestedMobileProductCardProps {
   product: Product & {
@@ -30,7 +30,7 @@ export default function SuggestedMobileProductCard({ product }: SuggestedMobileP
       {/* Image and Promo Tag */}
       <div className="relative aspect-[3/4] mb-2">
         <Link href={`/product/${product.id}`}>
-          <OptimizedImage
+          <Image
             src={imageUrl}
             alt={product.name}
             fill
@@ -91,7 +91,7 @@ export default function SuggestedMobileProductCard({ product }: SuggestedMobileP
                       : "border-gray-200"
                   }`}
                 >
-                  <OptimizedImage
+                  <Image
                     src={variantImage.url}
                     alt={variant.color}
                     fill

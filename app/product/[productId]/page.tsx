@@ -6,7 +6,7 @@ import { useCart } from "@/lib/context/cart-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Loader2, CheckCircle2 } from "lucide-react";
-import { OptimizedImage } from "@/components/ui/optimized-image";
+import Image from "next/image";
 import { DirectPurchaseForm } from "@/components/direct-purchase-form";
 import { ProductAvailability } from "@/components/product-availability";
 import { toast } from "sonner";
@@ -303,13 +303,12 @@ export default function ProductPage({ params }: { params: { productId: string } 
                   selectedImageUrl === image.url && "ring-2 ring-[#D4AF37]"
                 )}
               >
-                <OptimizedImage
+                <Image
                   src={image.url}
                   alt={`${product.name} - ${image.position}`}
                   fill
                   className="object-cover"
                   sizes="80px"
-                  lowQualityPlaceholder={false}
                 />
               </button>
             ))}
@@ -321,7 +320,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
-            <OptimizedImage
+            <Image
               src={selectedImageUrl}
               alt={product.name}
               fill
@@ -380,13 +379,12 @@ export default function ProductPage({ params }: { params: { productId: string } 
                     aria-label={variant.color}
                   >
                     <div className="absolute inset-[-50%] w-[200%] h-[200%]">
-                      <OptimizedImage
+                      <Image
                         src={variantMainImage}
                         alt={`${product.name} in ${variant.color}`}
                         fill
                         className="object-cover transition-transform duration-200 scale-110 group-hover:scale-125"
                         sizes="40px"
-                        lowQualityPlaceholder={false}
                       />
                     </div>
                   </button>
