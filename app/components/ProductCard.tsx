@@ -35,7 +35,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   // Get current color variant and its images
   const currentColorVariant = colorVariantsWithMainImages[currentColorIndex]
   const images = currentColorVariant?.images || []
-  const currentImage = images[currentImageIndex]?.url || '/default-image.jpg'
+  const currentImage = images[currentImageIndex]?.url || ''
 
   // Auto-advance images on hover
   useEffect(() => {
@@ -78,15 +78,22 @@ export default function ProductCard({ product }: ProductCardProps) {
       <Link href={`/product/${product.id}`} className="block">
         {/* Main Image Container */}
         <div className="relative aspect-[3/4] overflow-hidden">
-          <Image
-            src={currentImage}
-            alt={`${product.name} - ${currentColorVariant?.color}`}
-            fill
-            className="object-cover transform transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority={currentImageIndex === 0} // Only prioritize the first image
-            loading={currentImageIndex === 0 ? "eager" : "lazy"}
-          />
+          {!currentImage ? (
+            // Skeleton loader when image is not available
+            <div className="w-full h-full animate-pulse bg-gray-200 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-gray-300"></div>
+            </div>
+          ) : (
+            <Image
+              src={currentImage}
+              alt={`${product.name} - ${currentColorVariant?.color}`}
+              fill
+              className="object-cover transform transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={currentImageIndex === 0} // Only prioritize the first image
+              loading={currentImageIndex === 0 ? "eager" : "lazy"}
+            />
+          )}
 
           {/* Mobile Navigation Controls */}
           {isMobile && images.length > 1 && (

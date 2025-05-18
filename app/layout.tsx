@@ -1,14 +1,33 @@
 import './globals.css'
 import './ios-optimizations.css';
+import './skeleton-loaders.css';
 
 import { CartProvider } from "@/lib/context/cart-context";
 import { AuthProvider } from "@/contexts/auth-context";
 import { IOSOptimizations } from "@/components/ios-optimizations";
+import { PerformanceOptimizations } from "@/components/performance-optimizations";
 import Navbar from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { CartDropdown } from "@/components/cart-dropdown";
 import Script from 'next/script';
+import { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import dynamic from 'next/dynamic';
 
+// Load Inter font with subset optimization
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'sans-serif'],
+});
+
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://www.daralkoftanalassil.com'),
+  title: 'Dar El Koftan Al Assil - Vêtements traditionnels tunisiens',
+  description: 'Boutique en ligne de vêtements traditionnels tunisiens de haute qualité. Découvrez notre collection de kaftans, jabadors et accessoires.',
+}
 
 export default function RootLayout({
   children,
@@ -16,20 +35,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" style={{ WebkitTextSizeAdjust: 'none' }}>
+    <html lang="fr" style={{ WebkitTextSizeAdjust: 'none' }} className={inter.className}>
       <head>
-        {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-K62LW3ZTXY"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-K62LW3ZTXY');
-            `
-          }}
+        {/* Preload critical assets */}
+        <link rel="preload" href="/logo.webp" as="image" />
+        
+        {/* Google tag (gtag.js) - deferred to improve performance */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-K62LW3ZTXY"
+          strategy="afterInteractive"
         />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-K62LW3ZTXY');
+          `}
+        </Script>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <meta name="theme-color" content="#D4AF37" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -80,8 +103,9 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <CartProvider>
-            {/* iOS optimizations component */}
+            {/* Performance and compatibility optimizations */}
             <IOSOptimizations />
+            <PerformanceOptimizations />
             <Navbar />
             <CartDropdown />
             <main className="min-h-screen">

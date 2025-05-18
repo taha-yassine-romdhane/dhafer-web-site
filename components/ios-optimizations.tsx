@@ -13,6 +13,9 @@ export function IOSOptimizations() {
     // Only run on client side
     if (typeof window === 'undefined') return;
     
+    // Apply core optimizations for all browsers
+    applyCoreOptimizations();
+    
     // Check if we're on iOS
     if (isIOS()) {
       console.log('iOS device detected, applying optimizations');
@@ -151,6 +154,118 @@ function monitorLayoutShifts() {
 }
 
 /**
+ * Apply core optimizations for all browsers
+ */
+function applyCoreOptimizations() {
+  // Optimize images with loading="lazy" for non-critical images
+  setTimeout(() => {
+    const images = document.querySelectorAll('img:not([loading])');
+    images.forEach((img, index) => {
+      const imgElement = img as HTMLImageElement;
+      const rect = imgElement.getBoundingClientRect();
+      
+      // If image is not in the initial viewport, make it lazy load
+      if (rect.top > window.innerHeight) {
+        imgElement.loading = 'lazy';
+        
+        // For images far down the page, also use low priority fetch
+        if (rect.top > window.innerHeight * 2) {
+          imgElement.fetchPriority = 'low';
+        }
+      }
+    });
+  }, 1000);
+  
+  // Optimize script execution
+  optimizeScriptExecution();
+  
+  // Add intersection observer for lazy rendering of complex components
+  setupLazyRendering();
+}
+
+/**
+ * Optimize script execution to reduce TBT
+ */
+function optimizeScriptExecution() {
+  // Use requestIdleCallback for non-critical operations
+  const requestIdleCallback = window.requestIdleCallback || 
+    ((cb) => setTimeout(() => {
+      const start = Date.now();
+      cb({
+        didTimeout: false,
+        timeRemaining: () => Math.max(0, 50 - (Date.now() - start))
+      });
+    }, 1));
+  
+  // Queue for tasks to execute during idle time
+  const taskQueue: (() => void)[] = [];
+  
+  // Add task to queue
+  (window as any).addIdleTask = (task: () => void) => {
+    taskQueue.push(task);
+    scheduleTaskExecution();
+  };
+  
+  // Execute tasks during idle time
+  function scheduleTaskExecution() {
+    if (taskQueue.length === 0) return;
+    
+    requestIdleCallback((deadline) => {
+      while (deadline.timeRemaining() > 0 && taskQueue.length > 0) {
+        const task = taskQueue.shift();
+        if (task) task();
+      }
+      
+      if (taskQueue.length > 0) {
+        scheduleTaskExecution();
+      }
+    });
+  }
+}
+
+/**
+ * Setup lazy rendering for complex components
+ */
+function setupLazyRendering() {
+  // Create intersection observer
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const element = entry.target;
+          
+          // If this element has deferred rendering, enable it now
+          if (element.classList.contains('defer-render')) {
+            element.classList.remove('defer-render');
+            element.classList.add('render-enabled');
+            
+            // Execute any initialization scripts
+            const scriptId = element.getAttribute('data-init-script');
+            if (scriptId) {
+              const initFn = (window as any)[scriptId];
+              if (typeof initFn === 'function') {
+                initFn(element);
+              }
+            }
+          }
+          
+          // Stop observing once rendered
+          observer.unobserve(element);
+        }
+      });
+    },
+    { rootMargin: '200px' }
+  );
+  
+  // Find elements marked for deferred rendering
+  setTimeout(() => {
+    document.querySelectorAll('.defer-render').forEach(el => {
+      observer.observe(el);
+    });
+  }, 1000);
+}
+
+/**
  * Clean up unused resources to free memory
  */
 function cleanupUnusedResources() {
@@ -169,4 +284,16 @@ function cleanupUnusedResources() {
   document.querySelectorAll('.offscreen-content').forEach(el => {
     el.classList.add('ios-simplified');
   });
+  
+  // Release memory from image cache for offscreen images
+  if ('createImageBitmap' in window) {
+    // This forces the browser to release some image memory
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.clearRect(0, 0, 1, 1);
+    }
+  }
 }

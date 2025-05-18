@@ -26,42 +26,8 @@ export default function HeroSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Fallback images in case API fails or during loading
-  const fallbackImages: CarouselImage[] = [
-    {
-      id: 1,
-      url: '/images/about/fallback1.jpg',
-      section: 'SliderHome',
-      position: 1,
-      isActive: true,
-      title: null,
-      description: null,
-      buttonText: null,
-      buttonLink: null
-    },
-    {
-      id: 2,
-      url: '/images/about/fallback2.jpg',
-      section: 'SliderHome',
-      position: 2,
-      isActive: true,
-      title: null,
-      description: null,
-      buttonText: null,
-      buttonLink: null
-    },
-    {
-      id: 3,
-      url: '/images/about/fallback3.jpg',
-      section: 'SliderHomeMobile',
-      position: 1,
-      isActive: true,
-      title: null,
-      description: null,
-      buttonText: null,
-      buttonLink: null
-    }
-  ];
+  // Empty fallback array - we'll use skeletons instead of fallback images
+  const fallbackImages: CarouselImage[] = [];
   
   // Fetch carousel images from API
   useEffect(() => {
@@ -142,36 +108,32 @@ export default function HeroSection() {
     return () => clearInterval(interval);
   }, [images.length]);
 
-  // Show fallback images during loading or if no images
+  // Show skeleton loaders during loading or if no images
   if (loading || images.length === 0) {
-    const fallbackImage = {
-      desktop: '/images/about/fallback1.jpg',
-      mobile: '/images/about/fallback3.jpg',
-      index: 0
-    };
-    
     return (
       <section className="relative h-[25vh] md:h-[65vh] w-full overflow-hidden bg-gray-50 flex flex-col">
         <div className="relative flex-1">
           <div className="absolute inset-0 transition-opacity duration-1000 ease-in-out">
-            {/* Mobile Image */}
-            <Image
-              src={fallbackImage.mobile}
-              alt="Dar Koftan Slider Image"
-              fill
-              className="object-contain md:hidden"
-              priority={true}
-              sizes="100vw"
-            />
-            {/* Desktop Image */}
-            <Image
-              src={fallbackImage.desktop}
-              alt="Dar Koftan Slider Image"
-              fill
-              className="hidden md:block object-contain"
-              priority={true}
-              sizes="(max-width: 1200px) 50vw, 33vw"
-            />
+            {/* Mobile Skeleton */}
+            <div className="md:hidden w-full h-full flex items-center justify-center">
+              <div className="animate-pulse bg-gray-200 w-full h-full flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-gray-300"></div>
+              </div>
+            </div>
+            
+            {/* Desktop Skeleton */}
+            <div className="hidden md:flex w-full h-full items-center justify-center">
+              <div className="animate-pulse bg-gray-200 w-full h-full flex items-center justify-center">
+                <div className="w-24 h-24 rounded-full bg-gray-300"></div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Skeleton for navigation dots */}
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
+            <div className="animate-pulse w-4 h-2 rounded-full bg-gray-300"></div>
+            <div className="animate-pulse w-2 h-2 rounded-full bg-gray-300"></div>
+            <div className="animate-pulse w-2 h-2 rounded-full bg-gray-300"></div>
           </div>
         </div>
       </section>

@@ -1,0 +1,103 @@
+/* Skeleton loader styles for improved perceived performance */
+
+/* Base skeleton pulse animation */
+@keyframes skeletonPulse {
+  0% {
+    background-color: rgba(226, 226, 226, 0.6);
+  }
+  50% {
+    background-color: rgba(226, 226, 226, 0.9);
+  }
+  100% {
+    background-color: rgba(226, 226, 226, 0.6);
+  }
+}
+
+/* Skeleton loader base style */
+.skeleton-loader {
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  background-color: rgba(226, 226, 226, 0.6);
+  border-radius: 4px;
+  display: inline-block;
+  line-height: 1;
+  width: 100%;
+  height: 100%;
+}
+
+/* Skeleton text lines */
+.skeleton-text {
+  height: 1em;
+  margin-bottom: 0.5em;
+  border-radius: 3px;
+}
+
+/* Skeleton image placeholder */
+.skeleton-image {
+  aspect-ratio: 3/4;
+  width: 100%;
+  border-radius: 8px;
+  position: relative;
+}
+
+/* Skeleton image with circle in center */
+.skeleton-image::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: rgba(226, 226, 226, 0.9);
+}
+
+/* Skeleton card */
+.skeleton-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Skeleton button */
+.skeleton-button {
+  height: 2.5rem;
+  width: 8rem;
+  border-radius: 9999px;
+}
+
+/* Optimizations for deferred rendering */
+.defer-render {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.render-enabled {
+  opacity: 1;
+}
+
+/* iOS specific optimizations */
+.ios .offscreen-content {
+  will-change: auto !important;
+  transform: translateZ(0);
+}
+
+.ios-simplified {
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-loader {
+    animation: none;
+  }
+  
+  .defer-render, .render-enabled {
+    transition: none;
+  }
+}

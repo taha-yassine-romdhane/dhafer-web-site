@@ -69,7 +69,7 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
         </Link>
         
         {/* Price */}
-        <div className="flex flex-col">
+        <div className="flex items-center gap-2">
           {product.salePrice ? (
             <>
               <span className="text-xs text-gray-500 line-through">

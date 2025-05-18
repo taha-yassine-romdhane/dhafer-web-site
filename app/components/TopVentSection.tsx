@@ -20,17 +20,9 @@ interface CarouselImage {
 }
 
 const TopVentSection: React.FC = () => {
-  // Fallback images for when no images are found in the database or during loading
-  // Using the same images from the about section for consistency
-  const fallbackImages = [
-    '/images/about/fallback1.jpg',
-    '/images/about/fallback2.jpg',
-    '/images/about/fallback3.jpg'
-  ];
-  
-  // State for carousel images
-  const [imagesTop1, setImagesTop1] = useState<string[]>(fallbackImages);
-  const [imagesBottom, setImagesBottom] = useState<string[]>(fallbackImages);
+  // State for carousel images - initialize with empty arrays instead of fallback images
+  const [imagesTop1, setImagesTop1] = useState<string[]>([]);
+  const [imagesBottom, setImagesBottom] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentIndexTop, setCurrentIndexTop] = useState(0);
@@ -132,50 +124,68 @@ const TopVentSection: React.FC = () => {
       <div className="absolute top-0 right-0 w-full md:w-1/2 h-full z-0 flex gap-2 sm:gap-4">
         {/* First Carousel (Slides Up) */}
         <div className="w-1/2 md:w-1/3 h-full overflow-hidden">
-          <div
-            className="h-full flex flex-col transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateY(-${currentIndexTop * 100}%)` }}
-          >
-            {imagesTop1.map((src, index) => (
-              <div key={index} className="min-h-full w-full relative aspect-[3/4] md:aspect-[2/3]">
-                <Image
-                  src={src}
-                  alt={`Top Ventes Image ${index + 1}`}
-                  fill
-                  className="object-cover rounded-lg"
-                  priority={index === 0}
-                  sizes="(max-width: 768px) 33vw, 25vw"
-                  quality={75}
-                />
+          {loading || imagesTop1.length === 0 ? (
+            /* Skeleton Loader for First Carousel */
+            <div className="h-full w-full">
+              <div className="min-h-full w-full relative aspect-[3/4] md:aspect-[2/3] animate-pulse bg-gray-200 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gray-300"></div>
               </div>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div
+              className="h-full flex flex-col transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateY(-${currentIndexTop * 100}%)` }}
+            >
+              {imagesTop1.map((src, index) => (
+                <div key={index} className="min-h-full w-full relative aspect-[3/4] md:aspect-[2/3]">
+                  <Image
+                    src={src}
+                    alt={`Top Ventes Image ${index + 1}`}
+                    fill
+                    className="object-cover rounded-lg"
+                    priority={index === 0}
+                    sizes="(max-width: 768px) 33vw, 25vw"
+                    quality={75}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Second Carousel (Slides Down) */}
         <div className="w-1/2 md:w-1/3 h-full overflow-hidden">
-          <div
-            className="h-full flex flex-col transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateY(-${currentIndexBottom * 100}%)` }}
-          >
-            {imagesBottom.map((src, index) => (
-              <div
-                key={index}
-                className="min-h-full w-full relative aspect-[3/4] md:aspect-[2/3]"
-              >
-                <Image
-                  src={src}
-                  alt={`Top Ventes Image ${index + 4}`}
-                  fill
-                  className="object-cover rounded-lg"
-                  priority={index === 0}
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                  sizes="(max-width: 768px) 33vw, 25vw"
-                  quality={75}
-                />
+          {loading || imagesBottom.length === 0 ? (
+            /* Skeleton Loader for Second Carousel */
+            <div className="h-full w-full">
+              <div className="min-h-full w-full relative aspect-[3/4] md:aspect-[2/3] animate-pulse bg-gray-200 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gray-300"></div>
               </div>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div
+              className="h-full flex flex-col transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateY(-${currentIndexBottom * 100}%)` }}
+            >
+              {imagesBottom.map((src, index) => (
+                <div
+                  key={index}
+                  className="min-h-full w-full relative aspect-[3/4] md:aspect-[2/3]"
+                >
+                  <Image
+                    src={src}
+                    alt={`Top Ventes Image ${index + 4}`}
+                    fill
+                    className="object-cover rounded-lg"
+                    priority={index === 0}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    sizes="(max-width: 768px) 33vw, 25vw"
+                    quality={75}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

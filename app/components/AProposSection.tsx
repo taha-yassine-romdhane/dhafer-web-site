@@ -18,15 +18,8 @@ interface CarouselImage {
 }
 
 export default function AProposSection() {
-  // Fallback images for when no images are found in the database or during loading
-  const fallbackImages = [
-    '/images/about/fallback1.jpg',
-    '/images/about/fallback2.jpg',
-    '/images/about/fallback3.jpg'
-  ];
-  
-  // Simplified state management
-  const [images, setImages] = useState<string[]>(fallbackImages);
+  // Empty array for images
+  const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -104,32 +97,48 @@ export default function AProposSection() {
           <div className="relative">
             {/* Custom Carousel */}
             <div className="overflow-hidden rounded-lg bg-black/5 backdrop-blur-sm">
-              <div
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-              >
-                {images.map((src, index) => (
-                  <div
-                    key={index}
-                    className="relative min-w-full flex-shrink-0 transition-opacity duration-200"
-                    style={{ opacity: currentIndex === index ? 1 : 0.6 }}
-                  >
-                    <div className="aspect-[3/4] overflow-hidden rounded-lg">
-                      <div className="relative h-full w-full">
-                        <Image
-                          src={src}
-                          alt={`A Propos Image ${index + 1}`}
-                          fill
-                          className="object-cover object-center transition-transform duration-500 hover:scale-105"
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                          priority={index === 0} // Only prioritize the first image
-                          loading={index === 0 ? 'eager' : 'lazy'} // Lazy load non-visible images
-                        />
+              {loading || images.length === 0 ? (
+                /* Skeleton Loader */
+                <div className="aspect-[3/4] overflow-hidden rounded-lg">
+                  <div className="h-full w-full animate-pulse bg-gray-200 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-full bg-gray-300"></div>
+                  </div>
+                  
+                  {/* Skeleton for navigation dots */}
+                  <div className="mt-4 flex justify-center gap-2">
+                    <div className="animate-pulse w-6 h-2 rounded-full bg-gray-300"></div>
+                    <div className="animate-pulse w-2 h-2 rounded-full bg-gray-300"></div>
+                    <div className="animate-pulse w-2 h-2 rounded-full bg-gray-300"></div>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className="flex transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+                >
+                  {images.map((src, index) => (
+                    <div
+                      key={index}
+                      className="relative min-w-full flex-shrink-0 transition-opacity duration-200"
+                      style={{ opacity: currentIndex === index ? 1 : 0.6 }}
+                    >
+                      <div className="aspect-[3/4] overflow-hidden rounded-lg">
+                        <div className="relative h-full w-full">
+                          <Image
+                            src={src}
+                            alt={`A Propos Image ${index + 1}`}
+                            fill
+                            className="object-cover object-center transition-transform duration-500 hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                            priority={index === 0} // Only prioritize the first image
+                            loading={index === 0 ? 'eager' : 'lazy'} // Lazy load non-visible images
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Navigation Dots */}
