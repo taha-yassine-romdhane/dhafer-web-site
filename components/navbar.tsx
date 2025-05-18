@@ -373,7 +373,10 @@ export default function Navbar() {
                       <Link
                         href={category.url}
                         className="block w-full py-2 text-gray-800 hover:text-[#D4AF37] transition-colors"
-                        onClick={() => setIsOpen(false)}
+                        onClick={() => {
+                          setIsOpen(false);
+                          enableBodyScroll(); // Enable scrolling when navigating to static pages
+                        }}
                       >
                         {category.label}
                       </Link>
