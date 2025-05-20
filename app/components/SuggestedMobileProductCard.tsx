@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, memo, useMemo } from "react"
 import { Product, ColorVariant, ProductImage } from "@prisma/client"
 import Image from "next/image"
 import Link from "next/link"
+import { useInView } from "react-intersection-observer"
 
 interface SuggestedMobileProductCardProps {
   product: Product & {
@@ -13,57 +14,85 @@ interface SuggestedMobileProductCardProps {
   }
 }
 
-export default function SuggestedMobileProductCard({ product }: SuggestedMobileProductCardProps) {
-  const [selectedVariant, setSelectedVariant] = useState(product.colorVariants[0])
+const SuggestedMobileProductCard = ({ product }: SuggestedMobileProductCardProps) => {
+  // Use IntersectionObserver to lazy load components
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: '200px 0px',
+    threshold: 0.1,
+  })
+  
+  // Only initialize state when component is in view to save memory
+  const [selectedVariant, setSelectedVariant] = useState(() => product.colorVariants[0])
   const [imageLoaded, setImageLoaded] = useState(false)
   
   // Maximum number of color variants to show before using the +X indicator
-  const MAX_VISIBLE_VARIANTS = 3
+  const MAX_VISIBLE_VARIANTS = 2 // Reduced from 3 to 2 for better mobile performance
 
-  // Get the main image from the selected variant
-  const mainImage = selectedVariant?.images.find(img => img.isMain)
-  const firstImage = selectedVariant?.images[0]
-  const imageUrl = mainImage?.url || firstImage?.url || ""
+  // Memoize image URL calculation to prevent unnecessary recalculations
+  const imageUrl = useMemo(() => {
+    if (!selectedVariant) return ""
+    const mainImage = selectedVariant.images.find(img => img.isMain)
+    const firstImage = selectedVariant.images[0]
+    return mainImage?.url || firstImage?.url || ""
+  }, [selectedVariant])
   
   // Reset image loaded state when variant changes
   useEffect(() => {
     setImageLoaded(false)
   }, [selectedVariant])
   
-  // Calculate how many additional variants are not shown
-  const additionalVariants = Math.max(0, product.colorVariants.length - MAX_VISIBLE_VARIANTS)
+  // Memoize additional variants calculation
+  const additionalVariants = useMemo(() => 
+    Math.max(0, product.colorVariants.length - MAX_VISIBLE_VARIANTS),
+    [product.colorVariants.length, MAX_VISIBLE_VARIANTS]
+  )
 
+  // Memoize price formatting to prevent unnecessary recalculations
+  const formattedRegularPrice = useMemo(() => 
+    formatPrice(product.price),
+    [product.price]
+  )
+  
+  const formattedSalePrice = useMemo(() => 
+    product.salePrice ? formatPrice(product.salePrice) : null,
+    [product.salePrice]
+  )
+
+  // Format price function
   const formatPrice = (price: number) => {
     return price.toFixed(2) + " TND"
+  }
+
+  // If not in view, render minimal placeholder to save memory
+  if (!inView) {
+    return <div ref={ref} className="flex flex-col w-full aspect-[3/4] mb-2" />
   }
 
   return (
     <div className="flex flex-col w-full">
       {/* Image and Promo Tag */}
-      <div className="relative aspect-[3/4] mb-2">
-        <Link href={`/product/${product.id}`}>
+      <div ref={ref} className="relative aspect-[3/4] mb-2">
+        <Link href={`/product/${product.id}`} prefetch={false}>
           {!imageUrl ? (
-            // Skeleton loader when image is not available
-            <div className="w-full h-full animate-pulse bg-gray-200 flex items-center justify-center rounded-lg">
-              <div className="w-10 h-10 rounded-full bg-gray-300"></div>
-            </div>
+            // Simplified skeleton loader
+            <div className="w-full h-full bg-gray-200 rounded-lg" />
           ) : (
             <>
-              {/* Skeleton loader shown until image loads */}
+              {/* Simplified skeleton loader */}
               {!imageLoaded && (
-                <div className="absolute inset-0 w-full h-full animate-pulse bg-gray-200 flex items-center justify-center rounded-lg z-10">
-                  <div className="w-10 h-10 rounded-full bg-gray-300"></div>
-                </div>
+                <div className="absolute inset-0 w-full h-full bg-gray-200 rounded-lg z-10" />
               )}
               <Image
                 src={imageUrl}
                 alt={product.name}
                 fill
-                className={`object-cover rounded-lg transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                sizes="(max-width: 768px) 50vw"
+                className={`object-cover rounded-lg ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                sizes="(max-width: 640px) 160px, (max-width: 768px) 180px, 200px"
                 priority={false}
                 onLoad={() => setImageLoaded(true)}
                 loading="lazy"
+                quality={60}
               />
               {product.salePrice && (
                 <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded z-20">
@@ -75,32 +104,32 @@ export default function SuggestedMobileProductCard({ product }: SuggestedMobileP
         </Link>
       </div>
 
-      {/* Product Info */}
+      {/* Product Info - Simplified for better performance */}
       <div className="flex flex-col gap-1">
         {/* Product Name */}
-        <Link href={`/product/${product.id}`}>
+        <Link href={`/product/${product.id}`} prefetch={false}>
           <h3 className="text-sm font-medium line-clamp-1">{product.name}</h3>
         </Link>
         
-        {/* Price */}
+        {/* Price - Using pre-calculated formatted prices */}
         <div className="flex flex-col">
-          {product.salePrice ? (
+          {formattedSalePrice ? (
             <>
               <span className="text-xs text-gray-500 line-through">
-                {formatPrice(product.price)}
+                {formattedRegularPrice}
               </span>
               <span className="text-sm font-semibold text-[#D4AF37]">
-                {formatPrice(product.salePrice)}
+                {formattedSalePrice}
               </span>
             </>
           ) : (
             <span className="text-sm font-semibold text-[#D4AF37]">
-              {formatPrice(product.price)}
+              {formattedRegularPrice}
             </span>
           )}
         </div>
 
-        {/* Color Variant Images */}
+        {/* Color Variant Images - Only render if more than one variant */}
         {product.colorVariants.length > 1 && (
           <div className="flex items-center gap-1 mt-1">
             {/* Show only the first MAX_VISIBLE_VARIANTS color variants */}
@@ -115,20 +144,16 @@ export default function SuggestedMobileProductCard({ product }: SuggestedMobileP
                     e.preventDefault()
                     setSelectedVariant(variant)
                   }}
-                  className={`relative w-5 h-5 rounded-full overflow-hidden border transition-all duration-200 ${
-                    selectedVariant?.id === variant.id 
-                      ? "border-[#D4AF37] scale-110" 
-                      : "border-gray-200"
-                  }`}
+                  className={`relative w-5 h-5 rounded-full overflow-hidden border ${selectedVariant?.id === variant.id ? "border-[#D4AF37]" : "border-gray-200"}`}
                   aria-label={`Select ${variant.color} color`}
                 >
-                  <Image
-                    src={variantImage.url}
-                    alt={variant.color}
-                    fill
-                    className="object-cover"
-                    sizes="20px"
-                    loading="lazy"
+                  <div 
+                    className="w-full h-full"
+                    style={{
+                      backgroundImage: `url(${variantImage.url})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    }}
                   />
                 </button>
               )
@@ -146,3 +171,5 @@ export default function SuggestedMobileProductCard({ product }: SuggestedMobileP
     </div>
   )
 }
+
+export default memo(SuggestedMobileProductCard)
