@@ -1,5 +1,4 @@
 import './globals.css'
-import './ios-optimizations.css';
 import './skeleton-loaders.css';
 
 import { CartProvider } from "@/lib/context/cart-context";
@@ -12,7 +11,6 @@ import { CartDropdown } from "@/components/cart-dropdown";
 import Script from 'next/script';
 import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import dynamic from 'next/dynamic';
 
 // Load Inter font with subset optimization
 const inter = Inter({
