@@ -18,7 +18,7 @@ export default function SuggestedMobileProductCard({ product }: SuggestedMobileP
   const [imageLoaded, setImageLoaded] = useState(false)
   
   // Maximum number of color variants to show before using the +X indicator
-  const MAX_VISIBLE_VARIANTS = 3
+  const MAX_VISIBLE_VARIANTS = 2
 
   // Get the main image from the selected variant
   const mainImage = selectedVariant?.images.find(img => img.isMain)

@@ -35,9 +35,10 @@ export async function GET(request: Request) {
           include: {
             images: true,
           },
+          take: 2
         },
       },
-      take: 5, // Limit the number of suggested products
+      take: 4 // Limit the number of suggested products
     });
 
     return NextResponse.json(products);
