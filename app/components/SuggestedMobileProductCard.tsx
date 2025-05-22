@@ -43,7 +43,6 @@ export default function SuggestedMobileProductCard({ product }: SuggestedMobileP
       <div className="relative aspect-[3/4] mb-2">
         <Link href={`/product/${product.id}`}>
           {!imageUrl ? (
-            // Skeleton loader when image is not available
             <div className="w-full h-full animate-pulse bg-gray-200 flex items-center justify-center rounded-lg">
               <div className="w-10 h-10 rounded-full bg-gray-300"></div>
             </div>

@@ -64,9 +64,9 @@ const AboutUs = () => {
                             d'un style artistique qui correspond aux tendances et aux préférences personnelles, 
                             quel que soit le sens, du bas vers le haut.
                         </p>
-                        <button className="bg-[#D4AF37] text-white py-2 px-6 rounded-lg font-medium hover:bg-[#C49B2F] transition">
+                        <a href="/collections" className="bg-[#D4AF37] text-white py-2 px-6 rounded-lg font-medium hover:bg-[#C49B2F] transition">
                             Découvrez Nos Produits
-                        </button>
+                        </a>
                     </div>
                     <div className="relative h-[400px] rounded-lg overflow-hidden shadow-lg">
                         <iframe

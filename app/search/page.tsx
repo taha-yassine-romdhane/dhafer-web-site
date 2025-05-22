@@ -8,13 +8,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Loader2, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
 interface SearchProduct {
   id: number;
   name: string;
   price: number;
+  salePrice: number | null;
   description: string;
   category: string;
   colorVariants: {
@@ -297,21 +297,41 @@ export default function SearchPage() {
                 >
                   <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100 border border-[#D4AF37]/20 group-hover:border-[#D4AF37] transition-colors">
                     {product.colorVariants[0]?.images[0] && (
-                      <Image
-                        src={product.colorVariants[0].images[0].url}
-                        alt={product.name}
-                        fill
-                        className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                      />
+                      <>
+                        <Image
+                          src={product.colorVariants[0].images[0].url}
+                          alt={product.name}
+                          fill
+                          className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {product.salePrice && (
+                          <div className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            -{Math.round(((product.price - product.salePrice) / product.price) * 100)}%
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                   <div className="mt-4 space-y-1">
                     <h3 className="text-sm font-medium text-gray-900 group-hover:text-[#D4AF37] transition-colors">
                       {product.name}
                     </h3>
-                    <p className="text-sm font-medium text-[#D4AF37]">
-                      TND {product.price.toFixed(2)}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      {product.salePrice ? (
+                        <>
+                          <span className="text-sm font-medium text-[#D4AF37]">
+                            TND {product.salePrice.toFixed(2)}
+                          </span>
+                          <span className="text-xs text-gray-400 line-through">
+                            TND {product.price.toFixed(2)}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-sm font-medium text-[#D4AF37]">
+                          TND {product.price.toFixed(2)}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-gray-500 line-clamp-2">
                       {product.description}
                     </p>

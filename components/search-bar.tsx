@@ -10,6 +10,7 @@ interface Product {
   name: string;
   description: string;
   price: number;
+  salePrice: number | null;
   category: string;
   colorVariants: {
     color: string;
@@ -130,9 +131,22 @@ const SearchBar = () => {
                     <p className="text-xs md:text-sm text-gray-500 mb-2 line-clamp-2">
                       {product.description}
                     </p>
-                    <p className="text-base md:text-lg font-semibold text-[#D4AF37]">
-                      TND {product.price.toFixed(2)}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      {product.salePrice ? (
+                        <>
+                          <span className="text-base md:text-lg font-semibold text-[#D4AF37]">
+                            TND {product.salePrice.toFixed(2)}
+                          </span>
+                          <span className="text-sm text-gray-400 line-through">
+                            TND {product.price.toFixed(2)}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-base md:text-lg font-semibold text-[#D4AF37]">
+                          TND {product.price.toFixed(2)}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs md:text-sm text-gray-400 mt-1">
                       {product.category}
                     </p>
