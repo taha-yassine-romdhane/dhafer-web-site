@@ -4,20 +4,25 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    console.log('Fetching top sales products...'); 
+    console.log('Fetching top sales products based on order data...'); 
 
-    const products = await prisma.product.findMany({
-      where: {
-        showInTopSales: true,
-      },
+    // Get top products based on order count
+    const topProducts = await prisma.product.findMany({
+      take: 8, // Limit to top 8 products
       orderBy: [
         {
-          priority: 'desc', // First order by priority
+          orderCount: 'desc', // Order by the number of times the product was ordered
         },
         {
-          orderCount: 'desc', // Then by number of orders
+          priority: 'desc', // Use priority as a secondary sort
         }
       ],
+      where: {
+        // Only include products that have been ordered at least once
+        orderItems: {
+          some: {}
+        }
+      },
       include: {
         colorVariants: {
           include: {
@@ -28,9 +33,42 @@ export async function GET() {
       },
     });
 
-    console.log(`Found ${products.length} top sales products`);
+    // If we don't have enough products with orders, supplement with products based on priority
+    if (topProducts.length < 8) {
+      const remainingCount = 8 - topProducts.length;
+      
+      // Get IDs of products we already have to exclude them
+      const existingProductIds = topProducts.map(product => product.id);
+      
+      const additionalProducts = await prisma.product.findMany({
+        take: remainingCount,
+        where: {
+          id: {
+            notIn: existingProductIds
+          }
+        },
+        orderBy: {
+          priority: 'desc'
+        },
+        include: {
+          colorVariants: {
+            include: {
+              images: true,
+              stocks: true,
+            },
+          },
+        },
+      });
+      
+      // Combine the results
+      const combinedProducts = [...topProducts, ...additionalProducts];
+      
+      console.log(`Found ${combinedProducts.length} top sales products (${topProducts.length} from orders, ${additionalProducts.length} from priority)`);
+      return NextResponse.json(combinedProducts);
+    }
 
-    return NextResponse.json(products);
+    console.log(`Found ${topProducts.length} top sales products from order data`);
+    return NextResponse.json(topProducts);
   } catch (error) {
     console.error('Error fetching products:', error); 
     return NextResponse.json(
