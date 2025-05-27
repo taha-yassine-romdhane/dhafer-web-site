@@ -50,13 +50,24 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { items } = useCart();
+  const { items = [] } = useCart?.() || {}; // Safely handle missing cart context
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>(staticCategories);
+  const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Set isClient to true after component mounts (client-side only)
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Safe access to window object
+  const isBrowser = typeof window !== 'undefined';
 
   // Function to disable body scroll
   const disableBodyScroll = () => {
+    if (!isBrowser) return;
+    
     const scrollY = window.scrollY;
     document.body.style.position = 'fixed';
     document.body.style.top = `-${scrollY}px`;
@@ -66,6 +77,8 @@ export default function Navbar() {
 
   // Function to enable body scroll
   const enableBodyScroll = () => {
+    if (!isBrowser) return;
+    
     const scrollY = document.body.style.top;
     document.body.style.position = '';
     document.body.style.top = '';
@@ -108,24 +121,61 @@ export default function Navbar() {
     };
   }, []);
 
-  // Fetch categories from the API
+  // Fetch categories from the API with caching
   useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+    
+    // Check if we have cached categories in localStorage
     const fetchCategories = async () => {
+      if (!isMounted) return;
+      
+      // Try to get categories from localStorage first
+      const cachedCategories = localStorage.getItem('navbarCategories');
+      const cacheTimestamp = localStorage.getItem('navbarCategoriesTimestamp');
+      const currentTime = new Date().getTime();
+      
+      // Use cache if it exists and is less than 1 hour old
+      if (cachedCategories && cacheTimestamp && 
+          (currentTime - parseInt(cacheTimestamp)) < 3600000) {
+        try {
+          const parsedCategories = JSON.parse(cachedCategories);
+          if (isMounted) {
+            setCategories([...parsedCategories, ...staticCategories]);
+            setLoading(false);
+            return; // Use cache and skip API call
+          }
+        } catch (e) {
+          console.error('Error parsing cached categories:', e);
+          // Continue with API call if cache parsing fails
+        }
+      }
+      
       try {
         setLoading(true);
-        const response = await fetch('/api/categories');
+        const response = await fetch('/api/categories', {
+          signal: controller.signal,
+          cache: 'force-cache' // Use Next.js cache
+        });
+        
         if (!response.ok) {
           throw new Error('Failed to fetch categories');
         }
         
         const data = await response.json();
         
+        if (!isMounted) return;
+        
+        // Ensure data.categories exists and is an array
+        if (!data.categories || !Array.isArray(data.categories)) {
+          console.error('Invalid categories data format:', data);
+          return;
+        }
+        
         // Group categories by their group (FEMME, ENFANT, ACCESSOIRE)
         const categoryGroups: Record<string, any[]> = {};
         
         data.categories.forEach((category: any) => {
-          // Extract the group from the category or default to FEMME
-          // Note: In the actual API response, you might need to adjust how you access the group
           const group = category.group || 'FEMME';
           
           if (!categoryGroups[group]) {
@@ -135,63 +185,77 @@ export default function Navbar() {
           categoryGroups[group].push(category);
         });
         
-        // Function to convert technical group names to user-friendly display names
-        const getGroupDisplayName = (technicalName: string): string => {
-          switch (technicalName) {
-            case 'FEMME': return 'Femme';
-            case 'ENFANT': return 'Enfants';
-            case 'ACCESSOIRE': return 'Accessoires';
-            default: return technicalName;
-          }
-        };
+        const getGroupDisplayName = (technicalName: string): string => ({
+          'FEMME': 'Femme',
+          'ENFANT': 'Enfants',
+          'ACCESSOIRE': 'Accessoires'
+        }[technicalName] || technicalName);
         
-        // Define the order we want to display groups in
         const groupOrder = ['FEMME', 'ENFANT', 'ACCESSOIRE'];
         
-        // Transform grouped categories and ensure they're in the correct order
         const groupedCategories = groupOrder
-          .filter(group => categoryGroups[group] && categoryGroups[group].length > 0) // Only include groups that exist
+          .filter(group => categoryGroups[group]?.length > 0)
           .map(groupName => ({
             label: getGroupDisplayName(groupName),
             subcategories: categoryGroups[groupName].map(category => ({
               name: category.name,
               query: category.name.toLowerCase().replace(/\s+/g, '-'),
-              group: category.group, // Keep the technical group name for API calls
+              group: category.group,
             })),
           }));
         
-        // Combine grouped categories with static categories
-        setCategories([...groupedCategories, ...staticCategories]);
+        if (isMounted) {
+          // Save to localStorage for future use
+          try {
+            localStorage.setItem('navbarCategories', JSON.stringify(groupedCategories));
+            localStorage.setItem('navbarCategoriesTimestamp', new Date().getTime().toString());
+          } catch (e) {
+            console.error('Error caching categories:', e);
+            // Continue even if caching fails
+          }
+          
+          setCategories([...groupedCategories, ...staticCategories]);
+        }
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Error fetching categories:', error);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
     
     fetchCategories();
+    
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, []);
 
   // Handle click outside to close menu
   useEffect(() => {
+    if (!isBrowser || !isOpen) return;
+    
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node) && isOpen) {
-        // Restore scroll position when closing via outside click
-        const scrollY = document.body.style.top;
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.overflow = '';
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-        
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        enableBodyScroll();
         setIsOpen(false);
         setOpenCategory(null);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside as any);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside as any);
+      enableBodyScroll();
+    };
+  }, [isOpen]);
 
   const handleLogout = async () => {
     await logout();
@@ -212,14 +276,17 @@ export default function Navbar() {
               {isOpen ? <X size={20} /> : <Menu size={20} />}
             </Button>
 
-            <Link href="/" className="ml-4 lg:ml-0">
-              <Image
-                src="/logo.webp"
-                alt="Logo"
-                width={70}
-                height={70}
-                className="object-contain"
-              />
+            <Link href="/" className="ml-4 lg:ml-0 ">
+              <div className="relative h-12 w-32">
+                <Image
+                  src="/logo.webp"
+                  alt="Logo"
+                  fill
+                  sizes="(max-width: 768px) 8rem, 10rem"
+                  className="object-contain"
+                  priority
+                />
+              </div>
             </Link>
           </div>
 
@@ -282,9 +349,9 @@ export default function Navbar() {
               aria-label="Cart"
             >
               <ShoppingCart size={20} />
-              {items.length > 0 && (
+              {isClient && items.length > 0 && (
                 <div className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-[#D4AF37] text-white text-xs flex items-center justify-center">
-                  {items.length}
+                  {items.length > 9 ? '9+' : items.length}
                 </div>
               )}
             </Link>
@@ -366,65 +433,70 @@ export default function Navbar() {
               <SearchBar />
             </div>
             <div className="px-4 py-2">
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {categories.map((category) => (
-                  <li key={category.label}>
+                  <li key={category.label} className="border-b border-gray-100 last:border-0 pb-2 last:pb-0">
                     {category.url ? (
                       <Link
                         href={category.url}
-                        className="block w-full py-2 text-gray-800 hover:text-[#D4AF37] transition-colors"
+                        className="block w-full py-3 text-gray-800 hover:text-[#D4AF37] transition-colors"
                         onClick={() => {
                           setIsOpen(false);
-                          enableBodyScroll(); // Enable scrolling when navigating to static pages
+                          enableBodyScroll();
                         }}
                       >
                         {category.label}
                       </Link>
                     ) : (
-                      <>
+                      <div className="space-y-2">
                         <button
+                          type="button"
                           onClick={() => toggleCategory(category.label)}
-                          className="flex items-center justify-between w-full py-2 text-gray-800 hover:text-[#D4AF37] transition-colors"
+                          className="w-full flex items-center justify-between py-3 text-gray-800 hover:text-[#D4AF37] transition-colors"
+                          aria-expanded={openCategory === category.label}
+                          aria-controls={`mobile-submenu-${category.label}`}
                         >
                           <span>{category.label}</span>
                           {openCategory === category.label ? (
-                            <X size={18} />
+                            <X size={18} aria-hidden="true" />
                           ) : (
-                            <Menu size={18} />
+                            <Menu size={18} aria-hidden="true" />
                           )}
                         </button>
+                        
                         {category.subcategories && openCategory === category.label && (
-                          <div className="ml-4 mt-1 border-l-2 border-[#D4AF37]/20 pl-4 relative">
-                            <div className="sticky top-[60px] bg-white py-2 z-10 font-medium text-[#D4AF37] border-b border-[#D4AF37]/10 mb-2">
+                          <div 
+                            id={`mobile-submenu-${category.label}`}
+                            className="ml-4 mt-1 border-l-2 border-[#D4AF37]/20 pl-4 relative"
+                          >
+                            <h3 className="sticky top-0 bg-white py-2 z-10 font-medium text-[#D4AF37] border-b border-[#D4AF37]/10 mb-2">
                               {category.label}
-                            </div>
+                            </h3>
                             <ul className="space-y-2">
-                              {/* Only render the first 10 subcategories for performance */}
                               {category.subcategories.slice(0, 10).map((subcategory) => (
                                 <li key={subcategory.name}>
                                   <Link
                                     href={`/collections?category=${subcategory.query}&group=${subcategory.group}`}
                                     onClick={() => {
                                       setIsOpen(false);
-                                      enableBodyScroll(); // Enable scrolling when navigating
+                                      enableBodyScroll();
                                     }}
-                                    className="block py-1.5 text-gray-600 hover:text-[#D4AF37] transition-colors"
+                                    className="block py-2 text-gray-600 hover:text-[#D4AF37] transition-colors"
                                   >
                                     {subcategory.name}
                                   </Link>
                                 </li>
                               ))}
                             </ul>
-                            {/* Show "See More" if there are more than 10 subcategories */}
                             {category.subcategories.length > 10 && (
                               <div className="mt-2">
                                 <Link
                                   href={`/collections?group=${category.subcategories[0]?.group}`}
                                   onClick={() => {
                                     setIsOpen(false);
-                                    enableBodyScroll(); // Enable scrolling when navigating
+                                    enableBodyScroll();
                                   }}
-                                  className="block py-1.5 text-[#D4AF37] font-medium hover:underline"
+                                  className="block py-2 text-[#D4AF37] font-medium hover:underline"
                                 >
                                   Voir plus ({category.subcategories.length - 10})
                                 </Link>
@@ -432,7 +504,7 @@ export default function Navbar() {
                             )}
                           </div>
                         )}
-                      </>
+                      </div>
                     )}
                   </li>
                 ))}

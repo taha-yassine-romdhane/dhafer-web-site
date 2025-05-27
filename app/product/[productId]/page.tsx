@@ -238,26 +238,50 @@ export default function ProductPage({ params }: { params: { productId: string } 
     }
   };
 
-  // Handle zoom on hover
+  // Debounced zoom function to improve performance with null checks
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const container = e.currentTarget;
-    const img = container.querySelector("img");
-    if (!img) return;
+    // Safely handle the event in case the component is unmounting
+    try {
+      // Use requestAnimationFrame to optimize performance
+      requestAnimationFrame(() => {
+        // Check if the current target still exists in the DOM
+        if (!e.currentTarget) return;
+        
+        const container = e.currentTarget;
+        const img = container.querySelector("img");
+        
+        // Ensure the image element exists
+        if (!img) return;
 
-    const { left, top, width, height } = container.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
+        const { left, top, width, height } = container.getBoundingClientRect();
+        const x = ((e.clientX - left) / width) * 100;
+        const y = ((e.clientY - top) / height) * 100;
 
-    img.style.transformOrigin = `${x}% ${y}%`;
-    img.style.transform = "scale(1.5)";
+        img.style.transformOrigin = `${x}% ${y}%`;
+        img.style.transform = "scale(1.5)";
+      });
+    } catch (error) {
+      console.error("Error in zoom effect:", error);
+      // Silently fail if there's an error to prevent app crashes
+    }
   };
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    const img = e.currentTarget.querySelector("img");
-    if (!img) return;
+    try {
+      // Check if the current target still exists in the DOM
+      if (!e.currentTarget) return;
+      
+      const img = e.currentTarget.querySelector("img");
+      
+      // Ensure the image element exists
+      if (!img) return;
 
-    img.style.transformOrigin = "center";
-    img.style.transform = "scale(1)";
+      img.style.transformOrigin = "center";
+      img.style.transform = "scale(1)";
+    } catch (error) {
+      console.error("Error in zoom effect:", error);
+      // Silently fail if there's an error to prevent app crashes
+    }
   };
 
   if (loading) {
@@ -309,6 +333,8 @@ export default function ProductPage({ params }: { params: { productId: string } 
                   fill
                   className="object-cover"
                   sizes="80px"
+                  loading="lazy"
+                  quality={60} // Lower quality for thumbnails
                 />
               </button>
             ))}
@@ -326,8 +352,11 @@ export default function ProductPage({ params }: { params: { productId: string } 
               fill
               className="object-cover object-center transition-transform duration-300"
               priority
-              quality={90}
+              quality={75} // Reduced quality for better performance
               sizes="(max-width: 720px) 100vw, 50vw"
+              loading="eager"
+              placeholder="blur"
+              blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjFmMWYxIi8+PC9zdmc+"
             />
           </div>
         </div>
@@ -498,19 +527,35 @@ export default function ProductPage({ params }: { params: { productId: string } 
         <h2 className="text-2xl font-bold text-gray-900 mb-8">Produits suggérés</h2>
         {suggestedProducts && suggestedProducts.length > 0 ? (
           <>
-            {/* Desktop view - SuggestedProductCard */}
+            {/* Desktop view - SuggestedProductCard with lazy loading */}
             <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {suggestedProducts.map((suggestedProduct) => (
+              {suggestedProducts.slice(0, 4).map((suggestedProduct) => (
                 <SuggestedProductCard key={suggestedProduct.id} product={suggestedProduct} />
               ))}
             </div>
             
-            {/* Mobile view - SuggestedMobileProductCard */}
+            {/* Mobile view - SuggestedMobileProductCard with lazy loading */}
             <div className="grid grid-cols-2 gap-4 md:hidden">
-              {suggestedProducts.map((suggestedProduct) => (
+              {suggestedProducts.slice(0, 4).map((suggestedProduct) => (
                 <SuggestedMobileProductCard key={suggestedProduct.id} product={suggestedProduct} />
               ))}
             </div>
+            
+            {/* Load more button if there are more than 4 products */}
+            {suggestedProducts.length > 4 && (
+              <div className="mt-6 text-center">
+                <button 
+                  onClick={() => {
+                    // This would typically load more products
+                    // For now, we're just showing a message
+                    toast.info('Voir plus de produits similaires');
+                  }}
+                  className="inline-flex items-center px-4 py-2 border border-[#D4AF37] text-sm font-medium rounded-md text-[#D4AF37] bg-white hover:bg-[#D4AF37]/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37]"
+                >
+                  Voir plus
+                </button>
+              </div>
+            )}
           </>
         ) : (
           <p className="text-gray-500">Aucun produit similaire trouvé</p>

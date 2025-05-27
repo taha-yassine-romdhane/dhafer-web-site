@@ -58,11 +58,14 @@ export default function SuggestedMobileProductCard({ product }: SuggestedMobileP
                 src={imageUrl}
                 alt={product.name}
                 fill
+                loading="lazy"
+                quality={60}
+                sizes="(max-width: 640px) 50vw, 33vw"
+                placeholder="blur"
+                blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjFmMWYxIi8+PC9zdmc+"
                 className={`object-cover rounded-lg transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                sizes="(max-width: 768px) 50vw"
                 priority={false}
                 onLoad={() => setImageLoaded(true)}
-                loading="lazy"
               />
               {product.salePrice && (
                 <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded z-20">

@@ -33,7 +33,7 @@ const TopVentSection: React.FC = () => {
     // Analytics or other click handling logic could go here
   };
   
-  // Single useEffect for initialization and cleanup
+  // First useEffect for fetching images
   useEffect(() => {
     let isMounted = true;
     
@@ -50,12 +50,24 @@ const TopVentSection: React.FC = () => {
         const data = await response.json();
         
         if (data.success && Array.isArray(data.carouselImages) && isMounted) {
-          // Filter images by section
+          
+          // Filter images by section - try different section name variations
+          // and don't filter by isActive initially to see all available images
           const topVente1Images = data.carouselImages
-            .filter((img: CarouselImage) => img.section === 'topvente1' && img.isActive);
+            .filter((img: CarouselImage) => {
+              return img.section.toLowerCase().includes('topvente1') || 
+                     img.section.toLowerCase().includes('top-vente1') || 
+                     img.section.toLowerCase().includes('top_vente1') || 
+                     img.section.toLowerCase() === 'topvente1';
+            });
           
           const topVente2Images = data.carouselImages
-            .filter((img: CarouselImage) => img.section === 'topvente2' && img.isActive);
+            .filter((img: CarouselImage) => {
+              return img.section.toLowerCase().includes('topvente2') || 
+                     img.section.toLowerCase().includes('top-vente2') || 
+                     img.section.toLowerCase().includes('top_vente2') || 
+                     img.section.toLowerCase() === 'topvente2';
+            });
           
           // Sort and map to URLs
           const topVente1Urls = topVente1Images
@@ -66,13 +78,16 @@ const TopVentSection: React.FC = () => {
             .sort((a: CarouselImage, b: CarouselImage) => a.position - b.position)
             .map((img: CarouselImage) => img.url);
           
-          // Only update if we have images
           if (topVente1Urls.length > 0) {
             setImagesTop1(topVente1Urls);
+          } else {
+            console.warn('No images found for topvente1 section');
           }
           
           if (topVente2Urls.length > 0) {
             setImagesBottom(topVente2Urls);
+          } else {
+            console.warn('No images found for topvente2 section');
           }
         }
       } catch (err) {
@@ -87,36 +102,35 @@ const TopVentSection: React.FC = () => {
       }
     }
     
-    // Set up intervals for auto-sliding
     fetchImages();
-    
-    // Auto-slide functionality
-    let intervalTop: NodeJS.Timeout | null = null;
-    let intervalBottom: NodeJS.Timeout | null = null;
-    
-    if (imagesTop1.length > 0) {
-      intervalTop = setInterval(() => {
-        if (isMounted) {
-          setCurrentIndexTop((prevIndex) => (prevIndex + 1) % imagesTop1.length);
-        }
-      }, 5000);
-    }
-    
-    if (imagesBottom.length > 0) {
-      intervalBottom = setInterval(() => {
-        if (isMounted) {
-          setCurrentIndexBottom((prevIndex) => (prevIndex + 1) % imagesBottom.length);
-        }
-      }, 7000);
-    }
     
     // Cleanup function
     return () => {
       isMounted = false;
-      if (intervalTop) clearInterval(intervalTop);
-      if (intervalBottom) clearInterval(intervalBottom);
     };
   }, []);
+  
+  // Separate useEffect for auto-sliding top carousel
+  useEffect(() => {
+    if (imagesTop1.length <= 1) return;
+    
+    const intervalId = setInterval(() => {
+      setCurrentIndexTop(prevIndex => (prevIndex + 1) % imagesTop1.length);
+    }, 5000);
+    
+    return () => clearInterval(intervalId);
+  }, [imagesTop1.length]);
+  
+  // Separate useEffect for auto-sliding bottom carousel
+  useEffect(() => {
+    if (imagesBottom.length <= 1) return;
+    
+    const intervalId = setInterval(() => {
+      setCurrentIndexBottom(prevIndex => (prevIndex + 1) % imagesBottom.length);
+    }, 7000);
+    
+    return () => clearInterval(intervalId);
+  }, [imagesBottom.length]);
 
   return (
     <section className="container mx-auto p-2 sm:p-4 py-8 sm:py-16 relative rounded-lg overflow-hidden min-h-[500px] sm:min-h-[600px] bg-white">
@@ -137,7 +151,7 @@ const TopVentSection: React.FC = () => {
               style={{ transform: `translateY(-${currentIndexTop * 100}%)` }}
             >
               {imagesTop1.map((src, index) => (
-                <div key={index} className="min-h-full w-full relative aspect-[3/4] md:aspect-[2/3]">
+                <div key={index} className="min-h-full w-full relative aspect-[3/4] md:aspect-[2/3]" style={{ position: 'relative' }}>
                   <Image
                     src={src}
                     alt={`Top Ventes Image ${index + 1}`}
@@ -171,6 +185,7 @@ const TopVentSection: React.FC = () => {
                 <div
                   key={index}
                   className="min-h-full w-full relative aspect-[3/4] md:aspect-[2/3]"
+                  style={{ position: 'relative' }}
                 >
                   <Image
                     src={src}

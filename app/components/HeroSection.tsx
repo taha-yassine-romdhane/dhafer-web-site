@@ -145,26 +145,30 @@ export default function HeroSection() {
       <div className="relative flex-1">
         {/* Background Images - Simplified rendering */}
         {images.length > 0 && (
-          <Link href={"/collections"}>
-            <div className="absolute inset-0 transition-opacity duration-1000 ease-in-out">
+          <Link href={"/collections"} className="block absolute inset-0">
+            <div className="absolute inset-0 transition-opacity duration-1000 ease-in-out" style={{ position: 'relative', width: '100%', height: '100%' }}>
               {/* Mobile Image */}
-              <Image
-                src={images[currentImage].mobile}
-                alt="Dar Koftan Slider Image"
-                fill
-                className="object-contain md:hidden"
-                priority={true}
-                sizes="100vw"
-              />
+              <div className="relative w-full h-full md:hidden">
+                <Image
+                  src={images[currentImage].mobile}
+                  alt="Dar Koftan Slider Image"
+                  fill
+                  className="object-contain"
+                  priority={true}
+                  sizes="100vw"
+                />
+              </div>
               {/* Desktop Image */}
-              <Image
-                src={images[currentImage].desktop}
-                alt="Dar Koftan Slider Image"
-                fill
-                className="hidden md:block object-contain"
-                priority={true}
-                sizes="(max-width: 1200px) 50vw, 33vw"
-              />
+              <div className="relative hidden md:block w-full h-full">
+                <Image
+                  src={images[currentImage].desktop}
+                  alt="Dar Koftan Slider Image"
+                  fill
+                  className="object-contain"
+                  priority={true}
+                  sizes="(max-width: 1200px) 50vw, 33vw"
+                />
+              </div>
               {/* Overlay for better text readability */}
               <div className="absolute inset-0" />
             </div>

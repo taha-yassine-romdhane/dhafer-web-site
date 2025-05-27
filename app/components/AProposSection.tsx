@@ -123,7 +123,7 @@ export default function AProposSection() {
                       style={{ opacity: currentIndex === index ? 1 : 0.6 }}
                     >
                       <div className="aspect-[3/4] overflow-hidden rounded-lg">
-                        <div className="relative h-full w-full">
+                        <div className="relative h-full w-full" style={{ position: 'relative' }}>
                           <Image
                             src={src}
                             alt={`A Propos Image ${index + 1}`}

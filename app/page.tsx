@@ -4,8 +4,7 @@ import TopProduitsSection from './components/TopProduitsSection'
 import TopVentesSection from './components/TopVentSection'
 import AProposSection from './components/AProposSection'
 
-// We'll revert to static imports for now to ensure stability
-// Dynamic imports can be re-added once the core functionality is stable
+
 
 export const metadata: Metadata = {
   title: 'Dar El Koftan Al Assil | دار القفطان الأصيل ',

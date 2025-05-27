@@ -75,7 +75,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Link href={`/product/${product.id}`} className="block">
+      <div className="block">
         {/* Main Image Container */}
         <div className="relative aspect-[3/4] overflow-hidden">
           {!currentImage ? (
@@ -84,15 +84,17 @@ export default function ProductCard({ product }: ProductCardProps) {
               <div className="w-12 h-12 rounded-full bg-gray-300"></div>
             </div>
           ) : (
-            <Image
-              src={currentImage}
-              alt={`${product.name} - ${currentColorVariant?.color}`}
-              fill
-              className="object-cover transform transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              priority={currentImageIndex === 0} // Only prioritize the first image
-              loading={currentImageIndex === 0 ? "eager" : "lazy"}
-            />
+            <Link href={`/product/${product.id}`}>
+              <Image
+                src={currentImage}
+                alt={`${product.name} - ${currentColorVariant?.color}`}
+                fill
+                className="object-cover transform transition-transform duration-500 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                priority={currentImageIndex === 0} // Only prioritize the first image
+                loading={currentImageIndex === 0 ? "eager" : "lazy"}
+              />
+            </Link>
           )}
 
           {/* Mobile Navigation Controls */}
@@ -166,6 +168,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Color Variant Thumbnails */}
+          {/*  
           <div className="mt-1.5 flex items-center">
             <div className="flex -space-x-2 mr-2">
               {colorVariantsWithMainImages.slice(0, 3).map((variant, idx) => (
@@ -194,6 +197,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
             <span className="text-xs text-gray-600 capitalize">{currentColorVariant?.color}</span>
           </div>
+          */}
           
           {/* See More Details Button */}
           <div className="mt-3">
@@ -204,7 +208,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </Link>
           </div>
         </div>
-      </Link>
+      </div>
 
       {/* Color Selector Modal */}
       {showColorSelector && (
