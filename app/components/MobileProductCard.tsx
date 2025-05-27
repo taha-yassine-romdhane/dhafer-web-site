@@ -86,9 +86,9 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
           )}
         </div>
 
-        {/* Color Variant Images - Limited to 2 for better performance */}
+        {/* Color Variant Images - Limited to 2 for better performance 
         <div className="flex gap-1 mt-1 flex-wrap justify-center max-w-full overflow-hidden">
-          {/* Always show only 2 colors and a +X indicator if there are more */}
+  
           {product.colorVariants.slice(0, 2).map((variant) => {
             const variantImage = variant.images.find(img => img.isMain) || variant.images[0];
             if (!variantImage) return null;
@@ -114,14 +114,18 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
               </button>
             );
           })}
+
+         
           
-          {/* Show +X indicator if there are more than 2 colors */}
+    
           {product.colorVariants.length > 2 && (
             <div className="flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-xs font-medium text-gray-600">
               +{product.colorVariants.length - 2}
             </div>
           )}
         </div>
+        */}
+        
         
         {/* See More Details Button */}
         <div className="mt-3">

@@ -522,26 +522,26 @@ export default function ProductPage({ params }: { params: { productId: string } 
         </div>
       </div>
 
-      {/* Suggested Products */}
+      {/* Suggested Products 
       <div className="mt-16">
         <h2 className="text-2xl font-bold text-gray-900 mb-8">Produits suggérés</h2>
         {suggestedProducts && suggestedProducts.length > 0 ? (
           <>
-            {/* Desktop view - SuggestedProductCard with lazy loading */}
+           
             <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {suggestedProducts.slice(0, 4).map((suggestedProduct) => (
                 <SuggestedProductCard key={suggestedProduct.id} product={suggestedProduct} />
               ))}
             </div>
             
-            {/* Mobile view - SuggestedMobileProductCard with lazy loading */}
+            
             <div className="grid grid-cols-2 gap-4 md:hidden">
               {suggestedProducts.slice(0, 4).map((suggestedProduct) => (
                 <SuggestedMobileProductCard key={suggestedProduct.id} product={suggestedProduct} />
               ))}
             </div>
             
-            {/* Load more button if there are more than 4 products */}
+            
             {suggestedProducts.length > 4 && (
               <div className="mt-6 text-center">
                 <button 
@@ -560,7 +560,8 @@ export default function ProductPage({ params }: { params: { productId: string } 
         ) : (
           <p className="text-gray-500">Aucun produit similaire trouvé</p>
         )}
-      </div>
+      </div> 
+      */}
 
       {/* Success Dialog */}
       <SuccessDialog
