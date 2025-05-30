@@ -4,23 +4,49 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    console.log('Fetching top sales products based on order data...'); 
+    console.log('Fetching top sales products based on order quantity...');
 
-    // Get top products based on order count
-    const topProducts = await prisma.product.findMany({
-      take: 8, // Limit to top 8 products
-      orderBy: [
-        {
-          orderCount: 'desc', // Order by the number of times the product was ordered
+    // Get all order items with their products to calculate total quantities
+    const orderItems = await prisma.orderItem.findMany({
+      include: {
+        product: {
+          select: {
+            id: true,
+          },
         },
-        {
-          priority: 'desc', // Use priority as a secondary sort
-        }
-      ],
+      },
+    });
+
+    // Group by product and calculate total quantity ordered
+    const productStats: Record<number, {
+      id: number;
+      totalQuantity: number;
+    }> = {};
+
+    orderItems.forEach(item => {
+      const productId = item.product.id;
+      
+      if (!productStats[productId]) {
+        productStats[productId] = {
+          id: productId,
+          totalQuantity: 0,
+        };
+      }
+      
+      productStats[productId].totalQuantity += item.quantity;
+    });
+
+    // Convert to array and sort by total quantity
+    const topProductIds = Object.values(productStats)
+      .sort((a, b) => b.totalQuantity - a.totalQuantity)
+      .slice(0, 8) // Get top 8 by quantity
+      .map(product => product.id);
+
+    // Fetch the complete product data for these IDs
+    const topProducts = await prisma.product.findMany({
       where: {
-        // Only include products that have been ordered at least once
-        orderItems: {
-          some: {}
+        id: {
+          in: topProductIds
         }
       },
       include: {
@@ -33,12 +59,17 @@ export async function GET() {
       },
     });
 
+    // Sort the products in the same order as topProductIds
+    const sortedProducts = topProductIds
+      .map(id => topProducts.find(product => product.id === id))
+      .filter(product => product !== undefined);
+
     // If we don't have enough products with orders, supplement with products based on priority
-    if (topProducts.length < 8) {
-      const remainingCount = 8 - topProducts.length;
+    if (sortedProducts.length < 8) {
+      const remainingCount = 8 - sortedProducts.length;
       
       // Get IDs of products we already have to exclude them
-      const existingProductIds = topProducts.map(product => product.id);
+      const existingProductIds = sortedProducts.map(product => product!.id);
       
       const additionalProducts = await prisma.product.findMany({
         take: remainingCount,
@@ -61,14 +92,14 @@ export async function GET() {
       });
       
       // Combine the results
-      const combinedProducts = [...topProducts, ...additionalProducts];
+      const combinedProducts = [...sortedProducts, ...additionalProducts];
       
-      console.log(`Found ${combinedProducts.length} top sales products (${topProducts.length} from orders, ${additionalProducts.length} from priority)`);
+      console.log(`Found ${combinedProducts.length} top sales products (${sortedProducts.length} from order quantity, ${additionalProducts.length} from priority)`);
       return NextResponse.json(combinedProducts);
     }
 
-    console.log(`Found ${topProducts.length} top sales products from order data`);
-    return NextResponse.json(topProducts);
+    console.log(`Found ${sortedProducts.length} top sales products based on order quantity`);
+    return NextResponse.json(sortedProducts);
   } catch (error) {
     console.error('Error fetching products:', error); 
     return NextResponse.json(
