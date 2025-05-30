@@ -89,7 +89,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 src={currentImage}
                 alt={`${product.name} - ${currentColorVariant?.color}`}
                 fill
-                className="object-cover transform transition-transform duration-500 group-hover:scale-105"
+                className="object-cover transform transition-transform duration-500"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 priority={currentImageIndex === 0} // Only prioritize the first image
                 loading={currentImageIndex === 0 ? "eager" : "lazy"}

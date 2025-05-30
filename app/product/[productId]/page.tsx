@@ -238,51 +238,6 @@ export default function ProductPage({ params }: { params: { productId: string } 
     }
   };
 
-  // Debounced zoom function to improve performance with null checks
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Safely handle the event in case the component is unmounting
-    try {
-      // Use requestAnimationFrame to optimize performance
-      requestAnimationFrame(() => {
-        // Check if the current target still exists in the DOM
-        if (!e.currentTarget) return;
-        
-        const container = e.currentTarget;
-        const img = container.querySelector("img");
-        
-        // Ensure the image element exists
-        if (!img) return;
-
-        const { left, top, width, height } = container.getBoundingClientRect();
-        const x = ((e.clientX - left) / width) * 100;
-        const y = ((e.clientY - top) / height) * 100;
-
-        img.style.transformOrigin = `${x}% ${y}%`;
-        img.style.transform = "scale(1.5)";
-      });
-    } catch (error) {
-      console.error("Error in zoom effect:", error);
-      // Silently fail if there's an error to prevent app crashes
-    }
-  };
-
-  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    try {
-      // Check if the current target still exists in the DOM
-      if (!e.currentTarget) return;
-      
-      const img = e.currentTarget.querySelector("img");
-      
-      // Ensure the image element exists
-      if (!img) return;
-
-      img.style.transformOrigin = "center";
-      img.style.transform = "scale(1)";
-    } catch (error) {
-      console.error("Error in zoom effect:", error);
-      // Silently fail if there's an error to prevent app crashes
-    }
-  };
 
   if (loading) {
     return (
@@ -340,19 +295,15 @@ export default function ProductPage({ params }: { params: { productId: string } 
             ))}
           </div>
 
-          {/* Main Image with Zoom */}
-          <div
-            className="flex-1 relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-100 zoom-container"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-          >
+          {/* Main Image */}
+          <div className="flex-1 relative aspect-[3/4] overflow-hidden rounded-lg bg-gray-100">
             <Image
               src={selectedImageUrl}
               alt={product.name}
               fill
-              className="object-cover object-center transition-transform duration-300"
+              className="object-cover object-center"
               priority
-              quality={75} // Reduced quality for better performance
+              quality={75}
               sizes="(max-width: 720px) 100vw, 50vw"
               loading="eager"
               placeholder="blur"

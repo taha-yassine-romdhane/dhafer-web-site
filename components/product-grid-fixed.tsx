@@ -241,9 +241,6 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
               <div className="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
               <div className="h-3 bg-gray-200 rounded w-1/2"></div>
               <div className="mt-2 flex space-x-1">
-                <div className="w-4 h-4 rounded-full bg-gray-200"></div>
-                <div className="w-4 h-4 rounded-full bg-gray-200"></div>
-                <div className="w-4 h-4 rounded-full bg-gray-200"></div>
               </div>
             </div>
           ))}
@@ -288,8 +285,6 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     loading="lazy"
                     quality={50}
-                    placeholder="blur"
-                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
                   />
                 )}
 
@@ -332,7 +327,7 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
                   )}
                 </div>
 
-                {/* Color Variant Thumbnails */}
+                {/* Color Variant Thumbnails 
                 <div className="mt-1 flex items-center">
                   <div className="flex -space-x-2 mr-2">
                     {product.colorVariants.slice(0, 3).map((variant, idx) => {
@@ -381,6 +376,7 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
                     </span>
                   )}
                 </div>
+                */}
               </div>
             </div>
           ))}
