@@ -128,7 +128,7 @@ export default function AProposSection() {
                             src={src}
                             alt={`A Propos Image ${index + 1}`}
                             fill
-                            className="object-cover object-center transition-transform duration-500 hover:scale-105"
+                            className="object-cover object-center"
                             sizes="(max-width: 768px) 100vw, 50vw"
                             priority={index === 0} // Only prioritize the first image
                             loading={index === 0 ? 'eager' : 'lazy'} // Lazy load non-visible images
