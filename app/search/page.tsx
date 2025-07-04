@@ -169,14 +169,14 @@ export default function SearchPage() {
             <h1 className="text-3xl font-bold text-gray-900">Recherche Resultat</h1>
             {searchQuery && (
               <p className="text-sm text-gray-500">
-                Recherche pour: <span className="font-medium text-[#D4AF37]">{searchQuery}</span>
+                Recherche pour: <span className="font-medium text-[#7c3f61]">{searchQuery}</span>
               </p>
             )}
           </div>
           <Button
             onClick={() => setShowFilters(!showFilters)}
             variant="outline"
-            className="border-[#D4AF37]/20 hover:border-[#D4AF37] hover:text-[#D4AF37]"
+            className="border-[#7c3f61]/20 hover:border-[#7c3f61] hover:text-[#7c3f61]"
           >
             <SlidersHorizontal className="h-4 w-4 mr-2" />
             Filtres
@@ -189,7 +189,7 @@ export default function SearchPage() {
           showFilters ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
         )}>
           <div className="overflow-hidden">
-            <div className="bg-white p-4 rounded-lg border border-[#D4AF37]/20 space-y-4">
+            <div className="bg-white p-4 rounded-lg border border-[#7c3f61]/20 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Categories */}
                 <div className="space-y-2">
@@ -200,8 +200,8 @@ export default function SearchPage() {
                       className={cn(
                         "px-3 py-1 rounded-full text-sm",
                         selectedCategory === "all"
-                          ? "bg-[#D4AF37] text-white"
-                          : "bg-gray-100 hover:bg-[#D4AF37]/10"
+                          ? "bg-[#7c3f61] text-white"
+                          : "bg-gray-100 hover:bg-[#7c3f61]/10"
                       )}
                     >
                       Tous
@@ -213,8 +213,8 @@ export default function SearchPage() {
                         className={cn(
                           "px-3 py-1 rounded-full text-sm",
                           selectedCategory === category
-                            ? "bg-[#D4AF37] text-white"
-                            : "bg-gray-100 hover:bg-[#D4AF37]/10"
+                            ? "bg-[#7c3f61] text-white"
+                            : "bg-gray-100 hover:bg-[#7c3f61]/10"
                         )}
                       >
                         {category}
@@ -230,7 +230,7 @@ export default function SearchPage() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full rounded-md border border-[#D4AF37]/20 px-3 py-1.5 text-sm focus:border-[#D4AF37] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]"
+                    className="w-full rounded-md border border-[#7c3f61]/20 px-3 py-1.5 text-sm focus:border-[#7c3f61] focus:outline-none focus:ring-1 focus:ring-[#7c3f61]"
                   >
                     {sortOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -244,22 +244,22 @@ export default function SearchPage() {
               {/* Active Filters */}
               <div className="flex flex-wrap gap-2">
                 {selectedCategory !== "all" && (
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-[#D4AF37]/10 text-sm">
+                  <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-[#7c3f61]/10 text-sm">
                     <span>Categorie: {selectedCategory}</span>
                     <button
                       onClick={() => setSelectedCategory("all")}
-                      className="text-[#D4AF37] hover:text-[#B4941F]"
+                      className="text-[#7c3f61] hover:text-[#B4941F]"
                     >
                       <X className="h-4 w-4" />
                     </button>
                   </div>
                 )}
                 {sortBy !== "relevance" && (
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-[#D4AF37]/10 text-sm">
+                  <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-[#7c3f61]/10 text-sm">
                     <span>Filtrage par: {sortOptions.find(o => o.value === sortBy)?.label}</span>
                     <button
                       onClick={() => setSortBy("relevance")}
-                      className="text-[#D4AF37] hover:text-[#B4941F]"
+                      className="text-[#7c3f61] hover:text-[#B4941F]"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -272,7 +272,7 @@ export default function SearchPage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-10">
-            <Loader2 className="h-10 w-10 animate-spin text-[#D4AF37]" />
+            <Loader2 className="h-10 w-10 animate-spin text-[#7c3f61]" />
           </div>
         ) : error ? (
           <div className="flex items-center justify-center py-10">
@@ -295,7 +295,7 @@ export default function SearchPage() {
                   href={`/product/${product.id}`}
                   className="group"
                 >
-                  <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100 border border-[#D4AF37]/20 group-hover:border-[#D4AF37] transition-colors">
+                  <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100 border border-[#7c3f61]/20 group-hover:border-[#7c3f61] transition-colors">
                     {product.colorVariants[0]?.images[0] && (
                       <>
                         <Image
@@ -313,13 +313,13 @@ export default function SearchPage() {
                     )}
                   </div>
                   <div className="mt-4 space-y-1">
-                    <h3 className="text-sm font-medium text-gray-900 group-hover:text-[#D4AF37] transition-colors">
+                    <h3 className="text-sm font-medium text-gray-900 group-hover:text-[#7c3f61] transition-colors">
                       {product.name}
                     </h3>
                     <div className="flex items-center gap-2">
                       {product.salePrice ? (
                         <>
-                          <span className="text-sm font-medium text-[#D4AF37]">
+                          <span className="text-sm font-medium text-[#7c3f61]">
                             TND {product.salePrice.toFixed(2)}
                           </span>
                           <span className="text-xs text-gray-400 line-through">
@@ -327,7 +327,7 @@ export default function SearchPage() {
                           </span>
                         </>
                       ) : (
-                        <span className="text-sm font-medium text-[#D4AF37]">
+                        <span className="text-sm font-medium text-[#7c3f61]">
                           TND {product.price.toFixed(2)}
                         </span>
                       )}

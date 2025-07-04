@@ -59,7 +59,7 @@ export default function Login() {
   // Show loading state while checking auth
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D4AF37]"></div>
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7c3f61]"></div>
     </div>
   }
   // Only show login form if not logged in
@@ -69,7 +69,7 @@ export default function Login() {
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="flex justify-center">
             <Image
-              src="/logo.webp"
+              src="/logo.png"
               alt="Dar-Koftan Logo"
               width={120}
               height={120}
@@ -81,7 +81,7 @@ export default function Login() {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Ou{' '}
-            <Link href="/signup" className="font-medium text-[#D4AF37] hover:text-[#B59851]">
+            <Link href="/signup" className="font-medium text-[#7c3f61] hover:text-[#B59851]">
               créez un nouveau compte
             </Link>
           </p>
@@ -103,7 +103,7 @@ export default function Login() {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200"
+                    className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61] transition-all duration-200"
                   />
                 </div>
               </div>
@@ -121,7 +121,7 @@ export default function Login() {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200"
+                    className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61] transition-all duration-200"
                   />
                 </div>
               </div>
@@ -132,7 +132,7 @@ export default function Login() {
                     id="remember_me"
                     name="remember_me"
                     type="checkbox"
-                    className="h-4 w-4 text-[#D4AF37] focus:ring-[#D4AF37] border-gray-300 rounded"
+                    className="h-4 w-4 text-[#7c3f61] focus:ring-[#7c3f61] border-gray-300 rounded"
                   />
                   <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-700">
                     Se souvenir de moi
@@ -142,7 +142,7 @@ export default function Login() {
                 <div className="text-sm">
                   <Link
                     href="/forgot-password"
-                    className="font-medium text-[#D4AF37] hover:text-[#B59851] transition-colors duration-200"
+                    className="font-medium text-[#7c3f61] hover:text-[#B59851] transition-colors duration-200"
                   >
                     Mot de passe oublié?
                   </Link>
@@ -159,7 +159,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] transition-all duration-200"
+                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#7c3f61] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7c3f61] transition-all duration-200"
                 >
                   {loading ? 'Loading...' : 'Se connecter'}
                 </button>

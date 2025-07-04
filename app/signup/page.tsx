@@ -123,7 +123,7 @@ export default function SignUp() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <Image
-            src="/logo.webp"
+            src="/logo.png"
             alt="Dar-Koftan Logo"
             width={120}
             height={120}
@@ -135,7 +135,7 @@ export default function SignUp() {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Déjà un compte?{' '}
-          <Link href="/login" className="font-medium text-[#D4AF37] hover:text-[#B59851] transition-colors duration-200">
+          <Link href="/login" className="font-medium text-[#7c3f61] hover:text-[#B59851] transition-colors duration-200">
             Connectez-vous
           </Link>
         </p>
@@ -156,7 +156,7 @@ export default function SignUp() {
                   required
                   value={formData.username}
                   onChange={handleChange}
-                  className={`block w-full px-4 py-3 rounded-lg border ${getFieldError('username') ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200`}
+                  className={`block w-full px-4 py-3 rounded-lg border ${getFieldError('username') ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61] transition-all duration-200`}
                   placeholder="Nom d'utilisateur"
                 />
               </div>
@@ -177,7 +177,7 @@ export default function SignUp() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className={`block w-full px-4 py-3 rounded-lg border ${getFieldError('email') ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200`}
+                  className={`block w-full px-4 py-3 rounded-lg border ${getFieldError('email') ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61] transition-all duration-200`}
                   placeholder="Email"
                 />
               </div>
@@ -198,7 +198,7 @@ export default function SignUp() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className={`block w-full px-4 py-3 rounded-lg border ${getFieldError('password') ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200`}
+                  className={`block w-full px-4 py-3 rounded-lg border ${getFieldError('password') ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61] transition-all duration-200`}
                   placeholder="Mot de passe"
                 />
               </div>
@@ -219,7 +219,7 @@ export default function SignUp() {
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`block w-full px-4 py-3 rounded-lg border ${getFieldError('confirmPassword') ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200`}
+                  className={`block w-full px-4 py-3 rounded-lg border ${getFieldError('confirmPassword') ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61] transition-all duration-200`}
                   placeholder="Confirmer le mot de passe"
                 />
               </div>
@@ -239,7 +239,7 @@ export default function SignUp() {
                   type="tel"
                   value={formData.phoneNumber}
                   onChange={handleChange}
-                  className={`block w-full px-4 py-3 rounded-lg border ${getFieldError('phoneNumber') ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200`}
+                  className={`block w-full px-4 py-3 rounded-lg border ${getFieldError('phoneNumber') ? 'border-red-500' : 'border-gray-300'} shadow-sm focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61] transition-all duration-200`}
                   placeholder="Votre numéro de téléphone"
                 />
               </div>
@@ -259,7 +259,7 @@ export default function SignUp() {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] transition-all duration-200"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#7c3f61] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7c3f61] transition-all duration-200"
               >
                 {loading ? 'Chargement...' : 'Créer un compte'}
               </button>

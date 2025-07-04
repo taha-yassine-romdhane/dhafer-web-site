@@ -76,7 +76,7 @@ export default function TopProduitsSection() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#7c3f61]" />
       </div>
     )
   }
@@ -100,7 +100,7 @@ export default function TopProduitsSection() {
     <section className="py-12 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-center items-center mb-8">
-          <h2 className="text-3xl font-bold text-[#D4AF37] text-center">Notre Nouvelle Collection</h2>
+          <h2 className="text-3xl font-bold text-[#7c3f61] text-center">Notre Nouvelle Collection</h2>
         </div>
         
         <div className={isMobile ? "grid grid-cols-2 gap-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"}>

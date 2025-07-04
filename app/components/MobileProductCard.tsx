@@ -75,7 +75,7 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
               <span className="text-xs text-gray-500 line-through">
                 {formatPrice(product.price)}
               </span>
-              <span className="text-sm font-semibold text-[#D4AF37]">
+              <span className="text-sm font-semibold text-[#7c3f61]">
                 {formatPrice(product.salePrice)}
               </span>
             </>
@@ -100,7 +100,7 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
                 className={cn(
                   "relative w-7 h-7 rounded-full overflow-hidden border transition-all duration-200 shadow-sm",
                   selectedVariant?.id === variant.id 
-                    ? "border-2 border-[#D4AF37] scale-105" 
+                    ? "border-2 border-[#7c3f61] scale-105" 
                     : "border border-gray-200 hover:border-gray-300"
                 )}
               >
@@ -130,7 +130,7 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
         {/* See More Details Button */}
         <div className="mt-3">
           <Link href={`/product/${product.id}`} className="block">
-            <button className="w-full py-2 px-3 bg-[#D4AF37] hover:bg-[#c9a633] text-white rounded-md transition-colors duration-200 text-xs font-medium shadow-sm hover:shadow">
+            <button className="w-full py-2 px-3 bg-[#7c3f61] hover:hover:bg-[#7c3f61]/80 text-white rounded-md transition-colors duration-200 text-xs font-medium shadow-sm hover:shadow">
               Voir plus de détails
             </button>
           </Link>

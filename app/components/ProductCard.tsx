@@ -153,7 +153,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div className="mt-1.5 flex items-baseline space-x-2">
             {product.salePrice ? (
               <>
-                <span className="text-base font-bold text-[#D4AF37]">
+                <span className="text-base font-bold text-[#7c3f61]">
                   {product.salePrice.toFixed(2)} TND
                 </span>
                 <span className="text-xs text-gray-500 line-through">
@@ -161,7 +161,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </span>
               </>
             ) : (
-              <span className="text-base font-bold text-[#D4AF37]">
+              <span className="text-base font-bold text-[#7c3f61]">
                 {product.price.toFixed(2)} TND
               </span>
             )}
@@ -174,7 +174,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               {colorVariantsWithMainImages.slice(0, 3).map((variant, idx) => (
                 <div 
                   key={variant.id}
-                  className={`relative w-6 h-6 rounded-full overflow-hidden border-2 ${idx === currentColorIndex ? 'border-[#D4AF37] z-10' : 'border-white'}`}
+                  className={`relative w-6 h-6 rounded-full overflow-hidden border-2 ${idx === currentColorIndex ? 'border-[#7c3f61] z-10' : 'border-white'}`}
                   style={{ zIndex: 3 - idx }}
                 >
                   {variant.mainImage && (
@@ -202,7 +202,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* See More Details Button */}
           <div className="mt-3">
             <Link href={`/product/${product.id}`} className="block">
-              <button className="w-full py-2 px-4 bg-[#D4AF37] hover:bg-[#c9a633] text-white rounded-md transition-colors duration-200 text-sm font-medium shadow-sm hover:shadow">
+              <button className="w-full py-2 px-4 bg-[#7c3f61] hover:bg-[#7c3f61]/80 text-white rounded-md transition-colors duration-200 text-sm font-medium shadow-sm hover:shadow">
                 Voir plus de détails
               </button>
             </Link>
@@ -239,7 +239,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {colorVariantsWithMainImages.map((variant, index) => (
                   <button
                     key={variant.id}
-                    className={`rounded-lg overflow-hidden border-2 transition-all ${currentColorIndex === index ? 'border-[#D4AF37] shadow-md' : 'border-transparent hover:border-gray-300'}`}
+                    className={`rounded-lg overflow-hidden border-2 transition-all ${currentColorIndex === index ? 'border-[#7c3f61] shadow-md' : 'border-transparent hover:border-gray-300'}`}
                     onClick={() => {
                       setCurrentColorIndex(index)
                       setCurrentImageIndex(0)

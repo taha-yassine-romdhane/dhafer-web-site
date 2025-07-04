@@ -8,18 +8,18 @@ export default function RefundPolicyPage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-8 text-[#D4AF37] text-center">
+        <h1 className="text-3xl font-bold mb-8 text-[#7c3f61] text-center">
           Politique de Remboursement
         </h1>
 
-        <div className="bg-white rounded-xl shadow-sm p-8 border border-[#D4AF37]/20">
+        <div className="bg-white rounded-xl shadow-sm p-8 border border-[#7c3f61]/20">
           {/* Introduction */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-[#D4AF37] mb-4">
+            <h2 className="text-xl font-semibold text-[#7c3f61] mb-4">
               Notre Engagement envers Vous
             </h2>
             <p className="text-gray-600">
-              Chez Dar Al Koftan Al Assil, nous nous engageons à vous offrir une expérience
+              Chez Aichic Couture, nous nous engageons à vous offrir une expérience
               d'achat exceptionnelle. Si vous n'êtes pas entièrement satisfait de
               votre achat, nous sommes là pour vous aider.
             </p>
@@ -27,9 +27,9 @@ export default function RefundPolicyPage() {
 
           {/* Refund Eligibility */}
           <div className="flex items-start gap-4 mb-8">
-            <Shield className="h-8 w-8 text-[#D4AF37] mt-1" />
+            <Shield className="h-8 w-8 text-[#7c3f61] mt-1" />
             <div>
-              <h2 className="text-xl font-semibold text-[#D4AF37]">
+              <h2 className="text-xl font-semibold text-[#7c3f61]">
                 Conditions de Remboursement
               </h2>
               <ul className="list-disc list-inside text-gray-600">
@@ -51,15 +51,15 @@ export default function RefundPolicyPage() {
 
           {/* Refund Process */}
           <div className="flex items-start gap-4 mb-8">
-            <Clock className="h-8 w-8 text-[#D4AF37] mt-1" />
+            <Clock className="h-8 w-8 text-[#7c3f61] mt-1" />
             <div>
-              <h2 className="text-xl font-semibold text-[#D4AF37]">
+              <h2 className="text-xl font-semibold text-[#7c3f61]">
                 Processus d'échange
               </h2>
               <ol className="list-decimal list-inside text-gray-600">
                 <li>
                   Contactez notre service client à l'adresse{" "}
-                  <strong>contact@daralkoftanalassil.com</strong> ou navigatez sur la page de contact pour initier une demande
+                  <strong>contact@aichic.tn</strong> ou navigatez sur la page de contact pour initier une demande
                   d'échange.
                 </li>
                 <li>
@@ -71,9 +71,9 @@ export default function RefundPolicyPage() {
 
           {/* Non-Refundable Items */}
           <div className="flex items-start gap-4 mb-8">
-            <XCircle className="h-8 w-8 text-[#D4AF37] mt-1" />
+            <XCircle className="h-8 w-8 text-[#7c3f61] mt-1" />
             <div>
-              <h2 className="text-xl font-semibold text-[#D4AF37]">
+              <h2 className="text-xl font-semibold text-[#7c3f61]">
                 Articles Non Remboursables
               </h2>
               <ul className="list-disc list-inside text-gray-600">
@@ -86,9 +86,9 @@ export default function RefundPolicyPage() {
 
           {/* Exchange Methods */}
           <div className="flex items-start gap-4 mb-8">
-            <CheckCircle className="h-8 w-8 text-[#D4AF37] mt-1" />
+            <CheckCircle className="h-8 w-8 text-[#7c3f61] mt-1" />
             <div>
-              <h2 className="text-xl font-semibold text-[#D4AF37]">
+              <h2 className="text-xl font-semibold text-[#7c3f61]">
                 Méthodes d'échange
               </h2>
               <p className="text-gray-600">
@@ -100,7 +100,7 @@ export default function RefundPolicyPage() {
           {/* Call-to-Action */}
           <div className="text-center mt-8">
             <Link href="/contact">
-              <Button className="bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white px-8 py-3 text-lg">
+              <Button className="bg-[#7c3f61] hover:bg-[#7c3f61]/90 text-white px-8 py-3 text-lg">
                 Contactez Notre Service Client
               </Button>
             </Link>

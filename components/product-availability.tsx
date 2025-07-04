@@ -128,13 +128,13 @@ export function ProductAvailability({
   return (
     <div className={cn("p-3 rounded-lg border transition-colors", className, 
       isAvailable 
-        ? "border-[#D4AF37]/20 bg-[#D4AF37]/5" 
+        ? "border-[#7c3f61]/20 bg-[#7c3f61]/5" 
         : "border-gray-200 bg-gray-50"
     )}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {isAvailable ? (
-            <CheckCircle className="w-5 h-5 text-[#D4AF37]" />
+            <CheckCircle className="w-5 h-5 text-[#7c3f61]" />
           ) : (
             <XCircle className="w-5 h-5 text-gray-400" />
           )}
@@ -145,7 +145,7 @@ export function ProductAvailability({
         <div className={cn(
           "px-2 py-1 text-sm rounded",
           isAvailable 
-            ? "bg-[#D4AF37]/10 text-[#D4AF37]" 
+            ? "bg-[#7c3f61]/10 text-[#7c3f61]" 
             : "bg-gray-100 text-gray-500"
         )}>
           {isAvailable ? "En stock" : "Rupture de stock"}

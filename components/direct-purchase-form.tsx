@@ -153,11 +153,11 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                   <Input
                     placeholder="votre nom complet"
                     {...field}
-                    className="rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
+                    className="rounded-full focus:border-[#7c3f61] focus:ring-[#7c3f61] hover:border-[#7c3f61] !border-[#7c3f61]/20"
                     disabled={!!user}
                   />
                 </FormControl>
-                <FormMessage className="text-[#D4AF37]" />
+                <FormMessage className="text-[#7c3f61]" />
               </FormItem>
             )}
           />
@@ -171,10 +171,10 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                   <Input
                     placeholder="Votre adresse complète"
                     {...field}
-                    className="rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
+                    className="rounded-full focus:border-[#7c3f61] focus:ring-[#7c3f61] hover:border-[#7c3f61] !border-[#7c3f61]/20"
                   />
                 </FormControl>
-                <FormMessage className="text-[#D4AF37]" />
+                <FormMessage className="text-[#7c3f61]" />
               </FormItem>
             )}
           />
@@ -186,7 +186,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
               <FormItem>
                 <FormControl>
                   <select
-                    className="w-full p-2 rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20 outline-none"
+                    className="w-full p-2 rounded-full focus:border-[#7c3f61] focus:ring-[#7c3f61] hover:border-[#7c3f61] !border-[#7c3f61]/20 outline-none"
                     {...field}
                   >
                     <option value="">Sélectionnez un gouvernorat</option>
@@ -195,7 +195,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                     ))}
                   </select>
                 </FormControl>
-                <FormMessage className="text-[#D4AF37]" />
+                <FormMessage className="text-[#7c3f61]" />
               </FormItem>
             )}
           />
@@ -210,31 +210,13 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                     type="number"
                     placeholder="Votre numéro de télephone"
                     {...field}
-                    className="rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
+                    className="rounded-full focus:border-[#7c3f61] focus:ring-[#7c3f61] hover:border-[#7c3f61] !border-[#7c3f61]/20"
                   />
                 </FormControl>
-                <FormMessage className="text-[#D4AF37]" />
+                <FormMessage className="text-[#7c3f61]" />
               </FormItem>
             )}
           />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    placeholder="Email (facultatif)"
-                    {...field}
-                    className="rounded-full focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
-                  />
-                </FormControl>
-                <FormMessage className="text-[#D4AF37]" />
-              </FormItem>
-            )}
-          />
-
 
           <div className="flex items-center gap-4">
             <FormField
@@ -248,7 +230,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                       variant="outline"
                       size="icon"
                       onClick={decrementQuantity}
-                      className="rounded-full w-8 h-8 hover:bg-[#D4AF37]/10 hover:border-[#D4AF37] text-[#D4AF37] !border-[#D4AF37]/20"
+                      className="rounded-full w-8 h-8 hover:bg-[#7c3f61]/10 hover:border-[#7c3f61] text-[#7c3f61] !border-[#7c3f61]/20"
                     >
                       -
                     </Button>
@@ -257,7 +239,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                         type="positive number"
                         {...field}
                         onChange={(e) => field.onChange(parseInt(e.target.value))}
-                        className="text-center w-16 focus:border-[#D4AF37] focus:ring-[#D4AF37] hover:border-[#D4AF37] !border-[#D4AF37]/20"
+                        className="text-center w-16 focus:border-[#7c3f61] focus:ring-[#7c3f61] hover:border-[#7c3f61] !border-[#7c3f61]/20"
                       />
                     </FormControl>
                     <Button
@@ -265,18 +247,18 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
                       variant="outline"
                       size="icon"
                       onClick={incrementQuantity}
-                      className="rounded-full w-8 h-8 hover:bg-[#D4AF37]/10 hover:border-[#D4AF37] text-[#D4AF37] !border-[#D4AF37]/20"
+                      className="rounded-full w-8 h-8 hover:bg-[#7c3f61]/10 hover:border-[#7c3f61] text-[#7c3f61] !border-[#7c3f61]/20"
                     >
                       +
                     </Button>
                   </div>
-                  <FormMessage className="text-[#D4AF37]" />
+                  <FormMessage className="text-[#7c3f61]" />
                 </FormItem>
               )}
             />
             <Button
               type="submit"
-              className={`flex-1 ${isProductAvailable ? 'bg-[#d1a72e] text-white hover:bg-[#D4AF37]/80' : 'bg-gray-300 text-gray-600 cursor-not-allowed'} rounded !border-[#D4AF37]`}
+              className={`flex-1 ${isProductAvailable ? 'bg-[#7c3f61] text-white hover:bg-[#7c3f61]/80' : 'bg-gray-300 text-gray-600 cursor-not-allowed'} rounded !border-[#7c3f61]`}
               disabled={isSubmitting || !isProductAvailable}
             >
               {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShoppingBag className="mr-2 h-4 w-4" />}
@@ -314,12 +296,6 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
             <p className="text-sm text-gray-600"><strong>Nom et prénom:</strong></p>
             <p className="text-gray-800">{formData?.fullName}</p>
           </div>
-          {formData?.email && (
-            <div>
-              <p className="text-sm text-gray-600"><strong>Email:</strong></p>
-              <p className="text-gray-800">{formData?.email}</p>
-            </div>
-          )}
           <div>
             <p className="text-sm text-gray-600"><strong>Adresse:</strong></p>
             <p className="text-gray-800">{formData?.address}</p>
@@ -353,12 +329,12 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Frais de livraison:</span>
-            <span className="font-medium">6 TND</span>
+            <span className="font-medium">7 TND</span>
           </div>
           <div className="border-t pt-2 mt-2 flex justify-between">
             <span className="text-gray-600 font-semibold">Total:</span>
-            <span className="text-lg font-bold text-[#D4AF37]">
-              {(productInfo.salePrice !== null && productInfo.salePrice !== undefined ? productInfo.salePrice : productInfo.price) * (formData?.quantity || 1) + 6} TND
+            <span className="text-lg font-bold text-[#7c3f61]">
+              {(productInfo.salePrice !== null && productInfo.salePrice !== undefined ? productInfo.salePrice : productInfo.price) * (formData?.quantity || 1) + 7} TND
             </span>
           </div>
         </div>
@@ -374,7 +350,7 @@ export function DirectPurchaseForm({ onSubmit, className = "", isSubmitting = fa
         Modifier
       </Button>
       <Button 
-        className="bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white shadow hover:shadow-md transition-all"
+        className="bg-[#7c3f61] hover:bg-[#7c3f61]/90 text-white shadow hover:shadow-md transition-all"
         onClick={handleConfirm}
         disabled={isConfirming}
       >

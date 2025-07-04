@@ -1,48 +1,62 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Contact | دار القفطان الأصيل ',
-  description: 'Le coftan est apprécié par la plupart des femmes pour sa légèreté et sa souplesse, et son style est flexible pour permettre la liberté et la création d\'un style artistique qui correspond aux tendances et aux préférences personnelles.',
-  keywords: 'coftan, vêtements traditionnels, tunisie, jemmel, sousse, tunis, mode traditionnelle, caftan, dar el koftan, al assil',
-  authors: [{ name: 'Dar El Koftan Al Assil' }],
-  creator: 'Dar El Koftan Al Assil',
-  publisher: 'Dar El Koftan Al Assil',
+  title: 'AICHIC COUTURE | Mode Féminine Chic & Tendance',
+  description: 'Découvrez la collection exclusive de vêtements AICHIC COUTURE. Élégance, modernité et qualité pour toutes les femmes.',
+  keywords: 'AICHIC COUTURE, vêtements, mode, femme, collection, qualité, élégance, tendance',
+  authors: [{ name: 'AICHIC COUTURE' }],
+  creator: 'AICHIC COUTURE',
+  publisher: 'AICHIC COUTURE',
+  formatDetection: {
+    email: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://www.aichic.tn'),
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
-    type: 'website',
+    title: 'AICHIC COUTURE | Mode Féminine Chic & Tendance',
+    description: 'Découvrez la collection exclusive de vêtements AICHIC COUTURE. Élégance, modernité et qualité pour toutes les femmes.',
+    url: 'https://www.aichic.tn',
+    siteName: 'AICHIC COUTURE',
     locale: 'fr_FR',
-    url: 'https://daralkoftanalassil.com',
-    title: 'Contact | دار القفطان الأصيل',
-    description: 'Découvrez notre collection de vêtements traditionnels tunisiens. Boutiques à Jemmel, Sousse et Tunis.',
-    siteName: 'Dar El Koftan Al Assil',
+    type: 'website',
     images: [
       {
-        url: '/logo.webp',
+        url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Dar El Koftan Al Assil',
-      },
+        alt: 'AICHIC COUTURE Collection',
+      }
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Contact | دار القفطان الأصيل',
-    description: 'Découvrez notre collection de vêtements traditionnels tunisiens. Boutiques à Jemmel, Sousse et Tunis.',
-    images: ['/logo.webp'],
+    title: 'AICHIC COUTURE | Mode Féminine Chic & Tendance',
+    description: 'Découvrez la collection exclusive de vêtements AICHIC COUTURE. Élégance, modernité et qualité pour toutes les femmes.',
+    images: ['/twitter-image.jpg'],
   },
-  alternates: {
-    canonical: 'https://daralkoftanalassil.com',
+  icons: {
+    icon: [
+      { url: '/FAVICON AICHIC.ico' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/safari-pinned-tab.svg',
+        color: '#5bbad5'
+      },
+    ],
   },
+  manifest: '/site.webmanifest',
   robots: {
     index: true,
     follow: true,
   },
-  icons: {
-    icon: '/favicon.svg',
-  },
-  verification: {
-    google: 'verification_token',
-  },
-  category: 'shopping',
 };
 
 export default function ContactLayout({

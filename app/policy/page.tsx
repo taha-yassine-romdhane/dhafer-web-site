@@ -8,18 +8,18 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto py-6">
-        <h1 className="text-3xl font-bold mb-8 text-[#D4AF37] text-center">
+        <h1 className="text-3xl font-bold mb-8 text-[#7c3f61] text-center">
           Politique de Confidentialité
         </h1>
 
-        <div className="bg-white rounded-xl shadow-sm p-8 border border-[#D4AF37]/20">
+        <div className="bg-white rounded-xl shadow-sm p-8 border border-[#7c3f61]/20">
           {/* Introduction */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-[#D4AF37] mb-4">
+            <h2 className="text-xl font-semibold text-[#7c3f61] mb-4">
               Introduction
             </h2>
             <p className="text-gray-600">
-              Chez Dar Al Koftan Al Assil, nous accordons une grande importance à la
+              Chez Aichic Couture, nous accordons une grande importance à la
               protection de vos données personnelles. Cette politique de
               confidentialité explique comment nous collectons, utilisons et
               protégeons vos informations lorsque vous utilisez notre site web.
@@ -28,9 +28,9 @@ export default function PrivacyPolicyPage() {
 
           {/* Data Collection */}
           <div className="flex items-start gap-4 mb-8">
-            <User className="h-8 w-8 text-[#D4AF37] mt-1" />
+            <User className="h-8 w-8 text-[#7c3f61] mt-1" />
             <div>
-              <h2 className="text-xl font-semibold text-[#D4AF37]">
+              <h2 className="text-xl font-semibold text-[#7c3f61]">
                 Collecte des Données
               </h2>
               <p className="text-gray-600">
@@ -47,9 +47,9 @@ export default function PrivacyPolicyPage() {
 
           {/* Use of Data */}
           <div className="flex items-start gap-4 mb-8">
-            <Mail className="h-8 w-8 text-[#D4AF37] mt-1" />
+            <Mail className="h-8 w-8 text-[#7c3f61] mt-1" />
             <div>
-              <h2 className="text-xl font-semibold text-[#D4AF37]">
+              <h2 className="text-xl font-semibold text-[#7c3f61]">
                 Utilisation des Données
               </h2>
               <p className="text-gray-600">
@@ -66,9 +66,9 @@ export default function PrivacyPolicyPage() {
 
           {/* Data Protection */}
           <div className="flex items-start gap-4 mb-8">
-            <Lock className="h-8 w-8 text-[#D4AF37] mt-1" />
+            <Lock className="h-8 w-8 text-[#7c3f61] mt-1" />
             <div>
-              <h2 className="text-xl font-semibold text-[#D4AF37]">
+              <h2 className="text-xl font-semibold text-[#7c3f61]">
                 Protection des Données
               </h2>
               <p className="text-gray-600">
@@ -81,9 +81,9 @@ export default function PrivacyPolicyPage() {
 
           {/* Data Sharing */}
           <div className="flex items-start gap-4 mb-8">
-            <Shield className="h-8 w-8 text-[#D4AF37] mt-1" />
+            <Shield className="h-8 w-8 text-[#7c3f61] mt-1" />
             <div>
-              <h2 className="text-xl font-semibold text-[#D4AF37]">
+              <h2 className="text-xl font-semibold text-[#7c3f61]">
                 Partage des Données
               </h2>
               <p className="text-gray-600">
@@ -100,9 +100,9 @@ export default function PrivacyPolicyPage() {
 
           {/* Your Rights */}
           <div className="flex items-start gap-4 mb-8">
-            <CreditCard className="h-8 w-8 text-[#D4AF37] mt-1" />
+            <CreditCard className="h-8 w-8 text-[#7c3f61] mt-1" />
             <div>
-              <h2 className="text-xl font-semibold text-[#D4AF37]">
+              <h2 className="text-xl font-semibold text-[#7c3f61]">
                 Vos Droits
               </h2>
               <p className="text-gray-600">
@@ -119,7 +119,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Contact Information */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-[#D4AF37] mb-4">
+            <h2 className="text-xl font-semibold text-[#7c3f61] mb-4">
               Contact
             </h2>
             <p className="text-gray-600">
@@ -127,14 +127,14 @@ export default function PrivacyPolicyPage() {
               veuillez nous contacter à l'adresse suivante :
             </p>
             <p className="text-gray-600 font-medium mt-2">
-              E-mail : <strong>contact@daralkoftanalassil.com</strong>
+              E-mail : <strong>contact@aichic.tn</strong>
             </p>
           </div>
 
           {/* Call-to-Action */}
           <div className="text-center mt-8">
             <Link href="/contact">
-              <Button className="bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white px-8 py-3 text-lg">
+              <Button className="bg-[#7c3f61] hover:bg-[#7c3f61]/90 text-white px-8 py-3 text-lg">
                 Contactez-Nous
               </Button>
             </Link>

@@ -66,12 +66,12 @@ export default function SuggestedProductCard({ product }: SuggestedProductCardPr
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-xs text-gray-500 line-through block">{formatPrice(product.price)}</span>
-                  <span className="text-xs font-semibold text-[#D4AF37]">{formatPrice(product.salePrice)}</span>
+                  <span className="text-xs font-semibold text-[#7c3f61]">{formatPrice(product.salePrice)}</span>
                 </div>
                 <span className="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded">Promo</span>
               </div>
             ) : (
-              <span className="text-xs font-semibold text-[#D4AF37]">{formatPrice(product.price)}</span>
+              <span className="text-xs font-semibold text-[#7c3f61]">{formatPrice(product.price)}</span>
             )}
           </div>
 
@@ -81,7 +81,7 @@ export default function SuggestedProductCard({ product }: SuggestedProductCardPr
               {colorVariantsWithMainImages.slice(0, 3).map((variant, idx) => (
                 <div 
                   key={variant.id}
-                  className={`relative w-6 h-6 rounded-full overflow-hidden border-2 ${idx === currentColorIndex ? 'border-[#D4AF37] z-10' : 'border-white'}`}
+                  className={`relative w-6 h-6 rounded-full overflow-hidden border-2 ${idx === currentColorIndex ? 'border-[#7c3f61] z-10' : 'border-white'}`}
                   style={{ zIndex: 3 - idx }}
                   onClick={(e) => {
                     e.preventDefault()

@@ -45,6 +45,7 @@ const staticCategories: Category[] = [
   },
 ];
 
+
 export default function Navbar() {
   const { isLoggedIn, user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -225,7 +226,7 @@ export default function Navbar() {
           <div className="flex items-center">
             <Button
               onClick={toggleMenu}
-              className="p-2 lg:hidden text-[#D4AF37] hover:bg-[#D4AF37]/10"
+              className="p-2 lg:hidden text-[#7c3f61] hover:bg-[#7c3f61]/10"
               variant="ghost"
               aria-label="Toggle Menu"
               aria-expanded={isOpen}
@@ -235,7 +236,7 @@ export default function Navbar() {
 
             <Link href="/" className="ml-4 lg:ml-0">
               <Image
-                src="/logo.webp"
+                src="/logo.png"
                 alt="Logo"
                 width={70}
                 height={70}
@@ -252,22 +253,22 @@ export default function Navbar() {
                   {category.url ? (
                     <Link
                       href={category.url}
-                      className="text-gray-800 hover:text-[#D4AF37] transition-colors py-2 block"
+                      className="text-gray-800 hover:text-[#7c3f61] transition-colors py-2 block"
                     >
                       {category.label}
                     </Link>
                   ) : (
                     <div className="relative">
                       <button
-                        className="text-gray-800 hover:text-[#D4AF37] transition-colors py-2 flex items-center"
+                        className="text-gray-800 hover:text-[#7c3f61] transition-colors py-2 flex items-center"
                         onClick={() => toggleCategory(category.label)}
                         onMouseEnter={() => toggleCategory(category.label)}
                       >
                         {category.label}
                       </button>
                       {category.subcategories && (
-                        <div className="hidden group-hover:block absolute left-0 top-full mt-1 w-56 bg-white shadow-lg rounded-md border border-[#D4AF37]/20 z-50 overflow-y-auto max-h-[70vh]">
-                          <div className="sticky top-0 bg-white border-b border-[#D4AF37]/10 py-2 px-4 font-medium text-[#D4AF37]">
+                        <div className="hidden group-hover:block absolute left-0 top-full mt-1 w-56 bg-white shadow-lg rounded-md border border-[#7c3f61]/20 z-50 overflow-y-auto max-h-[70vh]">
+                          <div className="sticky top-0 bg-white border-b border-[#7c3f61]/10 py-2 px-4 font-medium text-[#7c3f61]">
                             {category.label}
                           </div>
                           <ul className="py-1">
@@ -275,7 +276,7 @@ export default function Navbar() {
                               <li key={subcategory.name}>
                                 <Link
                                   href={`/collections?category=${subcategory.query}&group=${subcategory.group}`}
-                                  className="block px-4 py-2 text-gray-700 hover:text-[#D4AF37] hover:bg-[#D4AF37]/5 transition-colors"
+                                  className="block px-4 py-2 text-gray-700 hover:text-[#7c3f61] hover:bg-[#7c3f61]/5 transition-colors"
                                 >
                                   {subcategory.name}
                                 </Link>
@@ -299,12 +300,12 @@ export default function Navbar() {
 
             <Link
               href="/cart"
-              className="relative text-gray-800 hover:text-[#D4AF37] transition-colors"
+              className="relative text-gray-800 hover:text-[#7c3f61] transition-colors"
               aria-label="Cart"
             >
               <ShoppingCart size={20} />
               {items.length > 0 && (
-                <div className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-[#D4AF37] text-white text-xs flex items-center justify-center">
+                <div className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-[#7c3f61] text-white text-xs flex items-center justify-center">
                   {items.length}
                 </div>
               )}
@@ -315,9 +316,9 @@ export default function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="relative h-8 w-8 bg-[#D4AF37] hover:bg-[#D4AF37]/80 rounded-full"
+                    className="relative h-8 w-8 bg-[#7c3f61] hover:bg-[#7c3f61]/80 rounded-full"
                   >
-                    <div className="flex items-center justify-center h-full w-full bg-[#D4AF37] text-white rounded-full">
+                    <div className="flex items-center justify-center h-full w-full bg-[#7c3f61] text-white rounded-full">
                       {user.username.charAt(0).toUpperCase()}
                     </div>
                   </Button>
@@ -359,14 +360,14 @@ export default function Navbar() {
                 <Link href="/login">
                   <Button
                     variant="ghost"
-                    className="text-gray-700 hover:text-[#D4AF37] transition-colors"
+                    className="text-gray-700 hover:text-[#7c3f61] transition-colors"
                   >
                     Connexion
                   </Button>
                 </Link>
                 <Link href="/signup">
                   <Button
-                    className="bg-[#D4AF37] text-white hover:bg-[#B59851] transition-colors"
+                    className="bg-[#7c3f61] text-white hover:bg-[#7c3f61]/80 transition-colors"
                   >
                     Inscription
                   </Button>
@@ -380,7 +381,7 @@ export default function Navbar() {
         {isOpen && (
           <div
             ref={menuRef}
-            className="lg:hidden fixed top-[64px] left-0 right-0 bottom-0 bg-white overflow-y-auto z-50 border-t border-[#D4AF37]/20"
+            className="lg:hidden fixed top-[64px] left-0 right-0 bottom-0 bg-white overflow-y-auto z-50 border-t border-[#7c3f61]/20"
           >
             {/* Sticky search bar at the top of mobile menu */}
             <div className="sticky top-0 p-4 bg-white shadow-md z-10">
@@ -393,7 +394,7 @@ export default function Navbar() {
                     {category.url ? (
                       <Link
                         href={category.url}
-                        className="block w-full py-2 text-gray-800 hover:text-[#D4AF37] transition-colors"
+                        className="block w-full py-2 text-gray-800 hover:text-[#7c3f61] transition-colors"
                         onClick={() => {
                           setIsOpen(false);
                           enableBodyScroll(); // Enable scrolling when navigating to static pages
@@ -405,7 +406,7 @@ export default function Navbar() {
                       <>
                         <button
                           onClick={() => toggleCategory(category.label)}
-                          className="flex items-center justify-between w-full py-2 text-gray-800 hover:text-[#D4AF37] transition-colors"
+                          className="flex items-center justify-between w-full py-2 text-gray-800 hover:text-[#7c3f61] transition-colors"
                         >
                           <span>{category.label}</span>
                           {openCategory === category.label ? (
@@ -415,8 +416,8 @@ export default function Navbar() {
                           )}
                         </button>
                         {category.subcategories && openCategory === category.label && (
-                          <div className="ml-4 mt-1 border-l-2 border-[#D4AF37]/20 pl-4 relative">
-                            <div className="sticky top-[60px] bg-white py-2 z-10 font-medium text-[#D4AF37] border-b border-[#D4AF37]/10 mb-2">
+                          <div className="ml-4 mt-1 border-l-2 border-[#7c3f61]/20 pl-4 relative">
+                            <div className="sticky top-[60px] bg-white py-2 z-10 font-medium text-[#7c3f61] border-b border-[#7c3f61]/10 mb-2">
                               {category.label}
                             </div>
                             <ul className="space-y-2">
@@ -431,7 +432,7 @@ export default function Navbar() {
                                       setIsOpen(false);
                                       setOpenCategory(null);
                                     }}
-                                    className="block py-1.5 text-gray-600 hover:text-[#D4AF37] transition-colors"
+                                    className="block py-1.5 text-gray-600 hover:text-[#7c3f61] transition-colors"
                                   >
                                     {subcategory.name}
                                   </Link>
@@ -449,7 +450,7 @@ export default function Navbar() {
                                     setIsOpen(false);
                                     setOpenCategory(null);
                                   }}
-                                  className="block py-1.5 text-[#D4AF37] font-medium hover:underline"
+                                  className="block py-1.5 text-[#7c3f61] font-medium hover:underline"
                                 >
                                   Voir plus ({category.subcategories.length - 10})
                                 </Link>

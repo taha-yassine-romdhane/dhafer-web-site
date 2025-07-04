@@ -92,27 +92,27 @@ const SearchBar = () => {
             setShowSuggestions(true);
           }}
           placeholder="Recherchez ici ..."
-          className="w-full px-4 py-2 rounded-full border border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 bg-white placeholder-gray-400"
+          className="w-full px-4 py-2 rounded-full border border-[#7c3f61] focus:outline-none focus:ring-2 focus:ring-[#7c3f61]/50 bg-white placeholder-gray-400"
         />
         <button
           type="submit"
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#D4AF37] hover:text-[#B4941F] transition-colors"
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#7c3f61] hover:text-[#B4941F] transition-colors"
         >
           <Search size={20} />
         </button>
       </form>
 
       {showSuggestions && searchQuery.length >= 2 && (
-        <div className="absolute z-50 w-full md:w-[150%] left-0 md:-left-1/4 mt-2 bg-white rounded-xl shadow-2xl border border-[#D4AF37]/20 max-h-[80vh] md:max-h-[600px] overflow-y-auto">
+        <div className="absolute z-50 w-full md:w-[150%] left-0 md:-left-1/4 mt-2 bg-white rounded-xl shadow-2xl border border-[#7c3f61]/20 max-h-[80vh] md:max-h-[600px] overflow-y-auto">
           {isLoading ? (
             <div className="p-4 md:p-6 text-center text-gray-500">Chargement...</div>
           ) : suggestions && suggestions.length > 0 ? (
-            <ul className="divide-y divide-[#D4AF37]/10">
+            <ul className="divide-y divide-[#7c3f61]/10">
               {suggestions.map((product) => (
                 <li
                   key={product.id}
                   onClick={() => handleSuggestionClick(product.id.toString())}
-                  className="flex items-center gap-3 md:gap-6 p-4 md:p-6 hover:bg-[#D4AF37]/5 cursor-pointer transition-colors duration-200"
+                  className="flex items-center gap-3 md:gap-6 p-4 md:p-6 hover:bg-[#7c3f61]/5 cursor-pointer transition-colors duration-200"
                 >
                   {product.colorVariants[0]?.images[0] && (
                     <div className="relative w-16 h-16 md:w-24 md:h-24 flex-shrink-0">
@@ -134,7 +134,7 @@ const SearchBar = () => {
                     <div className="flex items-center gap-2">
                       {product.salePrice ? (
                         <>
-                          <span className="text-base md:text-lg font-semibold text-[#D4AF37]">
+                          <span className="text-base md:text-lg font-semibold text-[#7c3f61]">
                             TND {product.salePrice.toFixed(2)}
                           </span>
                           <span className="text-sm text-gray-400 line-through">
@@ -142,7 +142,7 @@ const SearchBar = () => {
                           </span>
                         </>
                       ) : (
-                        <span className="text-base md:text-lg font-semibold text-[#D4AF37]">
+                        <span className="text-base md:text-lg font-semibold text-[#7c3f61]">
                           TND {product.price.toFixed(2)}
                         </span>
                       )}

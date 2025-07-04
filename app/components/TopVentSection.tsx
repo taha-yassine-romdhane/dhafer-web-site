@@ -216,7 +216,7 @@ const TopVentSection: React.FC = () => {
           </p>
           <Link href="/top-vente" passHref className="block">
             <Button
-              className="inline-flex items-center justify-center px-6 py-2.5 text-base font-semibold text-white bg-[#D4AF37] rounded-full hover:bg-[#D4AF37]/90 transition-colors shadow-lg hover:shadow-xl mx-auto w-full"
+              className="inline-flex items-center justify-center px-6 py-2.5 text-base font-semibold text-white bg-[#7c3f61] rounded-full hover:bg-[#7c3f61]/90 transition-colors shadow-lg hover:shadow-xl mx-auto w-full"
               onClick={handleButtonClick}
               aria-label="Voir les Top Ventes"
             >
@@ -235,7 +235,7 @@ const TopVentSection: React.FC = () => {
           </p>
           <Link href="/top-vente" passHref>
             <Button
-              className="inline-flex items-center justify-center px-8 py-3 text-xl font-semibold text-white bg-[#D4AF37] rounded-full hover:bg-[#D4AF37]/90 transition-colors shadow-lg hover:shadow-xl"
+              className="inline-flex items-center justify-center px-8 py-3 text-xl font-semibold text-white bg-[#7c3f61] rounded-full hover:bg-[#7c3f61]/90 transition-colors shadow-lg hover:shadow-xl"
               onClick={handleButtonClick}
               aria-label="Voir les Top Ventes"
             >

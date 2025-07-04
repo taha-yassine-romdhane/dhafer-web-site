@@ -53,16 +53,16 @@ export function CartDropdown() {
   }, 0);
 
   return (
-    <div className="fixed top-20 right-4 z-50 w-96 bg-white rounded-lg shadow-xl border border-[#D4AF37]/20">
+    <div className="fixed top-20 right-4 z-50 w-96 bg-white rounded-lg shadow-xl border border-[#7c3f61]/20">
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-[#D4AF37] flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-[#7c3f61] flex items-center gap-2">
             <ShoppingBag size={20} />
             Panier ({items.length})
           </h2>
           <button
             onClick={() => setIsVisible(false)}
-            className="text-gray-500 hover:text-[#D4AF37]"
+            className="text-gray-500 hover:text-[#7c3f61]"
           >
             <X size={20} />
           </button>
@@ -99,7 +99,7 @@ export function CartDropdown() {
                         item.selectedColor
                       )
                     }
-                    className="p-1 hover:text-[#D4AF37]"
+                    className="p-1 hover:text-[#7c3f61]"
                   >
                     <Minus size={14} />
                   </button>
@@ -113,7 +113,7 @@ export function CartDropdown() {
                         item.selectedColor
                       )
                     }
-                    className="p-1 hover:text-[#D4AF37]"
+                    className="p-1 hover:text-[#7c3f61]"
                   >
                     <Plus size={14} />
                   </button>
@@ -121,7 +121,7 @@ export function CartDropdown() {
               </div>
 
               <div className="text-right">
-                <p className="font-medium text-[#D4AF37]">
+                <p className="font-medium text-[#7c3f61]">
                   TND{formatPrice((item.salePrice !== null && item.salePrice !== undefined ? item.salePrice : item.price) * item.quantity)}
                 </p>
                 <button
@@ -140,14 +140,14 @@ export function CartDropdown() {
         <div className="mt-4 pt-4 border-t border-gray-100">
           <div className="flex justify-between mb-4">
             <span className="font-medium">Total:</span>
-            <span className="font-bold text-[#D4AF37]">TND{formatPrice(total)}</span>
+            <span className="font-bold text-[#7c3f61]">TND{formatPrice(total)}</span>
           </div>
 
           <div className="flex gap-2">
             <Link href="/cart" className="flex-1">
               <Button
                 variant="outline"
-                className="w-full border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-white"
+                className="w-full border-[#7c3f61] text-[#7c3f61] hover:bg-[#7c3f61] hover:text-white"
               >
                 Voir le Panier
               </Button>

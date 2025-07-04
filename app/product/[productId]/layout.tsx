@@ -14,26 +14,26 @@ export async function generateMetadata(
 
   // Use the product name in the title if available, or fallback to generic title
   const productName = product?.name || 'Produit';
-  const title = `${productName} | دار القفطان الأصيل`;
-  const description = product?.description || 'Le coftan est apprécié par la plupart des femmes pour sa légèreté et sa souplesse, et son style est flexible pour permettre la liberté et la création d\'un style artistique qui correspond aux tendances et aux préférences personnelles.';
+  const title = `${productName} | Aichic Couture`;
+  const description = product?.description || 'Le  est apprécié par la plupart des femmes pour sa légèreté et sa souplesse, et son style est flexible pour permettre la liberté et la création d\'un style artistique qui correspond aux tendances et aux préférences personnelles.';
   
   // Default image for OpenGraph
-  const ogImage = '/logo.webp';
+  const ogImage = '/logo.png';
 
   return {
     title: title,
     description: description,
-    keywords: 'coftan, vêtements traditionnels, tunisie, jemmel, sousse, tunis, mode traditionnelle, caftan, dar el koftan, al assil',
-    authors: [{ name: 'Dar El Koftan Al Assil' }],
-    creator: 'Dar El Koftan Al Assil',
-    publisher: 'Dar El Koftan Al Assil',
+    keywords: ', vêtements professionnels, tunisie , sousse , Aichic Couture',
+    authors: [{ name: 'Aichic Couture' }],
+    creator: 'Aichic Couture',
+    publisher: 'Aichic Couture',
     openGraph: {
       type: 'website',
       locale: 'fr_FR',
-      url: `https://daralkoftanalassil.com/product/${productId}`,
+      url: `https://aichic.tn/product/${productId}`,
       title: title,
       description: description,
-      siteName: 'Dar El Koftan Al Assil',
+      siteName: 'Aichic Couture',
       images: [
         {
           url: ogImage,
@@ -50,14 +50,14 @@ export async function generateMetadata(
       images: [ogImage],
     },
     alternates: {
-      canonical: `https://daralkoftanalassil.com/product/${productId}`,
+      canonical: `https://aichic.tn/product/${productId}`,
     },
     robots: {
       index: true,
       follow: true,
     },
     icons: {
-      icon: '/favicon.svg',
+      icon: '/FAVICON AICHIC.ico',
     },
     verification: {
       google: 'verification_token',

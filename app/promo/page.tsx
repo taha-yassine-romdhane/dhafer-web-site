@@ -119,10 +119,10 @@ const PromoPage = () => {
           />
         </div>
         <h3 className="font-medium">{product.name}</h3>
-        <p className="text-[#D4AF37] font-bold mt-1">{product.price} TND</p>
+        <p className="text-[#7c3f61] font-bold mt-1">{product.price} TND</p>
         <Link 
           href={`/product/${product.id}`}
-          className="mt-2 block text-center bg-[#D4AF37] text-white py-2 rounded hover:bg-[#C09C2C] transition-colors"
+          className="mt-2 block text-center bg-[#7c3f61] text-white py-2 rounded hover:bg-[#C09C2C] transition-colors"
         >
           Voir détails
         </Link>
@@ -304,13 +304,13 @@ const PromoPage = () => {
 
       {/* Promo Products Grid */}
       <div id="promo-products" className="container mx-auto px-4 py-8">
-        <h2 className="text-3xl font-bold text-center text-[#D4AF37] mb-8">
+        <h2 className="text-3xl font-bold text-center text-[#7c3f61] mb-8">
           Nos Produits en Promotion
         </h2>
         
         {loading ? (
           <div className="flex flex-col items-center justify-center min-h-[200px]">
-            <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
+            <Loader2 className="h-8 w-8 animate-spin text-[#7c3f61]" />
             <p className="mt-4 text-gray-600">Chargement des promotions...</p>
           </div>
         ) : error ? (

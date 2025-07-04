@@ -91,12 +91,12 @@ export default function SuggestedMobileProductCard({ product }: SuggestedMobileP
               <span className="text-xs text-gray-500 line-through">
                 {formatPrice(product.price)}
               </span>
-              <span className="text-sm font-semibold text-[#D4AF37]">
+              <span className="text-sm font-semibold text-[#7c3f61]">
                 {formatPrice(product.salePrice)}
               </span>
             </>
           ) : (
-            <span className="text-sm font-semibold text-[#D4AF37]">
+            <span className="text-sm font-semibold text-[#7c3f61]">
               {formatPrice(product.price)}
             </span>
           )}
@@ -119,7 +119,7 @@ export default function SuggestedMobileProductCard({ product }: SuggestedMobileP
                   }}
                   className={`relative w-5 h-5 rounded-full overflow-hidden border transition-all duration-200 ${
                     selectedVariant?.id === variant.id 
-                      ? "border-[#D4AF37] scale-110" 
+                      ? "border-[#7c3f61] scale-110" 
                       : "border-gray-200"
                   }`}
                   aria-label={`Select ${variant.color} color`}

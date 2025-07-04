@@ -20,11 +20,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Configure image optimization
-  images: {
-    domains: ['ik.imagekit.io'],
-    unoptimized: true,
-  },
 };
 
 module.exports = nextConfig;

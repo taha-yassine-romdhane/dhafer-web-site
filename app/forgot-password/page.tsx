@@ -36,7 +36,7 @@ export default function ForgotPassword() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <Image
-            src="/logo.webp"
+            src="/logo.png"
             alt="Dar-Koftan Logo"
             width={120}
             height={120}
@@ -67,7 +67,7 @@ export default function ForgotPassword() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] transition-all duration-200"
+                  className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-[#7c3f61] focus:border-[#7c3f61] transition-all duration-200"
                   placeholder="Votre email"
                 />
               </div>
@@ -89,7 +89,7 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] transition-all duration-200"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#7c3f61] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7c3f61] transition-all duration-200"
               >
                 {isSubmitting ? 'Envoi en cours...' : 'Envoyer les instructions'}
               </button>
@@ -99,7 +99,7 @@ export default function ForgotPassword() {
           <div className="mt-6 text-center">
             <Link
               href="/login"
-              className="font-medium text-[#D4AF37] hover:text-[#B59851] transition-colors duration-200"
+              className="font-medium text-[#7c3f61] hover:text-[#B59851] transition-colors duration-200"
             >
               Retour à la connexion
             </Link>

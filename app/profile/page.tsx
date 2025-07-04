@@ -150,7 +150,7 @@ export default function ProfilePage() {
   if (authLoading || (loading && !profile)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#7c3f61]" />
       </div>
     );
   }
@@ -163,7 +163,7 @@ export default function ProfilePage() {
           <p className="mt-2 text-gray-600">Veuillez vous connecter pour consulter votre profil</p>
           <button
             onClick={() => router.push('/login?redirect=/profile')}
-            className="mt-4 inline-flex items-center rounded-md bg-[#D4AF37] px-4 py-2 text-white hover:bg-[#B59851] transition-colors"
+            className="mt-4 inline-flex items-center rounded-md bg-[#7c3f61] px-4 py-2 text-white hover:bg-[#B59851] transition-colors"
           >
             Se connecter
           </button>
@@ -235,7 +235,7 @@ export default function ProfilePage() {
                       id="username"
                       value={formData.username}
                       onChange={handleChange}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#D4AF37] focus:border-[#D4AF37]"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#7c3f61] focus:border-[#7c3f61]"
                     />
                   </div>
                 </div>
@@ -254,7 +254,7 @@ export default function ProfilePage() {
                       id="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#D4AF37] focus:border-[#D4AF37]"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#7c3f61] focus:border-[#7c3f61]"
                     />
                   </div>
                 </div>
@@ -263,7 +263,7 @@ export default function ProfilePage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-50"
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#7c3f61] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7c3f61] disabled:opacity-50"
                   >
                     {loading ? 'Sauvegarde...' : 'Sauvegarder les modifications'}
                   </button>
@@ -291,7 +291,7 @@ export default function ProfilePage() {
                       id="currentPassword"
                       value={formData.currentPassword}
                       onChange={handleChange}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#D4AF37] focus:border-[#D4AF37]"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#7c3f61] focus:border-[#7c3f61]"
                     />
                   </div>
                 </div>
@@ -310,7 +310,7 @@ export default function ProfilePage() {
                       id="newPassword"
                       value={formData.newPassword}
                       onChange={handleChange}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#D4AF37] focus:border-[#D4AF37]"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#7c3f61] focus:border-[#7c3f61]"
                     />
                   </div>
                 </div>
@@ -329,7 +329,7 @@ export default function ProfilePage() {
                       id="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#D4AF37] focus:border-[#D4AF37]"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#7c3f61] focus:border-[#7c3f61]"
                     />
                   </div>
                 </div>
@@ -338,7 +338,7 @@ export default function ProfilePage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37] disabled:opacity-50"
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#7c3f61] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7c3f61] disabled:opacity-50"
                   >
                     {loading ? 'Changement du mot de passe...' : 'Changer le mot de passe'}
                   </button>
@@ -352,15 +352,15 @@ export default function ProfilePage() {
             <div className="p-6">
               <h2 className="text-lg font-medium text-gray-900">Statistiques du compte</h2>
               <dl className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div className="bg-[#D4AF37]/5 rounded-lg p-6">
+                <div className="bg-[#7c3f61]/5 rounded-lg p-6">
                   <dt className="text-sm font-medium text-gray-500">Points de fidélité</dt>
-                  <dd className="mt-1 text-3xl font-semibold text-[#D4AF37]">
+                  <dd className="mt-1 text-3xl font-semibold text-[#7c3f61]">
                     {profile?.fidelityPoints || 0}
                   </dd>
                 </div>
-                <div className="bg-[#D4AF37]/5 rounded-lg p-6">
+                <div className="bg-[#7c3f61]/5 rounded-lg p-6">
                   <dt className="text-sm font-medium text-gray-500">Membre depuis</dt>
-                  <dd className="mt-1 text-3xl font-semibold text-[#D4AF37]">
+                  <dd className="mt-1 text-3xl font-semibold text-[#7c3f61]">
                     {profile?.createdAt ? new Date(profile.createdAt).getFullYear() : '-'}
                   </dd>
                 </div>

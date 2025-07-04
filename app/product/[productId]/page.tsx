@@ -243,7 +243,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[60vh]">
         <div className="flex items-center gap-2">
-          <Loader2 className="h-6 w-6 animate-spin text-[#D4AF37]" />
+          <Loader2 className="h-6 w-6 animate-spin text-[#7c3f61]" />
           <span className="text-lg">Loading...</span>
         </div>
       </div>
@@ -278,8 +278,8 @@ export default function ProductPage({ params }: { params: { productId: string } 
                 key={image.id}
                 onMouseEnter={() => setSelectedImageUrl(image.url)}
                 className={cn(
-                  "relative w-20 h-20 overflow-hidden rounded-lg bg-gray-100 hover:ring-2 hover:ring-[#D4AF37] transition-all",
-                  selectedImageUrl === image.url && "ring-2 ring-[#D4AF37]"
+                  "relative w-20 h-20 overflow-hidden rounded-lg bg-gray-100 hover:ring-2 hover:ring-[#7c3f61] transition-all",
+                  selectedImageUrl === image.url && "ring-2 ring-[#7c3f61]"
                 )}
               >
                 <Image
@@ -317,7 +317,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
           <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
 
           <div className="flex items-center gap-4">
-            <span className="text-2xl font-semibold text-[#D4AF37]">
+            <span className="text-2xl font-semibold text-[#7c3f61]">
               {product.salePrice ? (
                 <>
                   <span>{formatPrice(product.salePrice)} TND</span>
@@ -352,8 +352,8 @@ export default function ProductPage({ params }: { params: { productId: string } 
                     className={cn(
                       "w-10 h-10 rounded-full border-2 relative overflow-hidden group",
                       selectedColorVariant.id === variant.id
-                        ? "border-[#D4AF37] ring-2 ring-[#D4AF37] ring-offset-1"
-                        : "border-transparent hover:border-[#D4AF37]/50"
+                        ? "border-[#7c3f61] ring-2 ring-[#7c3f61] ring-offset-1"
+                        : "border-transparent hover:border-[#7c3f61]/50"
                     )}
                     aria-label={variant.color}
                   >
@@ -378,7 +378,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium text-gray-700">Taille</label>
                 {selectedSize && (
-                  <span className="text-sm text-gray-500">Sélectionné: <span className="font-semibold text-[#D4AF37]">{selectedSize}</span></span>
+                  <span className="text-sm text-gray-500">Sélectionné: <span className="font-semibold text-[#7c3f61]">{selectedSize}</span></span>
                 )}
               </div>
               <div className="flex flex-wrap gap-3">
@@ -389,8 +389,8 @@ export default function ProductPage({ params }: { params: { productId: string } 
                     className={cn(
                       "px-5 py-2.5 text-sm font-medium rounded-md border-2 transition-all",
                       selectedSize === size
-                        ? "border-[#D4AF37] bg-[#D4AF37] text-white shadow-sm"
-                        : "border-gray-300 hover:border-[#D4AF37] hover:bg-[#D4AF37]/5"
+                        ? "border-[#7c3f61] bg-[#7c3f61] text-white shadow-sm"
+                        : "border-gray-300 hover:border-[#7c3f61] hover:bg-[#7c3f61]/5"
                     )}
                   >
                     {size}
@@ -448,7 +448,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
             {/* Add to Cart Button */}
             <Button
               onClick={handleAddToCart}
-              className={`w-full py-6 text-lg ${isProductAvailable ? 'bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
+              className={`w-full py-6 text-lg ${isProductAvailable ? 'bg-[#7c3f61] hover:bg-[#7c3f61]/90 text-white' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
               size="lg"
               disabled={!isProductAvailable}
             >
@@ -456,8 +456,8 @@ export default function ProductPage({ params }: { params: { productId: string } 
             </Button>
 
             {/* Additional Information */}
-            <div className="border-t border-[#D4AF37]/20 pt-6 mt-6">
-              <h3 className="text-sm font-medium mb-4 text-[#D4AF37]">Détails</h3>
+            <div className="border-t border-[#7c3f61]/20 pt-6 mt-6">
+              <h3 className="text-sm font-medium mb-4 text-[#7c3f61]">Détails</h3>
               <ul className="list-disc list-inside space-y-2 text-sm text-gray-600">
                 <li>Catégorie: {
                   product.categories && product.categories.length > 0 
@@ -501,7 +501,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
                     // For now, we're just showing a message
                     toast.info('Voir plus de produits similaires');
                   }}
-                  className="inline-flex items-center px-4 py-2 border border-[#D4AF37] text-sm font-medium rounded-md text-[#D4AF37] bg-white hover:bg-[#D4AF37]/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37]"
+                  className="inline-flex items-center px-4 py-2 border border-[#7c3f61] text-sm font-medium rounded-md text-[#7c3f61] bg-white hover:bg-[#7c3f61]/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7c3f61]"
                 >
                   Voir plus
                 </button>
@@ -529,11 +529,11 @@ export default function ProductPage({ params }: { params: { productId: string } 
       {/* Order Success Modal */}
       {showOrderSuccessModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 animate-fadeIn">
-          <div className="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl border-2 border-[#D4AF37] text-center">
+          <div className="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl border-2 border-[#7c3f61] text-center">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="h-12 w-12 text-green-600" />
             </div>
-            <h2 className="text-2xl font-bold text-[#D4AF37] mb-4">Commande créée avec succès!</h2>
+            <h2 className="text-2xl font-bold text-[#7c3f61] mb-4">Commande créée avec succès!</h2>
             <p className="text-gray-600 mb-6">
               Nous vous contacterons bientôt pour confirmer les détails de votre commande et organiser la livraison.
             </p>
@@ -541,7 +541,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
               Redirection vers la page d'accueil dans quelques secondes...
             </p>
             <Button
-              className="w-full bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white py-3"
+              className="w-full bg-[#7c3f61] hover:bg-[#7c3f61]/90 text-white py-3"
               onClick={() => router.push('/')}
             >
               Retour à l'accueil

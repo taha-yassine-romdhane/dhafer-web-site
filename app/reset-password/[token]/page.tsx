@@ -94,7 +94,7 @@ export default function ResetPassword({ params }: { params: { token: string } })
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="flex justify-center">
             <Image
-              src="/logo.webp"
+              src="/logo.png"
               alt="Logo"
               width={150}
               height={150}
@@ -110,7 +110,7 @@ export default function ResetPassword({ params }: { params: { token: string } })
           <div className="mt-6 text-center">
             <Link
               href="/forgot-password"
-              className="font-medium text-[#D4AF37] hover:text-[#B59851]"
+              className="font-medium text-[#7c3f61] hover:text-[#B59851]"
             >
               Request a new password reset
             </Link>
@@ -125,7 +125,7 @@ export default function ResetPassword({ params }: { params: { token: string } })
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <Image
-            src="/logo.webp"
+            src="/logo.png"
             alt="Logo"
             width={150}
             height={150}
@@ -156,7 +156,7 @@ export default function ResetPassword({ params }: { params: { token: string } })
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#D4AF37] focus:border-[#D4AF37] sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#7c3f61] focus:border-[#7c3f61] sm:text-sm"
                 />
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function ResetPassword({ params }: { params: { token: string } })
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#D4AF37] focus:border-[#D4AF37] sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#7c3f61] focus:border-[#7c3f61] sm:text-sm"
                 />
               </div>
             </div>
@@ -189,7 +189,7 @@ export default function ResetPassword({ params }: { params: { token: string } })
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4AF37]"
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#7c3f61] hover:bg-[#B59851] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7c3f61]"
               >
                 {isSubmitting ? 'Resetting...' : 'Reset Password'}
               </button>
@@ -199,7 +199,7 @@ export default function ResetPassword({ params }: { params: { token: string } })
           <div className="mt-6 text-center">
             <Link
               href="/login"
-              className="font-medium text-[#D4AF37] hover:text-[#B59851]"
+              className="font-medium text-[#7c3f61] hover:text-[#B59851]"
             >
               Back to login
             </Link>

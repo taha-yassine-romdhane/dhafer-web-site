@@ -1,31 +1,75 @@
-import './globals.css'
-import './skeleton-loaders.css';
+import './globals.css';
 
+import { Inter } from 'next/font/google';
 import { CartProvider } from "@/lib/context/cart-context";
 import { AuthProvider } from "@/contexts/auth-context";
-import { IOSOptimizations } from "@/components/ios-optimizations";
-import { PerformanceOptimizations } from "@/components/performance-optimizations";
 import Navbar from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { CartDropdown } from "@/components/cart-dropdown";
-import Script from 'next/script';
-import { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import Script from "next/script";
 
-// Load Inter font with subset optimization
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  preload: true,
-  fallback: ['system-ui', 'sans-serif'],
-});
+const inter = Inter({ subsets: ['latin'] });
+const GA_TRACKING_ID = "G-QD0XSX38KE"; // Google Analytics Measurement ID
+const FB_PIXEL_ID = "739233504686068"; // Facebook Pixel ID
 
-
-export const metadata: Metadata = {
-  metadataBase: new URL('https://www.daralkoftanalassil.com'),
-  title: 'Dar El Koftan Al Assil - Vêtements traditionnels tunisiens',
-  description: 'Boutique en ligne de vêtements traditionnels tunisiens de haute qualité. Découvrez notre collection de kaftans, jabadors et accessoires.',
-}
+export const metadata = {
+  title: 'AICHIC COUTURE | Mode Féminine Chic & Tendance',
+  description: 'Découvrez la collection exclusive de vêtements AICHIC COUTURE. Élégance, modernité et qualité pour toutes les femmes.',
+  keywords: 'AICHIC COUTURE, vêtements, mode, femme, collection, qualité, élégance, tendance',
+  authors: [{ name: 'AICHIC COUTURE' }],
+  creator: 'AICHIC COUTURE',
+  publisher: 'AICHIC COUTURE',
+  formatDetection: {
+    email: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://www.aichic.tn'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'AICHIC COUTURE | Mode Féminine Chic & Tendance',
+    description: 'Découvrez la collection exclusive de vêtements AICHIC COUTURE. Élégance, modernité et qualité pour toutes les femmes.',
+    url: 'https://www.aichic.tn',
+    siteName: 'AICHIC COUTURE',
+    locale: 'fr_FR',
+    type: 'website',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'AICHIC COUTURE Collection',
+      }
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AICHIC COUTURE | Mode Féminine Chic & Tendance',
+    description: 'Découvrez la collection exclusive de vêtements AICHIC COUTURE. Élégance, modernité et qualité pour toutes les femmes.',
+    images: ['/twitter-image.jpg'],
+  },
+  icons: {
+    icon: [
+      { url: '/FAVICON AICHIC.ico' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/safari-pinned-tab.svg',
+        color: '#5bbad5'
+      },
+    ],
+  },
+  manifest: '/site.webmanifest',
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function RootLayout({
   children,
@@ -33,77 +77,50 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" style={{ WebkitTextSizeAdjust: 'none' }} className={inter.className}>
+    <html lang="fr">
       <head>
-        {/* Preload critical assets */}
-        <link rel="preload" href="/logo.webp" as="image" />
-        
-        {/* Google tag (gtag.js) - deferred to improve performance */}
+        {/* Google Analytics Script */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-K62LW3ZTXY"
           strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
         />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-K62LW3ZTXY');
+            gtag('config', '${GA_TRACKING_ID}', {
+              page_path: window.location.pathname,
+            });
           `}
         </Script>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <meta name="theme-color" content="#D4AF37" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        
-        {/* Structured data for business */}
-        <script 
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "ClothingStore",
-              "name": "Dar El Koftan Al Assil",
-              "image": "https://www.daralkoftanalassil.com/logo.webp",
-              "@id": "https://www.daralkoftanalassil.com",
-              "url": "https://www.daralkoftanalassil.com",
-              "telephone": "+216 56 047 691",
-              "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "105 Av. Habib Bourguiba",
-                "addressLocality": "Jemmel",
-                "addressRegion": "Monastir",
-                "postalCode": "5020",
-                "addressCountry": "TN"
-              },
-              "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": 35.624614,
-                "longitude": 10.776341
-              },
-              "openingHoursSpecification": {
-                "@type": "OpeningHoursSpecification",
-                "dayOfWeek": [
-                  "Monday",
-                  "Tuesday",
-                  "Wednesday",
-                  "Thursday",
-                  "Friday",
-                  "Saturday",
-                  "Sunday"
-                ],
-                "opens": "09:00",
-                "closes": "20:00"
-              }
-            })
-          }}
-        />
+
+        {/* Meta Pixel Code */}
+        <Script id="facebook-pixel" strategy="afterInteractive">
+          {`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '${FB_PIXEL_ID}');
+            fbq('track', 'PageView');
+          `}
+        </Script>
+
+        {/* Meta Pixel noscript fallback */}
+        <noscript>
+          <img height="1" width="1" style={{ display: "none" }}
+            src={`https://www.facebook.com/tr?id=${FB_PIXEL_ID}&ev=PageView&noscript=1`} 
+          />
+        </noscript>
       </head>
-      <body>
+      <body className={inter.className}>
         <AuthProvider>
           <CartProvider>
-            {/* Performance and compatibility optimizations */}
-            <IOSOptimizations />
-            <PerformanceOptimizations />
             <Navbar />
             <CartDropdown />
             <main className="min-h-screen">
@@ -112,7 +129,6 @@ export default function RootLayout({
             <Footer />
           </CartProvider>
         </AuthProvider>
-        {/* Performance monitoring removed to fix stability issues */}
       </body>
     </html>
   );

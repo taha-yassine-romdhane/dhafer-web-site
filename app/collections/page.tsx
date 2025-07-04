@@ -256,8 +256,8 @@ export default function CollectionsPage() {
                 }}
                 className={`px-4 py-2 rounded-full transition-all duration-200 ${
                   filters.category === "Tous"
-                    ? "bg-[#D4AF37] text-white shadow-md"
-                    : "bg-gray-50 text-gray-700 hover:bg-[#D4AF37]/10"
+                    ? "bg-[#7c3f61] text-white shadow-md"
+                    : "bg-gray-50 text-gray-700 hover:bg-[#7c3f61]/10"
                 }`}
               >
                 Voir Tous
@@ -268,8 +268,8 @@ export default function CollectionsPage() {
                   onClick={() => setActiveGroup(activeGroup === group.label ? null : group.label)}
                   className={`px-4 py-2 rounded-full transition-all duration-200 ${
                     activeGroup === group.label
-                      ? "bg-[#D4AF37] text-white shadow-md"
-                      : "bg-gray-50 text-gray-700 hover:bg-[#D4AF37]/10"
+                      ? "bg-[#7c3f61] text-white shadow-md"
+                      : "bg-gray-50 text-gray-700 hover:bg-[#7c3f61]/10"
                   }`}
                 >
                   {group.label}
@@ -309,8 +309,8 @@ export default function CollectionsPage() {
                         ((activeGroup === 'Femme' && filters.group === 'FEMME') ||
                          (activeGroup === 'Enfants' && filters.group === 'ENFANT') ||
                          (activeGroup === 'Accessoires' && filters.group === 'ACCESSOIRE'))
-                          ? "bg-[#D4AF37]/20 text-[#D4AF37] border-2 border-[#D4AF37] font-medium shadow-sm"
-                          : "bg-white text-gray-600 border border-gray-200 hover:border-[#D4AF37] hover:text-[#D4AF37]"
+                          ? "bg-[#7c3f61]/20 text-[#7c3f61] border-2 border-[#7c3f61] font-medium shadow-sm"
+                          : "bg-white text-gray-600 border border-gray-200 hover:border-[#7c3f61] hover:text-[#7c3f61]"
                       }`}
                     >
                       {category.name.toUpperCase()}
@@ -330,7 +330,7 @@ export default function CollectionsPage() {
                   placeholder="Rechercher des produits..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-10 py-2 border border-gray-200 rounded-md focus:ring-[#D4AF37] focus:border-[#D4AF37] w-full"
+                  className="pl-10 pr-10 py-2 border border-gray-200 rounded-md focus:ring-[#7c3f61] focus:border-[#7c3f61] w-full"
                 />
                 {searchQuery && (
                   <button 
@@ -350,7 +350,7 @@ export default function CollectionsPage() {
                   value={filters.sort}
                   onValueChange={(value) => handleFilterChange("sort", value)}
                 >
-                  <SelectTrigger className="w-[180px] md:w-[200px] bg-white border border-gray-200 hover:border-[#D4AF37] transition-colors">
+                  <SelectTrigger className="w-[180px] md:w-[200px] bg-white border border-gray-200 hover:border-[#7c3f61] transition-colors">
                     <SelectValue placeholder="Trier par" />
                   </SelectTrigger>
                   <SelectContent>
@@ -358,7 +358,7 @@ export default function CollectionsPage() {
                       <SelectItem 
                         key={option.value} 
                         value={option.value}
-                        className="hover:bg-[#D4AF37]/10 cursor-pointer"
+                        className="hover:bg-[#7c3f61]/10 cursor-pointer"
                       >
                         {option.label}
                       </SelectItem>
@@ -377,7 +377,7 @@ export default function CollectionsPage() {
                         handleClearFilters();
                         setSearchQuery("");
                       }}
-                      className="hidden sm:flex items-center gap-1 rounded-full border border-gray-200 hover:border-[#D4AF37] hover:bg-[#D4AF37]/10 text-gray-600 hover:text-[#D4AF37] transition-colors"
+                      className="hidden sm:flex items-center gap-1 rounded-full border border-gray-200 hover:border-[#7c3f61] hover:bg-[#7c3f61]/10 text-gray-600 hover:text-[#7c3f61] transition-colors"
                     >
                       <X className="h-3.5 w-3.5" />
                       <span>Filtres</span>
@@ -391,7 +391,7 @@ export default function CollectionsPage() {
                         handleClearFilters();
                         setSearchQuery("");
                       }}
-                      className="sm:hidden h-8 w-8 rounded-full border border-gray-200 hover:border-[#D4AF37] hover:bg-[#D4AF37]/10 text-gray-600 hover:text-[#D4AF37] transition-colors"
+                      className="sm:hidden h-8 w-8 rounded-full border border-gray-200 hover:border-[#7c3f61] hover:bg-[#7c3f61]/10 text-gray-600 hover:text-[#7c3f61] transition-colors"
                       title="Effacer les filtres"
                     >
                       <X className="h-3.5 w-3.5" />
@@ -406,7 +406,7 @@ export default function CollectionsPage() {
                   value={productsPerPage.toString()}
                   onValueChange={(value) => handleProductsPerPageChange(parseInt(value))}
                 >
-                  <SelectTrigger className="w-[80px] bg-white border border-gray-200 hover:border-[#D4AF37] transition-colors">
+                  <SelectTrigger className="w-[80px] bg-white border border-gray-200 hover:border-[#7c3f61] transition-colors">
                     <SelectValue placeholder="10" />
                   </SelectTrigger>
                   <SelectContent>
@@ -442,7 +442,7 @@ export default function CollectionsPage() {
               size="sm"
               onClick={() => handlePageChange(1)}
               disabled={currentPage === 1}
-              className="border-[#D4AF37]/20 hover:bg-[#D4AF37]/5 hover:text-[#D4AF37] hover:border-[#D4AF37]"
+              className="border-[#7c3f61]/20 hover:bg-[#7c3f61]/5 hover:text-[#7c3f61] hover:border-[#7c3f61]"
             >
               «
             </Button>
@@ -451,7 +451,7 @@ export default function CollectionsPage() {
               size="sm"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="border-[#D4AF37]/20 hover:bg-[#D4AF37]/5 hover:text-[#D4AF37] hover:border-[#D4AF37]"
+              className="border-[#7c3f61]/20 hover:bg-[#7c3f61]/5 hover:text-[#7c3f61] hover:border-[#7c3f61]"
             >
               ‹
             </Button>
@@ -482,8 +482,8 @@ export default function CollectionsPage() {
                     size="sm"
                     onClick={() => handlePageChange(pageNum)}
                     className={currentPage === pageNum 
-                      ? "bg-[#D4AF37] text-white hover:bg-[#D4AF37]/90" 
-                      : "border-[#D4AF37]/20 hover:bg-[#D4AF37]/5 hover:text-[#D4AF37] hover:border-[#D4AF37]"}
+                      ? "bg-[#7c3f61] text-white hover:bg-[#7c3f61]/90" 
+                      : "border-[#7c3f61]/20 hover:bg-[#7c3f61]/5 hover:text-[#7c3f61] hover:border-[#7c3f61]"}
                   >
                     {pageNum}
                   </Button>
@@ -496,7 +496,7 @@ export default function CollectionsPage() {
               size="sm"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="border-[#D4AF37]/20 hover:bg-[#D4AF37]/5 hover:text-[#D4AF37] hover:border-[#D4AF37]"
+              className="border-[#7c3f61]/20 hover:bg-[#7c3f61]/5 hover:text-[#7c3f61] hover:border-[#7c3f61]"
             >
               ›
             </Button>
@@ -505,7 +505,7 @@ export default function CollectionsPage() {
               size="sm"
               onClick={() => handlePageChange(totalPages)}
               disabled={currentPage === totalPages}
-              className="border-[#D4AF37]/20 hover:bg-[#D4AF37]/5 hover:text-[#D4AF37] hover:border-[#D4AF37]"
+              className="border-[#7c3f61]/20 hover:bg-[#7c3f61]/5 hover:text-[#7c3f61] hover:border-[#7c3f61]"
             >
               »
             </Button>

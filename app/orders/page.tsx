@@ -171,7 +171,7 @@ export default function OrdersPage() {
   if (authLoading || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#7c3f61]" />
       </div>
     );
   }
@@ -184,7 +184,7 @@ export default function OrdersPage() {
           <p className="mt-2 text-gray-600">Veuillez vous connecter pour consulter vos commandes</p>
           <Link 
             href="/login?redirect=/orders"
-            className="mt-4 inline-block rounded-md bg-[#D4AF37] px-4 py-2 text-sm font-medium text-white hover:bg-[#B59851] transition-colors"
+            className="mt-4 inline-block rounded-md bg-[#7c3f61] px-4 py-2 text-sm font-medium text-white hover:bg-[#B59851] transition-colors"
           >
             Go to Login
           </Link>
@@ -201,7 +201,7 @@ export default function OrdersPage() {
           <p className="mt-2 text-gray-600">{error}</p>
           <Link 
             href="/collections"
-            className="mt-4 inline-block rounded-md bg-[#D4AF37] px-4 py-2 text-sm font-medium text-white hover:bg-[#B59851] transition-colors"
+            className="mt-4 inline-block rounded-md bg-[#7c3f61] px-4 py-2 text-sm font-medium text-white hover:bg-[#B59851] transition-colors"
           >
             Parcourir les produits
           </Link>
@@ -231,7 +231,7 @@ export default function OrdersPage() {
               </p>
               <Link
                 href="/collections"
-                className="mt-4 inline-block rounded-md bg-[#D4AF37] px-4 py-2 text-sm font-medium text-white hover:bg-[#B59851] transition-colors"
+                className="mt-4 inline-block rounded-md bg-[#7c3f61] px-4 py-2 text-sm font-medium text-white hover:bg-[#B59851] transition-colors"
               >
                 Commencer à acheter
               </Link>
@@ -243,7 +243,7 @@ export default function OrdersPage() {
                   key={order.id}
                   className="overflow-hidden rounded-lg bg-white shadow"
                 >
-                  <div className="border-b border-gray-200 bg-[#D4AF37]/5 px-4 py-4 sm:px-6">
+                  <div className="border-b border-gray-200 bg-[#7c3f61]/5 px-4 py-4 sm:px-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">
@@ -315,7 +315,7 @@ export default function OrdersPage() {
                         <span className="text-base font-medium text-gray-900">
                           Total
                         </span>
-                        <span className="text-base font-medium text-[#D4AF37]">
+                        <span className="text-base font-medium text-[#7c3f61]">
                           TND{order.totalAmount.toFixed(2)}
                         </span>
                       </div>

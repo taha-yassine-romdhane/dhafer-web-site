@@ -277,7 +277,7 @@ const TopVentePage = () => {
       {/* Products Grid Section */}
       <div id="top-vente-products" className="container mx-auto px-4 py-8">
         <motion.h2 
-          className="text-3xl font-bold text-center text-[#D4AF37] mb-8"
+          className="text-3xl font-bold text-center text-[#7c3f61] mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
@@ -287,7 +287,7 @@ const TopVentePage = () => {
 
         {loading ? (
           <div className="flex flex-col items-center justify-center min-h-[200px]">
-            <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
+            <Loader2 className="h-8 w-8 animate-spin text-[#7c3f61]" />
             <p className="mt-4 text-gray-600">Chargement des produits...</p>
           </div>
         ) : error ? (
@@ -295,7 +295,7 @@ const TopVentePage = () => {
             <p className="text-red-500">{error}</p>
             <button 
               onClick={() => window.location.reload()}
-              className="mt-4 text-[#D4AF37] hover:underline"
+              className="mt-4 text-[#7c3f61] hover:underline"
             >
               Réessayer
             </button>

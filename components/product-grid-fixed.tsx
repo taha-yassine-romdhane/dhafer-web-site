@@ -250,7 +250,7 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
           <p className="text-red-500">{error}</p>
           <Button 
             onClick={() => window.location.reload()} 
-            className="mt-4 bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white"
+            className="mt-4 bg-[#7c3f61] hover:bg-[#7c3f61]/90 text-white"
           >
             Réessayer
           </Button>
@@ -305,7 +305,7 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
                       e.stopPropagation();
                       router.push(`/product/${product.id}`);
                     }}
-                    className="bg-[#D4AF37] text-white hover:bg-[#C09C2C]"
+                    className="bg-[#7c3f61] text-white hover:bg-[#C09C2C]"
                   >
                     <Eye className="w-4 h-4 mr-2 " />
                     Voir Détails
@@ -320,10 +320,10 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
                   {product.salePrice ? (
                     <div className="flex items-center gap-2">
                       <p className="text-xs text-gray-500 line-through">{formatPrice(product.price)} TND</p>
-                      <p className="text-xs text-[#D4AF37] font-semibold">{formatPrice(product.salePrice)} TND</p>
+                      <p className="text-xs text-[#7c3f61] font-semibold">{formatPrice(product.salePrice)} TND</p>
                     </div>
                   ) : (
-                    <p className="text-xs text-[#D4AF37]">{formatPrice(product.price)} TND</p>
+                    <p className="text-xs text-[#7c3f61]">{formatPrice(product.price)} TND</p>
                   )}
                 </div>
 
@@ -344,7 +344,7 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
                           className={cn(
                             "relative w-6 h-6 rounded-full overflow-hidden border-2",
                             selectedColors[product.id] === variant.color
-                              ? "border-[#D4AF37] z-10"
+                              ? "border-[#7c3f61] z-10"
                               : "border-white"
                           )}
                           style={{ zIndex: 3 - idx }}

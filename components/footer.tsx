@@ -12,10 +12,10 @@ export function Footer() {
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [subscriptionResult, setSubscriptionResult] = useState<{ success: boolean; message: string } | null>(null);
-  
+
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!phoneNumber.trim()) {
       setSubscriptionResult({
         success: false,
@@ -24,42 +24,42 @@ export function Footer() {
       setDialogOpen(true);
       return;
     }
-    
+
     try {
       setLoading(true);
-      
+
       // Get auth token from localStorage if it exists
       let headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
-      
+
       // Add authorization token if available
       if (typeof window !== 'undefined') {
         // Try both possible token keys
         const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
-        
+
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
         }
       }
-      
+
       const response = await fetch('/api/subscribe', {
         method: 'POST',
         headers,
         body: JSON.stringify({ phoneNumber }),
       });
-      
+
       const data = await response.json();
-      
+
       setSubscriptionResult({
         success: data.success,
         message: data.message || data.error || 'Une erreur est survenue'
       });
-      
+
       if (data.success) {
         setPhoneNumber('');
       }
-      
+
       setDialogOpen(true);
     } catch (error) {
       console.error('Error subscribing:', error);
@@ -73,45 +73,37 @@ export function Footer() {
     }
   };
   return (
-    <footer className="bg-white border-t border-[#D4AF37]/20">
+    <footer className="bg-white border-t border-[#7c3f61]/20">
       <div className="container mx-auto px-4 py-12">
         {/* Top Section */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-[#D4AF37]">DAR AL KOFTAN AL ASIL</h3>
+            <h3 className="text-lg font-bold text-[#7c3f61]">Aichic Couture</h3>
             <p className="text-sm text-gray-600">
-              Dar Al Koftan Al Assil est votre destination de choix pour des caftans traditionnels de haute qualité.
+              Aichic Couture est votre destination de choix pour des caftans traditionnels de haute qualité.
             </p>
             {/* Social Links */}
-            <div className="flex space-x-6">
+            <div className="flex justify-center space-x-6">
               <Link 
-                href="https://www.facebook.com/profile.php?id=100064931580253" 
-                className="text-gray-400 hover:text-[#D4AF37] transition-colors transform hover:scale-110"
+                href="https://www.facebook.com/profile.php?id=61573119575107&mibextid=wwXIfr&mibextid=wwXIfr" 
+                className="text-gray-400 hover:text-[#7c3f61] transition-colors transform hover:scale-110"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <BsFacebook className="h-6 w-6" />
               </Link>
               <Link 
-                href="https://www.instagram.com/dar_koftan_alasil/" 
-                className="text-gray-400 hover:text-[#D4AF37] transition-colors transform hover:scale-110"
+                href="https://www.instagram.com/aichic.couture?igsh=ZmNhZThsbHc4NDFt" 
+                className="text-gray-400 hover:text-[#7c3f61] transition-colors transform hover:scale-110"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <BsInstagram className="h-6 w-6" />
               </Link>
               <Link 
-                href="https://www.youtube.com/@darelkoftanalassildarelkoftana" 
-                className="text-gray-400 hover:text-[#D4AF37] transition-colors transform hover:scale-110"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <BsYoutube className="h-6 w-6" />
-              </Link>
-              <Link 
-                href="https://www.tiktok.com/@dar.koftane.al.asil" 
-                className="text-gray-400 hover:text-[#D4AF37] transition-colors transform hover:scale-110"
+                href="https://www.tiktok.com/@aichic.couture?_t=ZM-8ujv4qmSFvD&_r=1" 
+                className="text-gray-400 hover:text-[#7c3f61] transition-colors transform hover:scale-110"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -122,30 +114,30 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-semibold mb-4 text-[#D4AF37]">Liens Rapides</h3>
+            <h3 className="font-semibold mb-4 text-[#7c3f61]">Liens Rapides</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/collections" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                <Link href="/collections" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
                   Collections
                 </Link>
               </li>
               <li>
-                <Link href="/collections?category=koftan&group=FEMME" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
-                  Koftan Femme
+                <Link href="/collections?category=koftan&group=FEMME" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
+                  Femme
                 </Link>
               </li>
               <li>
-                <Link href="/collections?category=robe&group=ENFANT" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
-                  Robe Enfant
+                <Link href="/collections?category=robe&group=ENFANT" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
+                  Enfant
                 </Link>
               </li>
               <li>
-                <Link href="/promo" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                <Link href="/promo" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
                   Promotions
                 </Link>
               </li>
               <li>
-                <Link href="/top-vente" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                <Link href="/top-vente" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
                   Top Vente
                 </Link>
               </li>
@@ -154,25 +146,25 @@ export function Footer() {
 
           {/* Customer Service */}
           <div>
-            <h3 className="font-semibold mb-4 text-[#D4AF37]">Service Client</h3>
+            <h3 className="font-semibold mb-4 text-[#7c3f61]">Service Client</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
-                  Dar Koftan al assil
+                <Link href="/about" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
+                  Aichic Couture
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                <Link href="/contact" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
                   Contactez Nous
                 </Link>
               </li>
               <li>
-                <Link href="/admin" className="text-gray-600 hover:text-[#D4AF37] transition-colors hidden">
+                <Link href="/admin" className="text-gray-600 hover:text-[#7c3f61] transition-colors hidden">
                   Politique de confidentialité
                 </Link>
               </li>
               <li>
-                <Link href="/refund" className="text-gray-600 hover:text-[#D4AF37] transition-colors">
+                <Link href="/refund" className="text-gray-600 hover:text-[#7c3f61] transition-colors">
                   Politique de remboursement
                 </Link>
               </li>
@@ -181,7 +173,7 @@ export function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h3 className="font-semibold mb-4 text-[#D4AF37]">Restez informé</h3>
+            <h3 className="font-semibold mb-4 text-[#7c3f61]">Restez informé</h3>
             <p className="text-sm text-gray-600 mb-4">
               Abonnez-vous à notre newsletter pour rester informé des dernières tendances et des offres exclusives.
             </p>
@@ -191,12 +183,12 @@ export function Footer() {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="+216 00 00 00 00"
-                className="border-[#D4AF37]/20 focus:ring-[#D4AF37] focus:border-[#D4AF37]"
+                className="border-[#7c3f61]/20 focus:ring-[#7c3f61] focus:border-[#7c3f61]"
                 disabled={loading}
               />
-              <Button 
+              <Button
                 type="submit"
-                className="w-full bg-[#D4AF37] text-white hover:bg-[#D4AF37]/90"
+                className="w-full bg-[#7c3f61] text-white hover:bg-[#7c3f61]/90"
                 disabled={loading}
               >
                 {loading ? (
@@ -213,20 +205,20 @@ export function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-[#D4AF37]/20 pt-8">
+        <div className="border-t border-[#7c3f61]/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-gray-600">
               {new Date().getFullYear()} <span className="font-semibold">DAR KOFTAN EL ASIL</span>  Tous droits reservés .
             </p>
             <div className="flex space-x-6">
-              <Link href="/policy" className="text-sm text-gray-600 hover:text-[#D4AF37] transition-colors">
+              <Link href="/policy" className="text-sm text-gray-600 hover:text-[#7c3f61] transition-colors">
                 Politique de confidentialité
               </Link>
             </div>
           </div>
         </div>
       </div>
-      
+
       {/* Success/Error Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-md">

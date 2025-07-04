@@ -132,7 +132,7 @@ function createOrderConfirmationEmail(
   const totalAmount = (order.totalAmount + shippingCost).toFixed(2);
   
   // Base URL for assets
-  const logoUrl = 'https://daralkoftanalassil.com/logo1.png';
+  const logoUrl = 'https://aichic.tn/logo.png';
   
   // Create the HTML email
   return `
@@ -140,7 +140,7 @@ function createOrderConfirmationEmail(
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Confirmation de Commande - Dar El Koftan Al Assil</title>
+      <title>Confirmation de Commande - Aichic Couture</title>
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -157,13 +157,13 @@ function createOrderConfirmationEmail(
     <body>
       <div class="container">
         <div class="header">
-          <img src="${logoUrl}" alt="Dar Koftan Logo" class="logo">
+          <img src="${logoUrl}" alt="Aichic Couture Logo" class="logo">
           <h1>Confirmation de Commande</h1>
         </div>
         
         <p>Bonjour ${customerName},</p>
         
-        <p>Merci pour votre commande chez Dar Al Koftan Al Assil! Nous avons bien reçu votre commande et nous la traiterons dans les plus brefs délais.</p>
+        <p>Merci pour votre commande chez Aichic Couture! Nous avons bien reçu votre commande et nous la traiterons dans les plus brefs délais.</p>
         
         <div class="order-details">
           <h2>Détails de la commande #${order.id}</h2>
@@ -195,10 +195,10 @@ function createOrderConfirmationEmail(
         
         <p>Pour toute question concernant votre commande, n'hésitez pas à nous contacter.</p>
         
-        <p>Cordialement,<br>L'équipe Dar Al Koftan Al Assil</p>
+        <p>Cordialement,<br>L'équipe Aichic Couture</p>
         
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Dar Al Koftan Al Assil. Tous droits réservés.</p>
+          <p>© ${new Date().getFullYear()} Aichic Couture. Tous droits réservés.</p>
         </div>
       </div>
     </body>
@@ -214,7 +214,7 @@ export async function sendOrderConfirmationEmail(
   customerName: string,
   email: string
 ): Promise<void> {
-  const subject = `Confirmation de commande #${order.id} - Dar Koftan`;
+  const subject = `Confirmation de commande #${order.id} - Aichic Couture`;
   const html = createOrderConfirmationEmail(order, customerName);
   
   return sendEmail({ to: email, subject, html });

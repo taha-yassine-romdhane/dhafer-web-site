@@ -98,7 +98,7 @@ export function StockNotificationForm({
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
-          className="mt-2 w-full border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37]/10"
+          className="mt-2 w-full border-[#7c3f61] text-[#7c3f61] hover:bg-[#7c3f61]/10"
         >
           <Bell className="mr-2 h-4 w-4" />
           Me prévenir quand disponible
@@ -151,7 +151,7 @@ export function StockNotificationForm({
               <Button 
                 type="submit" 
                 disabled={loading} 
-                className="bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-white"
+                className="bg-[#7c3f61] hover:bg-[#7c3f61]/90 text-white"
               >
                 {loading ? 'Envoi en cours...' : 'M\'avertir'}
               </Button>

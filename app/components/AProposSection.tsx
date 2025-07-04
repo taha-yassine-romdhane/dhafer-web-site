@@ -158,9 +158,9 @@ export default function AProposSection() {
           </div>
 
           <div className="flex flex-col justify-center">
-            <h2 className="mb-6 text-3xl font-bold">À Propos de Dar Al Koftan Al Assil</h2>
+            <h2 className="mb-6 text-3xl font-bold">À Propos de Aichic</h2>
             <p className="mb-6 text-lg text-gray-600">
-              Dar Al Koftan Al Assil est votre destination de choix pour des caftans traditionnels de haute qualité. 
+              Aichic est votre destination de choix pour des vêtements  de haute qualité. 
               Nous sommes fiers de perpétuer l&apos;héritage de l&apos;artisanat tunisien tout en apportant 
               une touche moderne à nos créations.
             </p>
