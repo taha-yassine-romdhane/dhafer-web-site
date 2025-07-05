@@ -208,7 +208,7 @@ export function Footer() {
         <div className="border-t border-[#7c3f61]/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-gray-600">
-              {new Date().getFullYear()} <span className="font-semibold">DAR KOFTAN EL ASIL</span>  Tous droits reservés .
+              {new Date().getFullYear()} <span className="font-semibold">Aichic Couture</span>  Tous droits reservés .
             </p>
             <div className="flex space-x-6">
               <Link href="/policy" className="text-sm text-gray-600 hover:text-[#7c3f61] transition-colors">
