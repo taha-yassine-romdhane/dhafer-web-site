@@ -133,7 +133,13 @@ export function ProductDetails({ product }: { product: ProductWithColorVariants 
       toast.error("Ce produit n'est pas disponible dans la taille ou la couleur sélectionnée.");
       return;
     }
-    addItem({ ...product, colorVariantId: selectedColorVariant.id, images: selectedColorVariant.images }, selectedSize, quantity);
+
+    // The original addItem function in the cart context adds one item at a time.
+    // We loop here to add the quantity selected by the user.
+    for (let i = 0; i < quantity; i++) {
+      addItem({ ...product, images: selectedColorVariant.images }, selectedSize, selectedColorVariant.color);
+    }
+
     toast.success(`${quantity} x ${product.name} ajouté au panier!`);
   };
 
@@ -156,7 +162,7 @@ export function ProductDetails({ product }: { product: ProductWithColorVariants 
           productId: product.id,
           quantity: quantity,
           size: selectedSize,
-          colorVariantId: selectedColorVariant.id,
+          color: selectedColorVariant.color,
           price: product.salePrice ?? product.price,
         }],
         totalAmount: (product.salePrice ?? product.price) * quantity,
