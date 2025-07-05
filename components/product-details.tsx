@@ -167,9 +167,20 @@ export function ProductDetails({ product }: { product: ProductWithColorVariants 
         }],
         totalAmount: (product.salePrice ?? product.price) * quantity,
       };
-      await apiPost('/orders', orderData);
-      toast.success("Commande passée avec succès! Nous vous contacterons bientôt.");
-      router.push('/');
+
+      // Corrected the endpoint to /api/orders
+      const newOrder = await apiPost('/api/orders', orderData);
+
+      // Improved UX with a confirmation dialog
+      toast.success("Commande passée avec succès!", {
+        description: `Votre commande #${newOrder.id} a été enregistrée. Nous vous contacterons bientôt pour la confirmation.`,
+        action: {
+          label: "Continuer",
+          onClick: () => router.push('/'),
+        },
+        duration: 10000, // Keep the toast open longer
+      });
+
     } catch (error) {
       console.error("Failed to create order:", error);
       toast.error("Échec de la création de la commande. Veuillez réessayer.");

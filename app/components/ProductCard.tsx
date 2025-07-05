@@ -167,43 +167,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             )}
           </div>
 
-          {/* Color Variant Thumbnails */}
-          {/*  
-          <div className="mt-1.5 flex items-center">
-            <div className="flex -space-x-2 mr-2">
-              {colorVariantsWithMainImages.slice(0, 3).map((variant, idx) => (
-                <div 
-                  key={variant.id}
-                  className={`relative w-6 h-6 rounded-full overflow-hidden border-2 ${idx === currentColorIndex ? 'border-[#7c3f61] z-10' : 'border-white'}`}
-                  style={{ zIndex: 3 - idx }}
-                >
-                  {variant.mainImage && (
-                    <Image
-                      src={variant.mainImage.url}
-                      alt={variant.color}
-                      fill
-                      className="object-cover"
-                      sizes="24px"
-                      quality={30}
-                    />
-                  )}
-                </div>
-              ))}
-              {colorVariantsWithMainImages.length > 3 && (
-                <div className="w-6 h-6 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center" style={{ zIndex: 0 }}>
-                  <span className="text-[10px] text-gray-600 font-medium">+{colorVariantsWithMainImages.length - 3}</span>
-                </div>
-              )}
-            </div>
-            <span className="text-xs text-gray-600 capitalize">{currentColorVariant?.color}</span>
-          </div>
-          */}
-          
           {/* See More Details Button */}
           <div className="mt-3">
             <Link href={`/product/${product.id}`} className="block">
               <button className="w-full py-2 px-4 bg-[#7c3f61] hover:bg-[#7c3f61]/80 text-white rounded-md transition-colors duration-200 text-sm font-medium shadow-sm hover:shadow">
-                Voir plus de détails
+                Acheter
               </button>
             </Link>
           </div>
