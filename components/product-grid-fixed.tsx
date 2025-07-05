@@ -305,7 +305,7 @@ const ProductGrid = ({ filters, productsPerPage = 5, onPageChange, onTotalPagesC
                       e.stopPropagation();
                       router.push(`/product/${product.id}`);
                     }}
-                    className="bg-[#7c3f61] text-white hover:bg-[#C09C2C]"
+                    className="bg-[#7c3f61] text-white hover:bg-[#7c3f61]"
                   >
                     <Eye className="w-4 h-4 mr-2 " />
                     Voir Détails
