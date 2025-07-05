@@ -185,8 +185,8 @@ export function ProductDetails({ product }: { product: ProductWithColorVariants 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-8">
         {/* Image Gallery */}
         <div className="flex flex-col-reverse md:flex-row gap-4">
-          <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto pr-2 md:pr-0">
-            {product.colorVariants.flatMap(v => v.images).map((image) => (
+          <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto">
+            {selectedColorVariant?.images.map((image) => (
               <button
                 key={image.id}
                 className={cn(
