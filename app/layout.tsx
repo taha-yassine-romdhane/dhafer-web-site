@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/auth-context";
 import Navbar from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { CartDropdown } from "@/components/cart-dropdown";
+import { Toaster } from "@/components/ui/sonner";
 import Script from "next/script";
 
 const inter = Inter({ subsets: ['latin'] });
@@ -127,6 +128,7 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
+            <Toaster />
           </CartProvider>
         </AuthProvider>
       </body>
