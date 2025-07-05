@@ -32,7 +32,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ProductAvailability } from "@/components/product-availability";
-import { StockNotificationForm } from "@/components/stock-notification-form";
 
 interface ProductWithColorVariants extends Omit<Product, "images"> {
   colorVariants: (ColorVariant & {
@@ -173,7 +172,7 @@ export function ProductDetails({ product }: { product: ProductWithColorVariants 
 
       // Improved UX with a confirmation dialog
       toast.success("Commande passée avec succès!", {
-        description: `Votre commande #${newOrder.id} a été enregistrée. Nous vous contacterons bientôt pour la confirmation.`,
+        description: `Votre commande a été enregistrée. Nous vous contacterons bientôt pour la confirmation.`,
         action: {
           label: "Continuer",
           onClick: () => router.push('/'),
@@ -195,8 +194,8 @@ export function ProductDetails({ product }: { product: ProductWithColorVariants 
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-8">
         {/* Image Gallery */}
-        <div className="flex flex-col-reverse md:flex-row gap-4">
-          <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto">
+        <div className="flex flex-row gap-4">
+          <div className="flex flex-col gap-2 overflow-y-auto pr-2">
             {selectedColorVariant?.images.map((image) => (
               <button
                 key={image.id}

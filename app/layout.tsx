@@ -128,7 +128,15 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
-            <Toaster />
+            <Toaster 
+              position="bottom-center"
+              toastOptions={{
+                classNames: {
+                  success: 'bg-[#7c3f61] border-[#7c3f61] text-white',
+                  actionButton: 'bg-white text-black hover:bg-gray-200',
+                },
+              }}
+            />
           </CartProvider>
         </AuthProvider>
       </body>
