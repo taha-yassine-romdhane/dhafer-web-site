@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    domains: ['images.aichic.tn'],
+  },
   output: 'standalone',
   experimental: {
     serverComponentsExternalPackages: [],
